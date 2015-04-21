@@ -1,0 +1,704 @@
+
+/* Ensin muutamia yleisiä perusmuotoiluja: */
+h1 {text-align: center; font-size: 170%}
+h2 {text-align: center; font-size: 150%}
+h3 {font-size: 135%}
+h4 {font-size: 120%}
+h5 {font-size: 110%}
+h6 {font-size: 100%}
+
+body {
+    padding: 0;
+    margin: 0;
+    background-color: #eff;
+    height: 100%;
+    font-family: Calibri,"Century Gothic", Arial;
+}
+table
+{
+    border-collapse:collapse;  
+}
+
+code{
+    background-color: white;
+}
+sub, sup{
+    font-size: 70%; 
+}
+
+
+/*sub, sup{
+    font-size: 65%;
+}*/
+/********************* sivujen päämuotoilut: ******/
+
+/*Tämän yleisen muotoilukokoelman idea on antaa yleiset raamit normisivuille
+(etusivu  yms voivat olla erikseen tehtyjä). Tämä antaa laatikkomallin pohjan,
+johon sitten värejä, taustoja ja muita tyylejä voi lisäillä. 
+*/
+
+/********************* Yleiset sivujen päämuotoilut: *************************/
+
+
+
+/* Jos pohja on keskitetty, ei fixed laatikot toimi, koska pohjan paikka
+ * vaihtelee ruudun koon mukaan!
+ */
+#pohja_keskitetty {
+    /*border-radius: 20px;
+    -moz-border-radius: 20px; /*Pyäreitä kulmia mozillaan*/
+    margin: 0px auto;
+    max-width: 1200px;
+    min-width: 800px;
+    min-height: 500px;
+    background-color: #dff;
+}
+
+#pohja {
+    margin: 0;
+    margin-left: 71px;
+    max-width: 1400px;
+    min-width: 600px;
+    min-height: 500px;
+    background-color: #dff;
+}
+
+/* Ylin vaakasuora palkki*/
+#otsikkopalkki {
+    text-align: center; /*Tekstin vaakasuora keskitys*/
+    padding: 0 0 0 0;
+    margin: 0;
+    overflow: auto;
+    /*border-bottom: 1px solid green ;*/
+    z-index: 0;
+    background-color: #aff;
+    /*border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    -moz-border-radius-topleft: 10px; /*Pyäreitä kulmia mozillaan*
+    -moz-border-radius-topright: 10px; /*Pyäreitä kulmia mozillaan*/
+}
+
+#otsikkopalkki h1 {
+  /*padding: 5px 1px 5px 4px;*/
+  margin: 0;
+  color: blue;
+  display: inline;
+}
+
+
+#palkki_vasen {
+    float:left;
+    width : 200px;
+    padding: 3px 0px 3px 3px;
+    margin: 0;
+    /*margin-left: 71px;*/
+    overflow: auto;
+}
+
+/* Tämä auttaa siihen, ettei ylikokoinen sisältö tule ulos säiliöstään. */
+#palkki_vasen:after
+{
+    content:"";
+    display: block;
+    clear: both;
+}
+
+#sisalto {
+    line-height: 100%;
+    min-height: 340px;/* Riittävän iso, jotta reuna yltää pohjan alareunaa asti*/
+    margin: 0px 0px 0px 0px;
+    padding: 10px 3px 3px 3px; /* padding yläsalas estää hassun välin tulon!*/
+    /*border-left: 3px solid #ddb;*/
+    min-height: 340px;/* Riittävän iso, jotta reuna yltää pohjan alareunaa asti*/
+    overflow: auto;
+    
+}
+
+
+/* Oikea palkki*/
+#palkki_oikea {
+    float: right;
+    padding: 10px 3px 3px 3px;
+    margin: 0px;
+    width : 200px;
+    overflow: hidden;
+}
+
+#palkki_pohja {			/* Tämä ois lähinnä alareunaelementti. */
+    width: 100%;
+    margin: 0px;
+    height: 30px;
+    padding: 0px;
+    text-align: center;
+    border-top-style: none;
+    z-index: 0;
+}
+#palkki_pohja_teksti {
+    padding-top: 3px;
+    color: black;
+}		
+		
+
+
+
+	
+
+
+#aika{
+    position: absolute;
+    top: 2px;
+    left: 400px;
+    font-size: 80%;
+    font-weight: normal;
+    color: olive
+}
+
+#ulos_nappi {
+    
+}
+
+/* Täällä näytetään kaikkien aikojen tilasto (kaikki havaitut lajit) */
+#bongaukset_kaikki{
+    /*background-color: #ddd;
+    opacity:0.5;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*
+    border-radius: 10px; /* Muita.*
+    border: 1px solid blue;*/
+    padding: 0px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    font-size: 110%;
+    color: green;
+    
+}
+
+.bongaukset_jakso{
+    /*background-color: #ddd;
+    opacity:0.5;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*
+    border-radius: 10px; /* Muita.*
+    border: 1px solid blue;*/
+    padding: 0px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    font-size: 100%;
+    color: black;
+    
+}
+
+#ilmoitus{
+    position: fixed;
+    padding: 0px;
+    top: 0;
+    text-align:center;
+    color: #008888;
+    font-weight: bold;
+    background-color: #dda;
+    /*border: 1px solid black;*/
+    left: 20%;
+    z-index: 10;
+}
+
+#painikepalkki{
+    position: fixed;
+    padding: 3px;
+    margin: 0px;
+    top: 0;
+    left: 0;
+    width: 63px;
+    height: 100%;
+    background-color: #aef;
+    border-left: 1px solid black;
+}
+
+.keskitys {text-align: center}
+.kuvateksti {color: rgb(250,0,250); font-size: 80%}
+.rinnakkain{display:inline}
+
+
+#paaotsikko {
+    display: inline;
+    color: blue;
+}
+
+
+#palkki_vasen a:link, #palkki_oikea a:link {text-decoration: none;}
+#palkki_vasen a:visited, #palkki_oikea a:visited {text-decoration: none;}
+#palkki_vasen a:hover, #palkki_oikea a:hover {background-color: white;}
+#palkki_vasen a:active, #palkki_oikea a:active {background-color: gray;}
+#palkki_vasen a, #palkki_oikea a  {
+  padding: 3px 1px 2px 4px;
+  display: block;
+  
+}
+#palkki_vasen h3, #palkki_oikea h3 {
+  padding: 3px 1px 2px 4px;
+  margin: 0;
+}
+
+
+/* Korostuksen voi tarpeen vaatiessa ylikirjoittaa asianomaisessa 
+tyylitiedostossa. Sama tyyli ei välttämättä käy yhtä hyvin kaikkiin väreihin
+yms. */
+.korostus {color: #008888; font-weight: bold}
+
+/************ LISTAT **********************************************************/
+.harvalista li { margin-bottom: 8px}
+
+/* Ohjeen muotoilut: */
+#ohje{
+    border: 5px solid black;
+    border-radius: 20px;
+    -moz-border-radius: 20px; /*Pyäreitä kulmia mozillaan*/
+    padding: 5px;
+    font-size: 100%;
+}
+
+
+.kuvaraamit {
+    float: right;
+    clear:both;
+    padding: 3px 3px 3px 3px;
+    background-color: white;
+    border: 2px solid gray;
+    margin: 5px 0px 2px 5px;
+    
+}
+
+.kuvaraamit th {border: none;}
+.kuvaraamit td {padding: 2px 2px 0px 2px;
+               margin: 0}
+
+#kuvaelementti {
+    position: fixed;
+    top: 0; 
+    bottom: 0;
+    left: 0;
+    right: 214px; 
+    background-color: black;
+}
+#kuvapainikerivi{
+    width: 100%;
+    background-color: black;
+    opacity: 50%;
+}
+
+#kuvan_poistovarmistus{
+    border: 5px solid #cdf;
+    border-radius: 10px;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
+    background-color: #def;
+    color:black;
+    text-align: center;
+    max-width: 600px;
+    line-height: 160%;
+}
+
+/* Rajattomassa ei ole rajoja taulukon sisällä */
+.tietolomake, #tietolomake, .tietolomake_rajaton, #tietolomake_rajaton{
+    border: 3px solid green;
+    padding: 3px;
+    margin: 3px;
+    border-radius: 10px;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
+    background-color: #ffa;
+    color:black;
+    max-width: 600px;
+}
+
+.tietolomake td, .tietolomake th, #tietolomake td, #tietolomake th {
+                    border: 1px solid green;
+                    padding: 0px 5px 0px 5px;
+                    color: black;}
+
+.tietolomake th, #tietolomake th {
+                border-bottom: 2px solid green;
+                background-color:#dd6;}
+
+.tietolomake_rajaton td, .tietolomake_rajaton th, #tietolomake_rajaton td, #tietolomake_rajaton th {
+                    padding: 5px 5px 5px 5px;
+                    color: black;}
+
+.tietolomake_rajaton th, #tietolomake_rajaton th {
+                border-bottom: 2px solid green;
+                background-color:#dd6;}
+
+/* Lisäluokitusvalinnat: */
+.labelradionappi{
+    /*border: 1px solid gray;*/
+    background-color:#eee;
+    margin-left: 5px;
+    margin-top: 5px;
+    -moz-border-radius: 3px; /*Pyäreitä kulmia mozillaan*/
+    border-radius: 3px; /* Muihin.*/
+}
+
+/* Havaintotaulu on varsinainen havaintotaulu. Tietotaulu on yleisempi.*/
+.havaintotauluotsikko{
+    border: 3px solid #eff;
+    background-color:#eff;
+    color: black;
+}
+
+.havaintotaulu{
+    border: 3px solid #8cf;
+    background-color:#eff;
+    border-collapse:collapse;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
+    border-radius: 10px; /* Muihin.*/
+    empty-cells: show;
+    color: black;
+    width: 100%;
+}
+
+/* top-left border-radius REUNUS EI TOTTELE*/
+.havaintotaulu tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.havaintotaulu tr{
+    vertical-align: central;
+}
+
+.havaintotaulu td, havaintotaulu td {padding: 1px 3px 1px 3px;
+                    color: black}
+.havaintotaulu th {border-bottom: 2px solid #8cf;
+                    background-color:#cef;}
+                    
+.havaintotaulu td {text-align: left;
+                   border: 1px dotted #8cf;
+                   font-size: 90%;}
+
+.havaintotaulu td.rajaton {
+    border: none;
+    margin: 0;
+}
+.havaintotaulu.parillinen_rivi {
+    background-color: #bef;
+}
+
+.havaintokuvakommentti{
+    font-size: 85%;
+}
+
+.havaintomuokkausvaroitus{
+    background-color: #bfb;
+    border: 1px solid green;
+    color: red;
+    font-weight: bold;
+}
+
+/* Havaintotaulun lisäluokitusmerkinnät: */
+.havtaul_lisaluok_elis{
+    color: orangered;
+    font-weight: bold;
+}
+.havtaul_lisaluok_maaelis{
+    color: crimson;
+}
+.havtaul_lisaluok_eko{
+    color: forestgreen;
+    font-weight: bold;
+}
+.havtaul_lisaluok_eko2{
+    color: forestgreen;
+}
+.havtaul_lisaluok_piha{
+    color: brown;
+    font-weight: bold;
+}
+.havtaul_lisaluok_vesilla{
+    color: blue;
+}
+.havtaul_lisaluok_tornientaisto{
+    color: darksalmon;
+}
+
+/* Korostaa nimen hiiren yllä ollessa */
+td.huomio:hover{
+    color: red;
+    background-color: white;
+}
+
+/* Korostaa tekstin hiiren yllä ollessa */
+.huomio:hover{
+    color: red;
+}
+/* Korostaa tekstin ja taustan hiiren yllä ollessa */
+.huomio2:hover{
+    color: blue ;
+    font-weight: bold;
+    background-color: white;
+}
+.klikattava_nimi:hover{
+    background-color: white;
+}
+
+
+#havaintotietolaatikko{
+    position: fixed; /* Fixed ei toimi oikein kännykällä.*/
+    top: 0px;
+    right: 0px;
+    width: auto;
+    height: 100%;
+    background-color: #fff;
+    padding: 0px;
+    color: black;
+    overflow:auto;
+}
+#havaintotietolaatikko_left{
+    /*position: fixed;*/
+    position: absolute;
+    top: 0px;
+    /*left: 65px;*/
+    left: 0px;
+    /*height: 100%;*/
+    width: auto;
+    background-color: #fff;
+    padding: 0px;
+    color: black;
+    overflow:auto;
+    z-index: 2;
+}
+
+#lajiluokkalaatikko{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: auto;
+    background-color: #fff;
+    padding: 5px;
+    color: black;
+    overflow:auto;
+    z-index: 1; /* Tärkeä, jotta ilmoitukset näkyvät takaa..*/
+}
+#nimikuvauslaatikko{
+    position: fixed;
+    top: 15%;
+    left: 20%;
+    width: auto;
+    overflow:auto;
+    z-index: 2; /* Tärkeä, jotta ei jää lajiluokkalaatikon taa..*/
+}
+#havaintokuvasiirtolaatikko{
+    position: fixed;
+    top: 15%;
+    left: 20%;
+    width: auto;
+    overflow:auto;
+    z-index: 2; /* Tärkeä, jotta ei jää lajiluokkalaatikon taa..*/
+}
+
+/* Tämä liittyy havaintolomakkeeseen: */
+#tallennustiedote{
+    color: red;
+}
+
+.tietotauluotsikko{
+    border: 2px solid black;
+    background-color:#ccc;
+    color: black;
+}
+
+.tietotauluotsikko_fixed_kork{
+    border: 2px solid black;
+    background-color:#ccc;
+    color: black;
+    position: fixed;
+    height:content-box
+}
+
+.tietotaulu{
+    border: 2px solid black;
+    background-color:#eee;
+    border-collapse:collapse;
+    /*-moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*
+    border-radius: 10px; /* Muihin.*/
+    empty-cells: show;
+    color: black;
+    padding: 50px;
+}
+
+.tietotaulu_ulkorajaton{
+    background-color:#eee;
+    border-collapse:collapse;
+    empty-cells: show;
+    color: black;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.tietotaulu td, tietotaulu th, .tietotaulu_ulkorajaton th {
+    padding: 4px 3px 4px 3px;
+    color: black}
+.tietotaulu th, .tietotaulu_ulkorajaton th{
+    border-bottom: 3px solid black;
+    background-color:#aaa;
+    border-left: 1px dotted black;
+    border-right: 1px dotted black;}
+
+.tietotaulu td, .tietotaulu_ulkorajaton td {
+    text-align: left; 
+    font-size: 100%;
+    /*border-left: 1px dotted black;*/
+    border: 1px dotted black;
+}
+
+.tietotaulu td.rajaton {
+    border: none;
+}
+.tietotaulu_parillinen_rivi {
+    background-color: #e3e3e3;
+    /*border-top: 1px solid black;*/
+}
+
+.fixed{
+    position: fixed;
+}
+
+.kuvalomake, #kuvalomake{
+    padding: 5px;
+    border: 3px solid #8cf;
+    border-radius: 10px;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
+    background-color: #eff;
+    color:black;
+}
+
+.kuvalomake td, .kuvalomake th, #kuvalomake td, #kuvalomake th{
+                    padding: 0px 5px 0px 5px;
+                    color: black;}
+
+.kuvalomake th  {border-bottom: 2px solid green;
+                background-color:#dd6;
+                padding: 0px 5px 0px 5px;
+                color: black;}
+
+
+#albumilomake{
+    padding: 5px;
+    border: 3px solid black;
+    border-radius: 10px;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
+    width: 700px;
+}
+
+
+
+.virhe{
+    color: red;
+}
+
+.yllapitoilmoitus{
+    background-color:pink;
+    color: blueviolet;
+}
+
+/*============================= Pikakommentointi =============================*/
+#pikakommenttilaatikko{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    height: 100%;
+    width: 200px;
+    background-color: #fff;
+    padding: 5px;
+    color: black;
+    overflow:auto;
+    -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
+    border-radius: 10px; /* Samat Safariin vai mikä se oli.*/
+    border: 2px solid #8cf;
+}
+
+/* Tää ei toimi!?! */
+.pikakommenttilaatikko textarea{
+    width: 180px;
+    height: 50px;
+}
+
+.pikakommentti{
+    background-color: #eee;
+    padding: 5px;
+    color: black;
+    overflow:auto;
+    -moz-border-radius: 20px; /*Pyäreitä kulmia mozillaan*/
+    border-radius: 20px; /* Samat Safariin vai mikä se oli.*/
+}
+
+.pikakommentti_poistovahvistus{
+    background-color:darkseagreen;
+    padding: 5px;
+    color: black;
+    overflow:auto;
+    -moz-border-radius: 20px; /*Pyäreitä kulmia mozillaan*/
+    border-radius: 20px; /* Samat Safariin vai mikä se oli.*/
+}
+
+/* Muotoilu, jos uusia pikakommentteja (muistio) */
+td.on_uusia{
+    color:red;
+    background-color: pink;
+    /*border: 2px solid red;
+    -moz-border-radius: 3px; /*Pyäreitä kulmia mozillaan*/
+    /*border-radius: 3px; /* Samat Safariin vai mikä se oli.*/
+}
+
+/* Muotoilu, jos uusia pikakommentteja (muistio) */
+td.huomio_on_uusia{
+    color:red;
+    background-color: pink;
+}
+td.huomio_on_uusia:hover{
+    background-color: #ffa;
+}
+
+.pikakommentti_otsikko{
+}
+.pikakommentti_aika{
+    color:maroon;
+    font-size: 75%;
+}
+.pikakommentti_lahettaja{
+    color: green;
+    font-weight: bold;
+}
+.pikakommentti_sisalto{
+
+}
+    
+
+/******************************************************************************/		
+/********************** IE6 IE6 IE6 IE6 IE6 IE6 IE6 säädät ********************/
+
+* html #pohja_keskitetty {
+    
+}
+
+* html #sisalto {
+   
+}
+
+
+
+* html #palkki_vasen {
+    
+}
+
+
+
+/* Oikea palkki*/
+* html #palkki_oikea {
+    
+}
+
+/*Alapalkki - vaakatasossa:*/
+* html #palkki_pohja {
+    
+}
+    
+* html #otsikkopalkki {}
+
+
+
+

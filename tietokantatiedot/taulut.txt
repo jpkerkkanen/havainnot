@@ -1,0 +1,622 @@
+/*
+Nämä ovat www.havainnot.net-sivustolla käytettäviä mysql-tauluja.
+*/
+
+/*
+ * Tämä on yhden havaitsijaporukan tiedot. Käyttäjätunnusta käytetään
+ * rekisteröitymisen yhteydessä - rajoitetaan hiukan.
+ * Poppoo voidaan poistaa ilman, että henkilöille tapahtuu muutoksia. Tämä
+ * voi joskus olla hyödyllistä. Toki pitää tällöin muuttaa henkilot-taulun
+ * poppoo_id arvoon -1, jottei tule ongelmia.  
+ *
+ * Huom: luomispvm:ssä 'default curdate()' olisi kätevä, mutta tietokanta valitti..
+ * Netti sanoi, ettei se toimikaan noin.
+ */
+create table poppoot
+(
+  id                    int auto_increment not null,
+  nimi                  varchar(50) not null,
+  luomispvm             date not null,
+  kommentti		varchar(1000),
+  kayttajatunnus        varchar(50) unique not null,
+  maksimikoko           int not null default 10,
+  primary key (id),
+  index(nimi),
+  index(kayttajatunnus)
+) ENGINE=InnoDB;
+
+/* Sisältää tiedot havaitsijoista. Online: true, jos käyttäjä kirjautunut, 
+ false muutoin. Tiny: -128-127 (signed). HUOM: syntymapaiva on kuukauden 
+ päivä 1-31 ja syntymakk 1-12.
+ 
+ Muutos 13.6.2013: lisätty osoite ja puhelin:
+ alter table henkilot add column osoite varchar(200) default '';
+ alter table henkilot add column puhelin varchar(100) default '';
+
+Muutos 17.1.2014: poistettu syntymäaika tarpeettomana ja lisätty asuinmaa:
+ alter table henkilot drop column syntymavuosi;
+ alter table henkilot drop column syntymakk;
+ alter table henkilot drop column syntymapaiva;
+ alter table henkilot add column asuinmaa smallint default 1;
+
+Muutos 7.5.2014: lisätty kieli.
+ alter table henkilot add column kieli smallint default 1;
+*/
+create table henkilot
+(
+  id                    int auto_increment not null,
+  etunimi		varchar(50) not null,
+  sukunimi		varchar(50) not null,
+  lempinimi		varchar(50),
+  kommentti		varchar(1000),
+  kayttajatunnus        varchar(30) unique not null,
+  salasana              varchar(50) not null,
+  eosoite               varchar(50) not null,
+  osoite                varchar(200) default '',
+  puhelin               varchar(100) default '',
+  online                boolean,
+  valtuudet             smallint default -1,
+  poppoo_id             int not null default -1,
+  asuinmaa              smallint default 1,
+  kieli                 smallint default 1,    
+
+  primary key (id),
+  index(kayttajatunnus),
+  index(salasana),
+  index(online),
+  index(poppoo_id)
+) ENGINE=InnoDB;
+
+create table pikakommentit
+(
+  id                    int auto_increment not null,
+  henkilo_id		int not null,
+  tallennushetki_sek    int not null,
+  muokkaushetki_sek     int default -1,
+  kohde_id              int not null,
+  kohde_tyyppi          smallint not null,
+  kommentti		varchar(1000) not null,
+  primary key (id),
+  index(henkilo_id),
+  index(tallennushetki_sek),
+  index(kohde_id),
+  index(kohde_tyyppi),
+  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id) ON DELETE CASCADE
+) ENGINE=InnoDB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
+
+
+
+
+
+
+/* Aktiivisuustaulu (tietoa käyttäjän toimista):*/
+create table aktiivisuus
+(
+  id                    int auto_increment not null,
+  henkilo_id            int not null,
+  aika          	int not null default 0, /* aika sekunteina (timestamp)*/
+  aktiivisuuslaji       smallint default 0,  /* Ei vielä käytössä */
+  primary key (id),
+  index(henkilo_id),
+  index(aika),
+  index(aktiivisuuslaji),
+  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
+                      ON DELETE CASCADE
+)ENGINE=INNODB;
+
+
+/*******************************************************************************/
+/******************** BONGAUSTAULUT ********************************************/
+/* Lajiluokat eli sekä lajit että erilaiset luokat:*/
+create table lajiluokat
+(
+  id                    int auto_increment not null,
+  ylaluokka_id          int default -1 not null,
+  nimi_latina           varchar(128) not null,
+  primary key (id),
+  index(ylaluokka_id),
+  unique index(nimi_latina)
+) ENGINE=INNODB;
+
+/* Lajiluokkien nimet ja kuvaukset eri kielillä. */
+create table kuvaukset
+(
+  id                    int auto_increment not null,
+  lajiluokka_id         int default -1 not null,
+  nimi                  varchar(128) not null,
+  kuvaus                varchar(5000) not null,
+  kieli                 smallint not null,
+  primary key (id),
+  index(lajiluokka_id),
+  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
+                      ON DELETE CASCADE
+
+) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
+
+
+/*******************************************************************************
+KORJAUS 5.1.2014: lisäluokitukset hoidetaan fiksummin erillisen tietokantataulun
+avulla. Tietokannan korjaus:
+ALTER TABLE havainnot DROP COLUMN lisaluokitus1;
+ALTER TABLE havainnot DROP COLUMN lisaluokitus2;
+ALTER TABLE havainnot DROP COLUMN lisaluokitus3;
+
+HUOM: According the the MySQL 5.1 Reference Manual:
+If columns are dropped from a table, the columns are also removed from any 
+index of which they are a part. If all columns that make up an index are dropped, 
+index is dropped as well. (If you use CHANGE or MODIFY to shorten a column for 
+which an index exists on the column, and the resulting column length is less 
+than the index length, MySQL shortens the index automatically.)
+*******************************************************************************/
+create table havainnot
+(
+  id                    int auto_increment not null,
+  henkilo_id            int default -1 not null,
+  lajiluokka_id         int default -1 not null,
+  vuosi                 smallint default -1,
+  kk                    tinyint default -1,
+  paiva                 tinyint default -1,
+  paikka                varchar(300),
+  kommentti             varchar(3000),
+  maa                   smallint default 1,
+  varmuus               smallint default 100,
+  sukupuoli             tinyint default -1,
+  lkm                   int default -1,
+  primary key (id),
+  index(henkilo_id),
+  index(vuosi),
+  index(kk),
+  index(paiva),
+  index(paikka),
+  index(maa),
+  index(lajiluokka_id),
+  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
+                      ON DELETE CASCADE,
+  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
+                      ON DELETE CASCADE
+
+) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
+
+/* Jos henkilöt poistaa, ei jaksoja ehkä kannata poistaa, koska ne voivat olla 
+yhteisiä. Näiden hyödyntäminen on vielä kesken. Huomaa, että lajiluokka_id
+viittaa yläluokkaan, esim "linnut".*/
+
+create table havaintojaksot
+(
+  id                    int auto_increment not null,
+  henkilo_id            int default -1 not null,
+  lajiluokka_id         int default -1 not null,
+  alkuaika              int not null,
+  kesto_sek             int not null,
+  kommentti             varchar(3000),
+  nakyvyys              smallint default -1 not null,
+  primary key (id),
+  index(lajiluokka_id),
+  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
+                      ON DELETE CASCADE
+
+) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
+
+
+create table havainnon_lisaluokitukset
+(
+  id                    int auto_increment not null,
+  havainto_id           int default -1 not null,
+  lisaluokka            int default -1 not null,
+  primary key (id),
+  index(havainto_id),
+  index(lisaluokka),
+  FOREIGN KEY (havainto_id) REFERENCES havainnot (id) ON DELETE CASCADE
+) ENGINE=INNODB; 
+
+/* Henkilö poistetaan -> henkilön kuvat poistetaan (cascade)*/
+create table kuvat
+(
+  id                    int auto_increment not null,
+  henkilo_id            int not null,
+  kuvaotsikko		varchar(200),
+  kuvaselitys		varchar(5000),
+  vuosi                 smallint default 0,
+  kk                    tinyint default 0,
+  paiva                 tinyint default 0,
+  src                   varchar(300),
+  leveys                smallint not null,
+  korkeus               smallint not null,
+  tiedostokoko          int not null,
+  tiedostotunnus        varchar(20) not null,
+  tiedostonimi          varchar(100) not null,
+  tallennusaika_sek     int default 0,
+  muutosaika_sek        int default 0,
+  primary key (id),
+  index(henkilo_id),
+  index(tallennusaika_sek),
+  index(vuosi),
+  index(kk),
+  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
+                      ON DELETE CASCADE
+)ENGINE=INNODB;
+
+/* Linkki lajiluokan ja kuvan välillä. Tämän avulla kuva yhdistetään tiettyyn
+lajiin, vaikkapa närheen. Linkki hävitetään, jos kuva tai lajiluokka hävitetään.
+Kuvalla on yleensä aina linkki lajiluokkaan ja useimmiten myös havaintoon.
+Kuitenkin kuvat ovat itsenäisiä kokonaisuuksia ja toimivat myös sellaisenaan.
+ 
+HUOM: Voiko kuvasta olla useita linkkejä eri lajeihin, jos kuvassa useita
+lintuja? Kyllä voi ja se otetaan huomioon lajiluokkamuutoksissa nyt!
+*/
+
+create table lajikuvalinkit
+(
+  id                    int auto_increment not null,
+  kuva_id               int default -1 not null,
+  lajiluokka_id         int default -1 not null,
+  jarjestysluku         int not null,
+  primary key (id),
+  index(jarjestysluku),
+  index(lajiluokka_id),
+  index(kuva_id),
+  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
+                      ON DELETE CASCADE,
+  FOREIGN KEY (kuva_id) REFERENCES kuvat (id)
+                      ON DELETE CASCADE
+) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
+
+create table havaintokuvalinkit
+(
+  id                    int auto_increment not null,
+  kuva_id               int default -1 not null,
+  havainto_id           int default -1 not null,
+  jarjestysluku         int not null,
+  primary key (id),
+  index(jarjestysluku),
+  index(havainto_id),
+  index(kuva_id),
+  FOREIGN KEY (havainto_id) REFERENCES havainnot (id)
+                      ON DELETE CASCADE,
+  FOREIGN KEY (kuva_id) REFERENCES kuvat (id)
+                      ON DELETE CASCADE
+) ENGINE=INNODB;
+
+
+INSERT INTO poppoot VALUES (null,'Huippupoppoo',curdate(),'Kiva porukka', 
+                            "lintulenti", 10);
+
+INSERT INTO henkilot VALUES (null,'Jukka-Pekka (admin)','Kerkkanen','JP', 1975,10,19,
+'Aika kiva kaveri','jp', 'fb3448f039272f0e40d4455c9349246b',
+'jpkerkkanen@gmail.com','Osoite','Puhelin', false, 100,0);
+
+// Seuraavissa samat kiinteät id:t kuin kerkkässivustolla, jotta tietosiirrot helpompia.
+INSERT INTO henkilot VALUES (1,'Jukka-Pekka (tavis)','Kerkkanen','JP', 1975,10,19,
+'Aika kiva kaveri','jp', 'fb3448f039272f0e40d4455c9349246b',
+'jpkerkkanen@gmail.com','Osoite','Puhelin', false, 10,1);
+
+INSERT INTO henkilot VALUES (2,'Viivi','Kerkkanen','Viivi', 1978,8,8,
+'Huipputyyppi','viivi', 'fb3448f039272f0e40d4455c9349246b',
+'viivi.kerkkanen@gmail.com','Osoite','Puhelin', false, 10,1);
+
+INSERT INTO henkilot VALUES (4,'Kimmo','Kerkkanen','Piip', 1977,9,20,
+'Piippiip','kimmo', 'fb3448f039272f0e40d4455c9349246b',
+'kimmo.kerkkanen@gmail.com','Osoite','Puhelin', false, 10,1);
+
+/* Ei enää mahdollinen, koska id on jo käytössä!:*/
+INSERT INTO henkilot VALUES (6,'Ari','Kerkkanen','Piip', 1920,1,1,
+'Piippiip','ari', 'fb3448f039272f0e40d4455c9349246b',
+'e-osoite','Osoite','Puhelin', false, 10,1);
+
+HUOMAUTUS: yllä id:n voi tallentaa myös kiinteänä antamalla nullin sijaan arvon.
+Testasin ja toimi hyvin. Se voi auttaa esimerkiksi kun kopioit tietoja
+tietokantojen välillä ja haluat säilyttää id:t entisellään.
+
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+
+/*Muutos 19.1.2013:
+ALTER TABLE bhavainnot ADD COLUMN sukupuoli tinyint default -1;
+ALTER TABLE bhavainnot ADD COLUMN lkm int default -1;
+ALTER TABLE bhavainnot ADD COLUMN lisaluokitus smallint default -1;
+*/
+
+/**************** MUUTOKSET 3.2011 KAIKKI alku *********************************
+
+ALTER TABLE kuvat DROP COLUMN avainsanat;
+DROP INDEX jarjestysluku ON kuvat;
+ALTER TABLE kuvat DROP COLUMN jarjestysluku;
+ALTER TABLE kuvat ADD COLUMN minikuva1 longblob;
+ALTER TABLE kuvat ADD COLUMN minikuva2 longblob;
+ALTER TABLE bkuvalinkit ADD COLUMN jarjestysluku mediumint not null;
+CREATE INDEX jarjestysluku_ind ON bkuvalinkit (jarjestysluku);
+ALTER TABLE kuva_albumi_linkit ADD COLUMN jarjestysluku mediumint not null;
+CREATE INDEX jarjestysluku_ind ON kuva_albumi_linkit (jarjestysluku);
+
+**********************MUUTOKSET 3.2011 KAIKKI loppu ****************************/
+
+
+/*SELECT * FROM aktiivisuus ORDER BY viimeksi_aktiivi DESC LIMIT 30;*/
+/******************** indeksin luontikoodaus:********************************/
+esim:
+CREATE INDEX viimeksi_aktiivi_ind ON aktiivisuus (viimeksi_aktiivi);
+CREATE INDEX henkilo_id_ind ON viestit (henkilo_id);
+CREATE INDEX henkilo_id_ind ON kuvat (henkilo_id);
+CREATE INDEX henkilo_id_ind ON albumit (henkilo_id);
+CREATE INDEX henkilo_id_ind ON suoritukset (henkilo_id);
+CREATE INDEX henkilo_id_ind ON kirjautumiset (henkilo_id);
+
+
+
+SELECT kuvat.kuvaotsikko, kuvat.kuvaselitys, kuvat.vuosi, kuvat.avainsanat
+FROM kuvat
+JOIN kuva_albumi_linkit AS linkit
+ON kuvat.id = linkit.kuva_id
+JOIN albumit
+ON albumit.id = linkit.albumi_id
+WHERE albumit.id = 16;
+
+***************
+
+salasana jviivip (jos ääkkösistä valittaa):
+INSERT INTO henkilot VALUES (null,'Jukka-Pekka (admin)','Kerkkanen','JP', 1975,10,19,
+'Aika kiva kaveri','jp', 'fb3448f039272f0e40d4455c9349246b',
+'jpkerkkanen@gmail.com', 0, false,0);
+
+INSERT INTO henkilot VALUES (null,'Kimmo','Kerkkanen','', 1977,9,20,
+'','jp', '1675d875eb16c51a484e0cca76d2aec3','kkerkkanen@gmail.com', 0, false,0);
+
+
+
+/*****************************************************************************/
+*************
+/* Liitoskokeilua: Hakee jokaisen linjoilla olevan henkilön viimeisen ajan. */
+SELECT he.id, he.etunimi, ak.viimeksi_aktiivi AS vika
+FROM aktiivisuus ak
+RIGHT OUTER JOIN henkilot he    -- JOIN toimii, mutta right outer tuo Tarmonkin mukaan..
+ON he.id = ak.henkilo_id
+WHERE he.online = 1
+AND ak.viimeksi_aktiivi =
+    (SELECT MAX(viimeksi_aktiivi)
+    FROM aktiivisuus
+    WHERE henkilo_id = he.id)
+ORDER BY ak.viimeksi_aktiivi;
+
+/* Tämä hakee henkilot, joiden online = 1, mutta joilla ei ole merkintöjä
+aktiivisuustaulussa.
+*/
+SELECT he.etunimi, he.kayttajatunnus, ak.viimeksi_aktiivi
+FROM aktiivisuus ak
+RIGHT OUTER JOIN henkilot he
+ON he.id = ak.henkilo_id
+WHERE he.online = 1
+ORDER BY ak.viimeksi_aktiivi;
+
+
+VIHJE MOZILLA-ONGELMAAN:
+http://www.howtocreate.co.uk/tutorials/javascript/dombasics (2010)
+
+Also important to note is that although the specifications say that no matter
+how much text exists between tags, it should all be in one text node, in
+practice this is not always the case. In Opera 7-9.2x and Mozilla/Netscape 6+,
+if the text is larger than a specific maximum size, it is split into multiple
+text nodes. These text nodes will be next to each other in the childNodes
+collection of the parent element.
+
+In Opera 7-9.2x, this maximum text node size is 32 KB. In
+Mozilla/Firefox/Netscape 6+, it is 4 KB. Although the normalize() method
+of the parent node(s) should be able to replace the multiple text nodes
+with a single text node containing all the text, this only works in
+Mozilla/Firefox/Netscape 6+. In Opera 7-9.2x it puts all of the text
+into a single node and then truncates that node to 32 KB, so the contents
+of all except the first node are lost. Running the normalize method can
+crash Internet Explorer 6 and does not exist in Internet Explorer 5 on Windows.
+
+For this reason, I do not recommend trying to normalize. It is better to
+manipulate the contents of text nodes separately. In fact, you can create
+your own text nodes and add them to the childNodes collection. Although to
+the DOM, they will still appear as separate nodes, they will appear as a
+single piece of text in the document. Basically, you need to be aware that
+your text may be split into several nodes, if it is 4 KB or over, or if you
+have added extra text nodes in yourself. In order to get that text in a single
+variable, you may need to look through every child node, and if they are
+consecutive text nodes append them together to get the total string.
+
+
+
+/**************** TESTITAULU PÄIVÄMÄÄRISTÄ ************************************/
+create table datetesti
+(
+  id                    mediumint auto_increment not null,
+  pvm                   varchar(100),
+  primary key (id)
+);
+
+
+INSERT INTO datetesti VALUES (null, CURDATE()); //OK!
+select * from datetesti; //OK!
+select pvm from datetesti where id=1; //OK!
+select YEAR(select pvm from datetesti where id=1);  // EI TOIMI!
+select YEAR('2002-3-4');    // TOIMII!
+
+INSERT INTO blajiluokat (ylaluokka_id, nimi_latina)
+                        VALUES (-1, 'jhdfoauy');
+select * from bkuvaukset;
+select * from blajiluokat;
+select id, lajiluokka_id, paikka, kommentti from bhavainnot;
+
+SELECT DISTINCT blajiluokat.id AS lj_id, bkuvaukset.nimi AS nimi
+FROM blajiluokat
+JOIN bkuvaukset
+ON bkuvaukset.lajiluokka_id = blajiluokat.id
+WHERE bkuvaukset.kieli= -1
+AND blajiluokat.ylaluokka_id = -1;
+
+SELECT DISTINCT bhavainnot.lajiluokka_id AS laji_id, henkilot.id AS henk_id
+FROM bhavainnot
+JOIN henkilot
+ON bhavainnot.henkilo_id = henkilot.id
+;
+etunimi AS nimi
+SELECT bhavainnot.lajiluokka_id AS laji_id, henkilot.etunimi AS nimi
+                FROM bhavainnot
+                JOIN henkilot
+                ON bhavainnot.henkilo_id = henkilot.id
+                JOIN blajiluokat
+                ON bhavainnot.lajiluokka_id = blajiluokat.id
+                WHERE henkilot.id = 2
+                AND blajiluokat.ylaluokka_id = 24
+                GROUP BY laji_id;
+
+SELECT blajiluokat.id, henkilot.etunimi AS nimi,
+                        bkuvaukset.nimi AS laji, bhavainnot.paikka AS paikka,
+                        bhavainnot.kommentti as kommentti,
+                        bhavainnot.vuosi AS vuosi, bhavainnot.kk AS kk,
+                        bhavainnot.paiva AS paiva
+                FROM blajiluokat
+                JOIN bkuvaukset
+                ON bkuvaukset.lajiluokka_id = blajiluokat.id
+                JOIN bhavainnot
+                ON bhavainnot.lajiluokka_id = blajiluokat.id
+                JOIN henkilot
+                ON bhavainnot.henkilo_id = henkilot.id
+                WHERE bkuvaukset.kieli= 1
+                AND blajiluokat.ylaluokka_id = 1
+                ORDER by vuosi DESC, kk DESC, paiva DESC, laji;
+
+
+SELECT DISTINCT
+                        henkilot.etunimi AS nimi,
+                        henkilot.id AS henk_id
+                FROM blajiluokat
+                JOIN bhavainnot
+                ON bhavainnot.lajiluokka_id = blajiluokat.id
+                JOIN henkilot
+                ON bhavainnot.henkilo_id = henkilot.id
+                WHERE blajiluokat.ylaluokka_id <> -1;
+
+
+SELECT DISTINCT
+                        henkilot.etunimi AS nimi,
+                        henkilot.id AS henk_id,
+                        COUNT(*) AS lkm
+                FROM blajiluokat
+                JOIN bhavainnot
+                ON bhavainnot.lajiluokka_id = blajiluokat.id
+                JOIN henkilot
+                ON bhavainnot.henkilo_id = henkilot.id
+                WHERE blajiluokat.ylaluokka_id <> -1
+                GROUP BY nimi;
+
+
+SELECT  blajiluokat.ylaluokka_id AS ylaluokka_id,
+        blajiluokat.id AS laji_id,
+        henkilot.etunimi AS nimi,
+        henkilot.id AS henk_id,
+        COUNT(*) AS lkm
+FROM blajiluokat
+JOIN bhavainnot
+ON bhavainnot.lajiluokka_id = blajiluokat.id
+JOIN henkilot
+ON bhavainnot.henkilo_id = henkilot.id
+WHERE blajiluokat.ylaluokka_id <> -1
+GROUP BY nimi, laji_id, ylaluokka_id;
+
+SELECT bkuvaukset.nimi AS laji
+FROM bkuvaukset
+WHERE bkuvaukset.lajiluokka_id = 49
+AND bkuvaukset.kieli= 1
+LIMIT 1;
+
+
+SELECT bhavainnot.id as hav_id, kuvat.id
+FROM bhavainnot
+JOIN bkuvalinkit
+ON bhavainnot.id = bkuvalinkit.havainto_id
+JOIN kuvat
+ON bkuvalinkit.kuva_id = kuvat.id
+WHERE bhavainnot.id = 11
+LIMIT 1;
+
+SELECT kuvat.id AS kuva_id, tiedostonimi, tiedostokoko,
+    leveys, korkeus, src, kuvaotsikko, kuvaselitys
+FROM kuvat
+JOIN kuva_albumi_linkit AS linkit
+ON kuvat.id = linkit.kuva_id
+JOIN albumit
+ON albumit.id = linkit.albumi_id
+WHERE albumit.id = 1
+ORDER BY linkit.jarjestysluku;
+
+
+SELECT kuvat.id, kuvat.tiedostonimi AS id
+FROM kuvat
+JOIN bkuvalinkit AS linkit
+ON kuvat.id = linkit.kuva_id
+ORDER BY kuvat.id;
+
+SELECT kuvat.id, kuvat.tiedostonimi AS id, linkit.jarjestysluku AS jarjluku
+FROM kuvat
+JOIN kuva_albumi_linkit AS linkit
+ON kuvat.id = linkit.kuva_id
+ORDER BY kuvat.id;
+
+UPDATE kuva_albumi_linkit SET jarjestysluku = kuva_id;
+UPDATE bkuvalinkit SET jarjestysluku = kuva_id;
+
+/* Haetaan lajiluokan nimi: */
+SELECT bkuvaukset.nimi AS nimi
+FROM bkuvaukset
+JOIN blajiluokat AS lj
+ON lj.id = bkuvaukset.lajiluokka_id
+WHERE lj.id = 1;
+
+
+SELECT COUNT(kuvat.id) AS lkm
+FROM kuvat
+JOIN bkuvalinkit AS linkit
+ON kuvat.id = linkit.kuva_id
+JOIN blajiluokat
+ON blajiluokat.id = linkit.lajiluokka_id
+WHERE blajiluokat.ylaluokka_id = 1
+ORDER BY linkit.jarjestysluku;
+
+SELECT bkuvaukset.nimi AS laji
+FROM bkuvaukset
+JOIN blajiluokat
+ON bkuvaukset.lajiluokka_id = blajiluokat.id
+WHERE bkuvaukset.kieli=1
+AND blajiluokat.id = 1;
+
+SELECT MAX(id) AS suurin FROM bhavainnot;
+
+SELECT kuvaus, henkilo_id, lajitarkennus, kestotunnit, kestomin, kestosek FROM suoritukset;
+
+SELECT kuvaus, henkilo_id, lajitarkennus, kestotunnit, kestomin, kestosek FROM suoritukset
+WHERE lajitarkennus=1
+ORDER by kestotunnit DESC, kestomin DESC, kestosek DESC;
+
+SELECT pikakommentit.id FROM pikakommentit
+JOIN suoritukset
+ON suoritukset.id = pikakommentit.kohde_id
+WHERE (pikakommentit.tallennushetki_sek > 0
+AND pikakommentit.kohde_tyyppi = 1
+AND suoritukset.henkilo_id = 2
+AND pikakommentit.henkilo_id <> 1);
+
+select etunimi, id from henkilot;
+
+select * from blajiluokat;
+
+select * from bhavainnot where kommentti=Testihavainnot;
+
+SELECT bhavainnot.id AS hav_id
+FROM bhavainnot
+JOIN blajiluokat
+ON bhavainnot.lajiluokka_id = blajiluokat.id
+WHERE blajiluokat.ylaluokka_id = 1;
+
+select * from kuva_albumi_linkit where kuva_id = 41;
+
+================================ Tietokantojen väliset toimet ==================
+
+
+================================================================================
