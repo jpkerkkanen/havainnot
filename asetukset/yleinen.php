@@ -158,15 +158,20 @@ class Maat {
     public static $tanska = 15;
     
     public static $islanti = 16;
+    public static $israel = 17;
+    public static $isobritannia = 17;
+    
     
     /**
      * @return <type> Palauttaa taulukon, joka sisältää maaoliot. Sisäiseen
-     * käyttöön. KESKEN!!
+     * käyttöön. KESKEN!! Huomaa, että maan nimet suomeksi kiinteästi. Pitäisi
+     * jotenkin mahdollistaa muuttaminen, kun kerkiää.
      */
     private static function hae_maataulukko(){
         $maat = array(new Maa(Maat::$belgia, "Belgia"),
                         new Maa(Maat::$hollanti, "Hollanti"),
                         new Maa(Maat::$islanti, "Islanti"),
+                        new Maa(Maat::$isobritannia, "Iso-Britannia"),
                         new Maa(Maat::$jordania, "Jordania"),
                         new Maa(Maat::$libanon, "Libanon"),
             

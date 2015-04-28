@@ -41,6 +41,8 @@ class Kielet {
     public static $ITALIA = 9;
     public static $KIINA = 10;
     public static $RANSKA = 11;
+    
+    public static $HOLLANTI = 12;
 
     // Kieli_id on kielen nroarvoon viittaavan sessiomuuttujan nimi tai name-arvo.
     public static $name_kieli_id = "kieli_id";
@@ -51,18 +53,15 @@ class Kielet {
      * käyttöön. KESKEN!!
      */
     private static function hae_kielitaulukko(){
-        $kielet = array(new Kieli(0, "latina"),
-                        new Kieli(1, "suomi"),
-                        new Kieli(2, "ruotsi"),
-                        new Kieli(3, "englanti"),
-                        new Kieli(4, "norja"),
-                        new Kieli(5, "saksa"),
-                        new Kieli(6, "ven&auml;j&auml;"),
-                        new Kieli(7, "arabia"),
-                        new Kieli(8, "heprea"),
+        $kielet = array(new Kieli(3, "englanti"),
                         new Kieli(9, "italia"),
-                        new Kieli(10, "kiina"),
-                        new Kieli(11, "ranska"));
+                        new Kieli(0, "latina"),
+                        new Kieli(4, "norja"),
+                        new Kieli(11, "ranska"),
+                        new Kieli(2, "ruotsi"),
+                        new Kieli(5, "saksa"),
+                        new Kieli(1, "suomi"),
+                        new Kieli(6, "ven&auml;j&auml;"));
         
         //KORJAA sort($kielet, $sort_flags);
         
