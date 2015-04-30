@@ -142,6 +142,7 @@ class Nakymat_lj {
         // Haetaan kielten nimet ja arvot:
         $kielinimet = Kielet::hae_kielten_nimet();
         $kieliarvot = Kielet::hae_kielten_arvot();
+        $kielet = Kielet::hae_kielet();
         
         $sarakkeiden_lkm = sizeof($kieliarvot)+1;
         
@@ -232,38 +233,34 @@ class Nakymat_lj {
                 
                 // Kuvauksen sisältämä nimi pitää tulla oikeaan paikkaan
                 // kielen mukaisesti. Ellei kuvausta löydy, jätetään tyhjä solu.
-                // Tässä hyödynnetään sitä, että kuvaukset on järjestetty
-                // kieli_id:n mukaisesti. Näin vältetään tupla for-lause.'
-                $sarakkeiden_lkm = sizeof($kieliarvot);
+                $sarakkeiden_lkm = sizeof($kielet);
+                $laskuri_vaaka = 0;
                 
-                // Käännetään kuvaukset toisinpäin, eli pienin kieli_id
-                // vikaksi. Kun tuo poisto on vain lopusta..
-                $kuvaukset = array_reverse($kuvaukset);
-                
-                for($i=0; $i < $sarakkeiden_lkm; $i++){
-                    
+                // Käydään läpi kaikki yhden lajiluokan (rivin) kielet:
+                foreach ($kielet as $kieli) {
+                 
                     // Jokaisella solulla pitää olla oma erityinen id,
                     // jotta solu tunnistetaan:
-                    $soluid = "nimisolu".$laskuri.$i;
+                    $soluid = "nimisolu".$laskuri.$laskuri_vaaka;
                     $id_koodi = "id='".$soluid."'";
                     
                     // Soluihin lisätään onclick-määre, jotta niitä päästään
                     // muokkaamaan:
                     // 2. parametri -1 -> olemattoman olion id. 
                     $onklikki = "onclick = 'hae_nimikuvauslomake(".
-                                    $kieliarvot[$i].",-1,\"".$soluid."\",".
+                                    $kieli->get_id().",-1,\"".$soluid."\",".
                                     $lajiluokka->get_id().
                                     " )'";
                     
-                    $kielinimi = Kielet::hae_kielen_nimi($kieliarvot[$i]);
+                    $kielinimi = $kieli->get_nimi();
                     
-                    // Eka sarake on aina latina:
-                    if($i == 0){
+                    // Latina:
+                    if($kieli->get_id()+0 === Kielet::$LATINA){
                         
                         // Latinassa olio on lajiluokka, jonka id tarvitaan
                         // jatkossa. Tämä on aina olemassa.
                         $onklikki = "onclick = 'hae_nimikuvauslomake(".
-                                    $kieliarvot[$i].",".$lajiluokka->get_id().
+                                    $kieli->get_id().",".$lajiluokka->get_id().
                                     ",\"".$soluid."\",".
                                     $lajiluokka->get_id().
                                     " )'";
@@ -274,35 +271,41 @@ class Nakymat_lj {
                                 $lajiluokka->get_nimi_latina_html_encoded()."</td>";
                     }
                     
-                    
+                    // Muut kuin latina:
                     else if(!empty($kuvaukset)){
                         
-                        // Valitaan aina viimeinen taulukosta:
-                        $kuvaus = $kuvaukset[(sizeof($kuvaukset)-1)];
-                        //$kuvaus = null;
+                        // Valitaan kieltä vastaava kuvaus (jota ei välttämättä
+                        // ole):
+                        $osuma = "";
+                        foreach ($kuvaukset as $kuvaus) {
+                            if($kuvaus instanceof Kuvaus){
+                                if($kuvaus->get_kieli()+0 === $kieli->get_id()){
+                                    $osuma = $kuvaus;
+                                }
+                            }
+                        }
                         
-                        if(($kuvaus instanceof Kuvaus) && 
-                            ($kuvaus->get_kieli() == $kieliarvot[$i])){
+                        if($osuma instanceof Kuvaus){
 
                             // Suomea ei päästetä muokkaamaan kuin admin:
-                            if($kieliarvot[$i] == Kielet::$SUOMI){
+                            if($kieli->get_id()+0 === Kielet::$SUOMI){
                                 if($on_admin){
                                     $onklikki = "onclick = 'hae_nimikuvauslomake(".
-                                    $kuvaus->get_kieli().",".
-                                    $kuvaus->get_id().",\"".$soluid."\",".
+                                    $osuma->get_kieli().",".
+                                    $osuma->get_id().",\"".$soluid."\",".
                                     $lajiluokka->get_id().
                                     " )'";
                                 }
                                 else{
                                     $onklikki = 
                                     "onclick = 'nayta_viesti(\"".
-                        Bongaustekstit::$lajiluokan_muok_ei_voi_suomenkiel."\")'";
+                                    Bongaustekstit::$lajiluokan_muok_ei_voi_suomenkiel."\")'";
                                 }
                             }
                             else{
                                 $onklikki = "onclick = 'hae_nimikuvauslomake(".
-                                    $kuvaus->get_kieli().",".
-                                    $kuvaus->get_id().",\"".$soluid."\",".
+                                    $osuma->get_kieli().",".
+                                    $osuma->get_id().",\"".$soluid."\",".
                                     $lajiluokka->get_id().
                                     " )'";
                             }
@@ -310,10 +313,8 @@ class Nakymat_lj {
                             
                             $html .= "<td class='huomio' ".$id_koodi.$onklikki." title='".
                                 Bongauspainikkeet::$LAJILUOKAT_MUOKKAA_TITLE.
-                                " (".$kielinimi.")'>".$kuvaus->get_nimi_html_encoded()."</td>";
+                                " (".$kielinimi.")'>".$osuma->get_nimi_html_encoded()."</td>";
 
-                            // Poistetaan vika eli jo käytetty kuvaus:
-                            array_pop($kuvaukset);
                         }
                         else{
                             $html .= "<td class='huomio' ".$id_koodi.$onklikki." title='".
@@ -326,6 +327,7 @@ class Nakymat_lj {
                                 Bongauspainikkeet::$LAJILUOKAT_SYOTA_UUSI_TITLE.
                                 " (".$kielinimi.")'></td>";
                     }
+                    $laskuri_vaaka++;
                 }
                 
                 //Lisätään painikkeet:

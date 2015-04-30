@@ -172,6 +172,7 @@ class Maat {
                         new Maa(Maat::$hollanti, "Hollanti"),
                         new Maa(Maat::$islanti, "Islanti"),
                         new Maa(Maat::$isobritannia, "Iso-Britannia"),
+                         new Maa(Maat::$israel, "Israel"),
                         new Maa(Maat::$jordania, "Jordania"),
                         new Maa(Maat::$libanon, "Libanon"),
             

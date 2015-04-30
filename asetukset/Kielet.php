@@ -52,16 +52,16 @@ class Kielet {
      * @return <type> Palauttaa taulukon, joka sisältää kielioliot. Sisäiseen
      * käyttöön. KESKEN!!
      */
-    private static function hae_kielitaulukko(){
-        $kielet = array(new Kieli(3, "englanti"),
-                        new Kieli(9, "italia"),
-                        new Kieli(0, "latina"),
-                        new Kieli(4, "norja"),
-                        new Kieli(11, "ranska"),
-                        new Kieli(2, "ruotsi"),
-                        new Kieli(5, "saksa"),
-                        new Kieli(1, "suomi"),
-                        new Kieli(6, "ven&auml;j&auml;"));
+    public static function hae_kielet(){
+        $kielet = array(new Kieli(Kielet::$ENGLANTI, "englanti"),
+                        new Kieli(Kielet::$ITALIA, "italia"),
+                        new Kieli(Kielet::$LATINA, "latina"),
+                        new Kieli(Kielet::$NORJA, "norja"),
+                        new Kieli(Kielet::$RANSKA, "ranska"),
+                        new Kieli(Kielet::$RUOTSI, "ruotsi"),
+                        new Kieli(Kielet::$SAKSA, "saksa"),
+                        new Kieli(Kielet::$SUOMI, "suomi"),
+                        new Kieli(Kielet::$VENAJA, "ven&auml;j&auml;"));
         
         //KORJAA sort($kielet, $sort_flags);
         
@@ -75,7 +75,7 @@ class Kielet {
     public static function hae_kielten_arvot(){
         $arvot = array();
         
-        $kielet = Kielet::hae_kielitaulukko();
+        $kielet = Kielet::hae_kielet();
         
         foreach ($kielet as $kieli) {
             if($kieli instanceof Kieli){
@@ -94,7 +94,7 @@ class Kielet {
     public static function hae_kielten_nimet(){
         $nimet = array();
         
-        $kielet = Kielet::hae_kielitaulukko();
+        $kielet = Kielet::hae_kielet();
         
         foreach ($kielet as $kieli) {
             if($kieli instanceof Kieli){
@@ -118,11 +118,11 @@ class Kielet {
         // jotakin outoa, palautetaan virheviesti.
         if(is_numeric($arvo)) {
             try{
-                $kielet = Kielet::hae_kielitaulukko();
+                $kielet = Kielet::hae_kielet();
 
                 foreach ($kielet as $kieli) {
                     if($kieli instanceof Kieli){
-                        if($arvo == $kieli->get_id()){
+                        if($arvo+0 === $kieli->get_id()+0){
                             $kuvaus = $kieli->get_nimi();
                             break;
                         }
