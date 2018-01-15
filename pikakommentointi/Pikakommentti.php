@@ -247,7 +247,7 @@ class Pikakommentti extends Malliluokkapohja{
                     FROM ".Pikakommentti::$taulunimi."
                     WHERE ".Pikakommentti::$SARAKENIMI_KOHDE_TYYPPI."=".$kohde_tyyppi.
                     " AND ".Pikakommentti::$SARAKENIMI_KOHDE_ID."=".$kohde_id.
-                    " ORDER BY ".Pikakommentti::$SARAKENIMI_TALLENNUSHETKI." DESC";
+                    " ORDER BY ".Pikakommentti::$SARAKENIMI_TALLENNUSHETKI;
 
         $osumat =
             $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
@@ -307,7 +307,7 @@ class Pikakommentti extends Malliluokkapohja{
                     " AND ".Henkilo::$taulunimi.".".Henkilo::$sarakenimi_poppoo_id.
                             "=".$poppoo_id.
                     " ORDER BY ".Pikakommentti::$taulunimi.".".
-                            Pikakommentti::$SARAKENIMI_TALLENNUSHETKI." DESC";
+                            Pikakommentti::$SARAKENIMI_TALLENNUSHETKI;
 
         $osumat =
             $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);

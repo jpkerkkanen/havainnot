@@ -47,7 +47,21 @@ class Havaintokontrolleri extends Kontrolleripohja{
     public static $name_uusi_hav = "uusi_hav";  // boolean: uusi havainto vai vanhan muokkaus
     public static $name_naytettavan_id_hav = "naytettavan_id_hav";   
     
-    //public static $name_maavalikko_hav = "maavalikkoname_hav";
+    // Name-arvot liittyen havaintojaksoihin:
+    public static $name_id_havjaks= "id_havjaks";
+    public static $name_henkilo_id_havjaks= "henkilo_id_havjaks";
+    public static $name_lajiluokka_id_havjaks= "lajiluokka_id_havjaks";
+    public static $name_alkuaika_sek_havjaks= "alkuaika_sek_havjaks";
+    public static $name_kesto_min_havjaks= "kesto_min_havjaks";
+    public static $name_nimi_havjaks= "nimi_havjaks";
+    public static $name_kommentti_havjaks= "kommentti_havjaks";
+    public static $name_nakyvyys_havjaks= "nakyvyys_havjaks";
+    
+    // Name-arvot liittyen havaintojaksolinkkeihin:
+    public static $name_id_havjakslink= "id_havjakslink";
+    public static $name_havainto_id_havjakslink= "havainto_id_havjakslink";
+    public static $name_havaintojakso_id_havjakslink= "havaintojakso_id_havjakslink";
+    
     //=========================================================================
     
     /**
