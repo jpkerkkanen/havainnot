@@ -21,7 +21,7 @@ create table havaintojaksolinkit
  * 
  * @author J-P
  */
-class Havaintojaksolinkit extends Malliluokkapohja {
+class Havaintojaksolinkki extends Malliluokkapohja {
     
     public static $SARAKENIMI_HAVAINTO_ID= "havainto_id";
     public static $SARAKENIMI_HAVAINTOJAKSO_ID= "havaintojakso_id";
@@ -33,14 +33,14 @@ class Havaintojaksolinkit extends Malliluokkapohja {
      */
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
-            array(new Tietokantasolu(Havaintojaksolinkit::$SARAKENIMI_ID, 
+            array(new Tietokantasolu(Havaintojaksolinkki::$SARAKENIMI_ID, 
                                                     Tietokantasolu::$luku_int),  
-                new Tietokantasolu(Havaintojaksolinkit::$SARAKENIMI_HAVAINTO_ID, 
+                new Tietokantasolu(Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID, 
                                                     Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havaintojaksolinkit::$SARAKENIMI_HAVAINTOJAKSO_ID, 
+                new Tietokantasolu(Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID, 
                                                     Tietokantasolu::$luku_int));
         
-        $taulunimi = Havaintojaksolinkit::$taulunimi;
+        $taulunimi = Havaintojaksolinkki::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
     }
 }

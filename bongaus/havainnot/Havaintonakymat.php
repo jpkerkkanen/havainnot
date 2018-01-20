@@ -1265,11 +1265,11 @@ class Havaintonakymat extends Nakymapohja{
     /**
      * Palauttaa monen havainnon tietojen syöttöön tarkoitetun
      * lomakkeen.
+     *
+     * @param Parametrit $parametriolio
      * @return string
      */
-    function nayta_uusi_monen_havainnon_lomake(){
-
-        $parametriolio = $this->parametriolio;
+    function nayta_uusi_monen_havainnon_lomake($parametriolio){
         
         $paiva_hav = $parametriolio->paiva_hav;
         $kk_hav = $parametriolio->kk_hav;
@@ -1291,6 +1291,8 @@ class Havaintonakymat extends Nakymapohja{
         $hj_kestomin= $parametriolio->kesto_min_havjaks;
         $hj_kestoh= $parametriolio->kesto_h_havjaks;
         $hj_kestovrk= $parametriolio->kesto_vrk_havjaks;
+        
+        $hj_valittu = $parametriolio->id_havjaks;
 
         // Taulukon järjestys. Jos false, niin näytetään riveittäin.
         $lajijarj_ylh_alas = true;
@@ -1629,7 +1631,8 @@ class Havaintonakymat extends Nakymapohja{
                                                 $hj_alkuaikamin, 
                                                 $hj_kestomin,
                                                 $hj_kestoh,
-                                                $hj_kestovrk).
+                                                $hj_kestovrk,
+                                                $hj_valittu).
             $taulukko.
             $submitnappi.$poistunappi;
 
@@ -1644,6 +1647,42 @@ class Havaintonakymat extends Nakymapohja{
         return $mj.Html::luo_script_js("nayta_nyk_pvm('');nayta_nyk_pvm(2);");
 
     }
+    
+    function luo_havaintojaksovalikko($valittu){
+        
+        $valikkohtml = "";
+        $max = 100;     // Korkeintaan näin monta näytetään valikossa (uusimmat).
+
+        try{
+            $jaksot = Havaintojakso::hae_uusimmat($this->tietokantaolio, $max);
+            $arvot = Havaintojakso::hae_jaksojen_idt($jaksot);
+            $nimet = Havaintojakso::hae_jaksojen_valikkonimet($jaksot);
+            $name_arvo = Havaintokontrolleri::$name_id_havjaks;
+            $id_arvo = "havaintojaksovalikko";
+            $class_arvo = "havaintojaksovalikko";
+            $oletusvalinta_arvo = $valittu;
+            $otsikko = Bongaustekstit::$havaintolomake_jaksovalikko_otsikko;
+            $onchange_metodinimi = "edit_lomake";   // Muokkaa lomaketta.
+            $onchange_metodiparametrit_array = array();
+
+            $valikkohtml.= Html::luo_pudotusvalikko_onChange($arvot,
+                                                            $nimet,
+                                                            $name_arvo,
+                                                            $id_arvo,
+                                                            $class_arvo,
+                                                            $oletusvalinta_arvo,
+                                                            $otsikko,
+                                                            $onchange_metodinimi,
+                                                $onchange_metodiparametrit_array);
+
+        }
+        catch(Exception $poikkeus){
+            $valikkohtml =  "Virhe havaintojaksovalikossa! (".
+                $poikkeus->getMessage().")";
+        }
+        return $valikkohtml;
+    }
+    
     /**
      * Palauttaa havaintolomakkeen havaintojakso-osion html-koodin:
      * @return type
@@ -1653,13 +1692,21 @@ class Havaintonakymat extends Nakymapohja{
                                             $kommentti, 
                                             $alkuaikapaiva, 
                                             $alkuaikakk,
-            
                                             $alkuaikavuosi,
                                             $alkuaikah,
                                             $alkuaikamin,
                                             $kestomin,
                                             $kestoh,
-                                            $kestovrk){
+                                            $kestovrk,
+                                            $valittu){
+        
+        $nimi = Parametrit::$EI_MAARITELTY ? "" : $nimi;
+        $kommentti = Parametrit::$EI_MAARITELTY ? "" : $kommentti;
+        $alkuaikah = Parametrit::$EI_MAARITELTY ? "" : $alkuaikah;
+        $alkuaikamin = Parametrit::$EI_MAARITELTY ? "" : $alkuaikamin;
+        $kestovrk = Parametrit::$EI_MAARITELTY ? "" : $kestovrk;
+        $kestoh = Parametrit::$EI_MAARITELTY ? "" : $kestoh;
+        $kestomin = Parametrit::$EI_MAARITELTY ? "" : $kestomin;
         
         $havjaks_ohje = 
             // Div ohjeelle:
@@ -1670,6 +1717,11 @@ class Havaintonakymat extends Nakymapohja{
                     
                 array(Maarite::style("font-weight:bold"),
                     Maarite::classs("havaintolomakerivi")));
+        
+        $havjaks_valikko = 
+            Html::luo_div(
+                $this->luo_havaintojaksovalikko($valittu),
+                Maarite::classs("havaintolomakerivi"));
         
         $havjaks_pvm =
             Html::luo_div(
@@ -1686,7 +1738,7 @@ class Havaintonakymat extends Nakymapohja{
                                 Maarite::title(Bongauspainikkeet::$ed_paiva_title),
                                 Maarite::onclick("nayta_ed", array(2)))).
 
-                " *".
+                " ".
                 Html::luo_input(array(Maarite::type("text"),
                                         Maarite::id("paiva2"),
                                         Maarite::name("paiva_havjaks"),
@@ -1697,7 +1749,7 @@ class Havaintonakymat extends Nakymapohja{
                                         Maarite::onkeyup("nayta_pvm_havjaks", ""))).   
 
 
-                " *".
+                
                 Html::luo_input(array(Maarite::type("text"),
                                     Maarite::id("kk2"),
                                     Maarite::name("kk_havjaks"),
@@ -1707,7 +1759,7 @@ class Havaintonakymat extends Nakymapohja{
                                     Maarite::onchange("nayta_pvm_havjaks", ""),
                                     Maarite::onkeyup("nayta_pvm_havjaks", ""))).     
 
-                " *".
+                
                 Html::luo_input(array(Maarite::type("text"),
                                     Maarite::id("vuosi2"),
                                     Maarite::name("vuosi_havjaks"),
@@ -1741,16 +1793,16 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::type("text"),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_h_havjaks),
                     Maarite::value($alkuaikah),
-                    Maarite::size(3),
-                    Maarite::placeholder("hh"))).
+                    Maarite::size(2),
+                    Maarite::placeholder(""))).
                 " ".Bongaustekstit::$havaintolomake_h." ". 
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_min_havjaks),
                     Maarite::value($alkuaikamin),
-                    Maarite::size(3),
-                    Maarite::placeholder("m"))).
+                    Maarite::size(2),
+                    Maarite::placeholder(""))).
                 " ".Bongaustekstit::$havaintolomake_min
                 , 
             array(Maarite::classs("havaintolomakerivi")));  // Div määritteet
@@ -1773,7 +1825,13 @@ class Havaintonakymat extends Nakymapohja{
                         Maarite::size(30))), 
             array(Maarite::classs("havaintolomakerivi")));  // Div määritteet
         
+        $havjaks_valikko = 
+            Html::luo_div(
+                $this->luo_havaintojaksovalikko($this->parametriolio->id_havjaks), 
+            array(Maarite::classs("havaintolomakerivi")));  // Div määritteet
+        
         $sisalto = $havjaks_ohje.
+                $havjaks_valikko.
                 $havjaks_nimi_kommentti.
                 $havjaks_pvm.
                 $havjaks_kellonaika;    

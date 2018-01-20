@@ -177,22 +177,24 @@ create table havainnot
 
 ) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
 
-/* Jos henkilöt poistaa, ei jaksoja ehkä kannata poistaa, koska ne voivat olla 
-yhteisiä. Näiden hyödyntäminen on vielä kesken. Huomaa, että lajiluokka_id
-viittaa yläluokkaan, esim "linnut".
+/* 
 
 Havaintojaksolla tarkoitetaan havaintotapahtumaa, joka voi olla vaikkapa
-viiden minuutin tarkkailu, tornien taisto tai viikon matka. 
+viiden minuutin tarkkailu, tornien taisto tai viikon matka. Voi sisältää
+eri henkilöiden havaintoja eri lajiluokista.
 
-Periaatteessa kaikki havainnot voisivat liittyä havaintojaksoon, mutta ei
-pakoteta ().
+Jos henkilön poistaa, ei jaksoja kannata poistaa, koska ne voivat olla 
+yhteisiä. Jaksoon kyllä jää merkintä sen luojasta, joka etupäässä voi
+muokata jakson tietoja. Pitää miettiä, voisiko oikeudet näppärästi anttaa
+esim. kaikille, joiden havaintoja jaksossa on (aika loogista).
+
+Kaikki havainnot liittyvät havaintotapahtumaan tästedes. 
 */
 
 create table havaintojaksot
 (
   id                    int auto_increment not null,
   henkilo_id            int default -1 not null,
-  lajiluokka_id         int default -1 not null,
   alkuaika_sek          int not null,
   kesto_min             int not null,
   nimi                  varchar(50),
@@ -200,11 +202,8 @@ create table havaintojaksot
   nakyvyys              smallint default -1 not null,
   primary key (id),
   index(henkilo_id),
-  index(lajiluokka_id),
   index (alkuaika_sek),
-  index (kesto_min),
-  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
-                      ON DELETE CASCADE
+  index (kesto_min)
 
 ) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
 

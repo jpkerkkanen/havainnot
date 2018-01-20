@@ -50,7 +50,6 @@ class Havaintokontrolleri extends Kontrolleripohja{
     // Name-arvot liittyen havaintojaksoihin:
     public static $name_id_havjaks= "id_havjaks";
     public static $name_henkilo_id_havjaks= "henkilo_id_havjaks";
-    public static $name_lajiluokka_id_havjaks= "lajiluokka_id_havjaks";
     public static $name_alkuaika_sek_havjaks= "alkuaika_sek_havjaks";
     public static $name_alkuaika_min_havjaks= "alkuaika_min_havjaks";
     public static $name_alkuaika_paiva_havjaks= "alkuaika_paiva_havjaks";
@@ -787,7 +786,9 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                                     $this->get_parametriolio(),
                                                     $this->kuvanakymat);
         
-        $palauteolio->set_sisalto($havaintonakymat->nayta_uusi_monen_havainnon_lomake());
+        $palauteolio->set_sisalto(
+            $havaintonakymat->
+                nayta_uusi_monen_havainnon_lomake($this->get_parametriolio()));
         $palauteolio->set_nayttomoodi(
                 Html_tulostus::$nayttomoodi_yksipalkki);
     }

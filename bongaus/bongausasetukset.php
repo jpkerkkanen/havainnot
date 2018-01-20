@@ -362,6 +362,7 @@ class Bongaustekstit{
     public static $havaintolomake_h = "h";
     public static $havaintolomake_min = "min";
     public static $havaintolomake_uusi = "uusi";
+    public static $havaintolomake_jaksovalikko_otsikko = "Havaintojaksot";
     
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)
