@@ -1278,6 +1278,20 @@ class Havaintonakymat extends Nakymapohja{
         $kommentti_hav = $parametriolio->kommentti_hav;
         $tietokantaolio = $this->tietokantaolio;
         
+        // Havaintojaksomuuttujat:
+        $hj_uusi = $parametriolio->uusi_havjaks;
+        $hj_nimi = $parametriolio->nimi_havjaks;
+        $hj_kommentti = $parametriolio->kommentti_havjaks;
+        $hj_alkuaikapaiva = $parametriolio->alkuaika_sek_havjaks;
+        $hj_alkuaikakk = $parametriolio->alkuaika_kk_havjaks;
+ 
+        $hj_alkuaikavuosi= $parametriolio->alkuaika_vuosi_havjaks;
+        $hj_alkuaikah= $parametriolio->alkuaika_h_havjaks;
+        $hj_alkuaikamin= $parametriolio->alkuaika_min_havjaks;
+        $hj_kestomin= $parametriolio->kesto_min_havjaks;
+        $hj_kestoh= $parametriolio->kesto_h_havjaks;
+        $hj_kestovrk= $parametriolio->kesto_vrk_havjaks;
+
         // Taulukon järjestys. Jos false, niin näytetään riveittäin.
         $lajijarj_ylh_alas = true;
         
@@ -1531,17 +1545,20 @@ class Havaintonakymat extends Nakymapohja{
                                         array(Maarite::id(Bongausasetuksia::
                                             $havaintolomake_tallennustiedote_id))).
                         Bongaustekstit::$havaintolomake_uusien_tallennus_ohje, 
-                            array(Maarite::style("font-weight:bold"))).
+                            array(Maarite::style("font-weight:bold"),
+                                Maarite::classs("havaintolomakerivi"))).
 
             Html::luo_button(Bongauspainikkeet::$ed_vko, 
                             array(Maarite::id("b1"), 
                                     Maarite::type("button"),
-                                    Maarite::onclick("nayta_ed_vko", ""))).
+                                    Maarite::title(Bongauspainikkeet::$ed_vko_title ),
+                                    Maarite::onclick("nayta_ed_vko", array("")))).
 
             Html::luo_button(Bongauspainikkeet::$ed_paiva, 
                             array(Maarite::id("b2"), 
                                     Maarite::type("button"),
-                                    Maarite::onclick("nayta_ed", ""))).
+                                    Maarite::title(Bongauspainikkeet::$ed_paiva_title),
+                                    Maarite::onclick("nayta_ed", array("")))).
 
             " *".Bongaustekstit::$paiva.": ".
             Html::luo_input(array(Maarite::type("text"),
@@ -1572,50 +1589,199 @@ class Havaintonakymat extends Nakymapohja{
                                     Maarite::size(4),
                                     Maarite::max_length(4),
                                     Maarite::onchange("nayta_pvm", ""),
-                                    Maarite::onkeyup("nayta_pvm", ""))).         
+                                    Maarite::onkeyup("nayta_pvm", "")))." ".         
 
 
-            Html::luo_span("", array(Maarite::id("pvm_naytto"))).  
+            Html::luo_span(" ", array(Maarite::id("pvm_naytto")))." ". 
 
             Html::luo_button(Bongauspainikkeet::$seur_paiva, 
                             array(Maarite::id("b3"), 
                                     Maarite::type("button"),
-                                    Maarite::onclick("nayta_seur", ""))).
+                                    Maarite::title(Bongauspainikkeet::$seur_paiva_title),
+                                    Maarite::onclick("nayta_seur", array("")))).
 
             Html::luo_button(Bongauspainikkeet::$seur_vko, 
                             array(Maarite::id("b4"), 
                                     Maarite::type("button"),
-                                    Maarite::onclick("nayta_seur_vko", ""))).
+                                    Maarite::title(Bongauspainikkeet::$seur_vko_title),
+                                    Maarite::onclick("nayta_seur_vko", array("")))).
 
             Html::luo_br().
             " *".Bongaustekstit::$paikka.": ".
             Html::luo_input(array(Maarite::type("text"),
                                     Maarite::name("paikka_hav"),
                                     Maarite::value($paikka_hav),
-                                    Maarite::size(43))).$maavalikkohtml."<br/>".
+                                    Maarite::size(43)))." ".$maavalikkohtml."<br/>".
                 
-            Varmuus::$valikko_otsikko.": ".$varmuusvalikko.
-            Bongaustekstit::$kommentti.": ".
-            Html::luo_input(array(Maarite::type("text"),
-                                    Maarite::name("kommentti_hav"),
-                                    Maarite::value($kommentti_hav),
-                                    Maarite::size(43)))."<br/>".
+            Varmuus::$valikko_otsikko.": ".$varmuusvalikko." ".
+            
                 
             Bongaustekstit::$havaintolomake_lisaluokitukset.": ".$lisaluokitusradionapit.
 
+            $this->luo_havaintojaksolomakeruutu($hj_uusi, 
+                                                $hj_nimi, 
+                                                $hj_kommentti, 
+                                                $hj_alkuaikapaiva, 
+                                                $hj_alkuaikakk, 
+                    
+                                                $hj_alkuaikavuosi, 
+                                                $hj_alkuaikah, 
+                                                $hj_alkuaikamin, 
+                                                $hj_kestomin,
+                                                $hj_kestoh,
+                                                $hj_kestovrk).
             $taulukko.
             $submitnappi.$poistunappi;
 
         // Sullotaan sisältö form-tagien sisään:
         $mj = Html::luo_form($mj, 
-                    array(Maarite::align("center"),
+                    array(Maarite::classs("keskitys"),
                         Maarite::method("post"), 
                         Maarite::action("index.php".$url_id), 
                         Maarite::id(Bongausasetuksia::$havaintolomake_kaikki_lajit_id)));
 
-        // Palautetaan lomake ja näytetään js-päivämäärä;.
-        return $mj.Html::luo_script_js("nayta_pvm();");
+        // Palautetaan lomake ja näytetään nyt päivämäärä;.
+        return $mj.Html::luo_script_js("nayta_nyk_pvm('');nayta_nyk_pvm(2);");
 
+    }
+    /**
+     * Palauttaa havaintolomakkeen havaintojakso-osion html-koodin:
+     * @return type
+     */
+    function luo_havaintojaksolomakeruutu($uusi, 
+                                            $nimi, 
+                                            $kommentti, 
+                                            $alkuaikapaiva, 
+                                            $alkuaikakk,
+            
+                                            $alkuaikavuosi,
+                                            $alkuaikah,
+                                            $alkuaikamin,
+                                            $kestomin,
+                                            $kestoh,
+                                            $kestovrk){
+        
+        $havjaks_ohje = 
+            // Div ohjeelle:
+            Html::luo_div(
+                Bongaustekstit::$havaintolomake_havjaksohje. 
+                Html::luo_span(" [Info]", array(Maarite::title(
+                        Bongaustekstit::$havaintolomake_havjaksohje_tarkempi))),
+                    
+                array(Maarite::style("font-weight:bold"),
+                    Maarite::classs("havaintolomakerivi")));
+        
+        $havjaks_pvm =
+            Html::luo_div(
+                Html::luo_span(Bongaustekstit::$havaintolomake_aloitus.": ", array()).
+                Html::luo_button(Bongauspainikkeet::$ed_vko, 
+                        array(Maarite::id("hb1"), 
+                                Maarite::type("button"),
+                                Maarite::title(Bongauspainikkeet::$ed_vko_title ),
+                                Maarite::onclick("nayta_ed_vko", array(2)))).
+
+                Html::luo_button(Bongauspainikkeet::$ed_paiva, 
+                        array(Maarite::id("hb2"), 
+                                Maarite::type("button"),
+                                Maarite::title(Bongauspainikkeet::$ed_paiva_title),
+                                Maarite::onclick("nayta_ed", array(2)))).
+
+                " *".
+                Html::luo_input(array(Maarite::type("text"),
+                                        Maarite::id("paiva2"),
+                                        Maarite::name("paiva_havjaks"),
+                                        Maarite::value($alkuaikapaiva),
+                                        Maarite::size(2),
+                                        Maarite::max_length(2),
+                                        Maarite::onchange("nayta_pvm_havjaks", ""),
+                                        Maarite::onkeyup("nayta_pvm_havjaks", ""))).   
+
+
+                " *".
+                Html::luo_input(array(Maarite::type("text"),
+                                    Maarite::id("kk2"),
+                                    Maarite::name("kk_havjaks"),
+                                    Maarite::value($alkuaikakk),
+                                    Maarite::size(2),
+                                    Maarite::max_length(2),
+                                    Maarite::onchange("nayta_pvm_havjaks", ""),
+                                    Maarite::onkeyup("nayta_pvm_havjaks", ""))).     
+
+                " *".
+                Html::luo_input(array(Maarite::type("text"),
+                                    Maarite::id("vuosi2"),
+                                    Maarite::name("vuosi_havjaks"),
+                                    Maarite::value($alkuaikavuosi),
+                                    Maarite::size(4),
+                                    Maarite::max_length(4),
+                                    Maarite::onchange("nayta_pvm_havjaks", ""),
+                                    Maarite::onkeyup("nayta_pvm_havjaks", "")))." ".         
+
+
+                Html::luo_span(" ", array(Maarite::id("pvm_naytto2")))." ". 
+
+                Html::luo_button(Bongauspainikkeet::$seur_paiva, 
+                        array(Maarite::id("hb3"), 
+                                Maarite::type("button"),
+                                Maarite::title(Bongauspainikkeet::$seur_paiva_title),
+                                Maarite::onclick("nayta_seur", array(2)))).
+
+                Html::luo_button(Bongauspainikkeet::$seur_vko, 
+                        array(Maarite::id("hb4"), 
+                                Maarite::type("button"),
+                                Maarite::title(Bongauspainikkeet::$seur_vko_title),
+                            Maarite::onclick("nayta_seur_vko", array(2)))), 
+            array(Maarite::classs("havaintolomakerivi")));   // Div määritteet
+        
+        $havjaks_kellonaika =
+            Html::luo_div(
+                
+                " *".Bongaustekstit::$havaintolomake_kellonaika.": ".
+                Html::luo_input(array(
+                    Maarite::type("text"),
+                    Maarite::name(Havaintokontrolleri::$name_alkuaika_h_havjaks),
+                    Maarite::value($alkuaikah),
+                    Maarite::size(3),
+                    Maarite::placeholder("hh"))).
+                " ".Bongaustekstit::$havaintolomake_h." ". 
+                    
+                Html::luo_input(array(
+                    Maarite::type("text"),
+                    Maarite::name(Havaintokontrolleri::$name_alkuaika_min_havjaks),
+                    Maarite::value($alkuaikamin),
+                    Maarite::size(3),
+                    Maarite::placeholder("m"))).
+                " ".Bongaustekstit::$havaintolomake_min
+                , 
+            array(Maarite::classs("havaintolomakerivi")));  // Div määritteet
+        
+        $havjaks_nimi_kommentti = 
+            Html::luo_div(
+                
+                " *".Bongaustekstit::$nimi.": ".
+                Html::luo_input(array(
+                    Maarite::type("text"),
+                    Maarite::name(Havaintokontrolleri::$name_nimi_havjaks),
+                    Maarite::value($nimi),
+                    Maarite::size(13)))." ".
+
+                Bongaustekstit::$kommentti.": ".
+                    Html::luo_input(array(
+                        Maarite::type("text"),
+                        Maarite::name(Havaintokontrolleri::$name_kommentti_havjaks),
+                        Maarite::value($kommentti),
+                        Maarite::size(30))), 
+            array(Maarite::classs("havaintolomakerivi")));  // Div määritteet
+        
+        $sisalto = $havjaks_ohje.
+                $havjaks_nimi_kommentti.
+                $havjaks_pvm.
+                $havjaks_kellonaika;    
+        
+        $html = Html::luo_div($sisalto, 
+                            array(Maarite::id("havaintojaksolomakeruutu")));
+        
+        return $html;
     }
     
     /**

@@ -788,13 +788,13 @@ function siirra_hitaasti(uusiURL, aikamillisek)
 
 
 // Näyttää viikonpäivän ja päivämäärän käyttäjän antamien tietojen mukaan.
-function nayta_pvm()
+function nayta_pvm(idpaiva, idkk, idvuosi, idpvm)
 {
     try{
         var tulos = "";
-        var paiva = document.getElementById("paiva").value;
-        var kk = document.getElementById("kk").value;
-        var vuosi = document.getElementById("vuosi").value;
+        var paiva = document.getElementById(idpaiva).value;
+        var kk = document.getElementById(idkk).value;
+        var vuosi = document.getElementById(idvuosi).value;
 
         //Tarkistetaan tyhjät ja -1:set:
         if((paiva == "") || (paiva == -1) || (kk == "") || (kk == -1)) {
@@ -842,7 +842,7 @@ function nayta_pvm()
             }
         }
     
-        document.getElementById("pvm_naytto").innerHTML = tulos;
+        document.getElementById(idpvm).innerHTML = tulos;
     }
     catch(virhe){
         document.getElementById("ilmoitus2").innerHTML =
@@ -851,14 +851,15 @@ function nayta_pvm()
 
 }
 
-// Kirjoittaa halutun pvm:n kenttiin id:ltään "paiva", "kk" ja "vuosi". Jos
+// Kirjoittaa halutun pvm:n muutoksen kenttiin, joiden id-arvot
+// annettu parametreina. Jos
 // jokin mainitusta on undefined, palautetaan nykyinen pvm.
-function muuta_pvm(muutos)
+function muuta_pvm(muutos, idpaiva, idkk, idvuosi, idpvm)
 {
     try{
-        var paiva = document.getElementById("paiva").value;
-        var kk = document.getElementById("kk").value;
-        var vuosi = document.getElementById("vuosi").value;
+        var paiva = document.getElementById(idpaiva).value;
+        var kk = document.getElementById(idkk).value;
+        var vuosi = document.getElementById(idvuosi).value;
 
         /* Jos jokin kentistä ei ole määritelty, annetaan nykyinen pvm: */
         var pvm = new Date();
@@ -874,11 +875,11 @@ function muuta_pvm(muutos)
             pvm.setDate(pvm.getDate()+muutos);
         }
         
-        document.getElementById("paiva").value = pvm.getDate();
-        document.getElementById("kk").value = pvm.getMonth()+1;
-        document.getElementById("vuosi").value = pvm.getFullYear();
+        document.getElementById(idpaiva).value = pvm.getDate();
+        document.getElementById(idkk).value = pvm.getMonth()+1;
+        document.getElementById(idvuosi).value = pvm.getFullYear();
 
-        nayta_pvm();
+        nayta_pvm(idpaiva, idkk, idvuosi, idpvm);
     }
     catch(virhe){
         document.getElementById("ilmoitus2").innerHTML =
@@ -900,27 +901,43 @@ function tyhjenna_pvm()
             "Virhe (metodit.js/tyhjenna_pvm): "+virhe.description;
     }
 }
-
-function nayta_ed()
+/**
+ * Muuttaa päivämäärää nimen mukaisesti ja kirjoittaa uuden kenttiin, 
+ * joiden id:t ovat "paiva"+id_erotin, "kk"+id_erotin ja "vuosi"+id_erotin.
+ * Viikonpäivä ja pvm kirjoitetaan kenttään, jonka id on "pvm_naytto"+
+ * id_erotin. 
+ * @param {type} id_erotin
+ * @returns {undefined}
+ */
+function nayta_ed(id_erotin)
 {
-    muuta_pvm(-1);
+    muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
 
-function nayta_seur()
+function nayta_seur(id_erotin)
 {
-    muuta_pvm(1);
+    muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
 
-function nayta_seur_vko()
+function nayta_seur_vko(id_erotin)
 {
-    muuta_pvm(7);
+    muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
 
-function nayta_ed_vko()
+function nayta_ed_vko(id_erotin)
 {
-    muuta_pvm(-7);
+    muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
-function nayta_nyk_pvm(){
-    muuta_pvm("nyt");
+function nayta_nyk_pvm(id_erotin){
+   
+    muuta_pvm("nyt", "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
+}
+function nayta_pvm_havjaks(){
+  nayta_pvm("paiva2", "kk2", "vuosi2", "pvm_naytto2");
 }
 

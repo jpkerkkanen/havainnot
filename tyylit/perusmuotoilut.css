@@ -315,13 +315,24 @@ yms. */
                 border-bottom: 2px solid green;
                 background-color:#dd6;}
 
-.tietolomake_rajaton td, .tietolomake_rajaton th, #tietolomake_rajaton td, #tietolomake_rajaton th {
+.tietolomake_rajaton td, .tietolomake_rajaton th, 
+#tietolomake_rajaton td, #tietolomake_rajaton th {
                     padding: 5px 5px 5px 5px;
                     color: black;}
 
 .tietolomake_rajaton th, #tietolomake_rajaton th {
                 border-bottom: 2px solid green;
                 background-color:#dd6;}
+
+#havaintojaksolomakeruutu{
+    margin: 5px;
+    padding: 3px;
+    background-color:#daa;
+    border-radius: 10px;
+}
+.havaintolomakerivi{
+    margin: 3px;
+}
 
 /* Lisäluokitusvalinnat: */
 .labelradionappi{

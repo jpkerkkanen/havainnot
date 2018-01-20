@@ -148,12 +148,20 @@ class Parametrit {
     public $henkilo_id_havjaks;
     public $lajiluokka_id_havjaks;
     public $alkuaika_sek_havjaks;
+    public $alkuaika_min_havjaks;
+    public $alkuaika_h_havjaks;
+    public $alkuaika_paiva_havjaks;
+    public $alkuaika_kk_havjaks;
+    public $alkuaika_vuosi_havjaks;
     public $alkuaika_date_havjaks;
     public $alkuaika_time_havjaks;
+    public $kesto_vrk_havjaks;
+    public $kesto_h_havjaks;
     public $kesto_min_havjaks;
     public $nimi_havjaks;
     public $kommentti_havjaks;
     public $nakyvyys_havjaks;
+    public $uusi_havjaks;
     //==========================================================================
     // Havaintojaksolinkkimuuttujat:
     // Name-arvot liittyen havaintojaksolinkkeihin:
@@ -617,17 +625,45 @@ class Parametrit {
             isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_sek_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_alkuaika_sek_havjaks]: 
                 Parametrit::$EI_MAARITELTY;
-        $this->alkuaika_date_havjaks =
+        $this->alkuaika_min_havjaks_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_min_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_min_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_h_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_h_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_h_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_paiva_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_paiva_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_paiva_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_kk_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_kk_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_kk_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_vuosi_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_vuosi_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_vuosi_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        /*$this->alkuaika_date_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_date_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_alkuaika_date_havjaks]: 
                 Parametrit::$EI_MAARITELTY;
         $this->alkuaika_time_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_time_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_alkuaika_time_havjaks]: 
-                Parametrit::$EI_MAARITELTY;
+                Parametrit::$EI_MAARITELTY;*/
         $this->kesto_min_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_kesto_min_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_kesto_min_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->kesto_h_havjaks_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_kesto_h_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_kesto_h_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->kesto_vrk_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_kesto_vrk_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_kesto_vrk_havjaks]: 
                 Parametrit::$EI_MAARITELTY;
         $this->nimi_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_nimi_havjaks]) ? 
@@ -640,6 +676,10 @@ class Parametrit {
         $this->nakyvyys_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_nakyvyys_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_nakyvyys_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->uusi_havjaks = 
+            isset($_REQUEST[Havaintokontrolleri::$name_uusi_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_uusi_havjaks]: 
                 Parametrit::$EI_MAARITELTY;
    
         //================== Havaintojaksomuuttujat loppu ======================

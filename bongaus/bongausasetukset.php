@@ -85,10 +85,14 @@ class Bongauspainikkeet{
 
 
     // Aikavalinnat:
-    public static $ed_paiva = "Edellinen p&auml;iv&auml;";
-    public static $seur_paiva = "Seuraava p&auml;iv&auml;";
-    public static $ed_vko = "Edellinen viikko";
-    public static $seur_vko = "Seuraava viikko";
+    public static $ed_paiva = "<";
+    public static $seur_paiva = ">";
+    public static $ed_vko = "<<";
+    public static $seur_vko = ">>";
+    public static $ed_paiva_title = "Edellinen p&auml;iv&auml;";
+    public static $seur_paiva_title = "Seuraava p&auml;iv&auml;";
+    public static $ed_vko_title = "Edellinen viikko";
+    public static $seur_vko_title = "Seuraava viikko";
 
     // Lajiluokat:
     public static $TALLENNA_UUSI_LAJILUOKKA_VALUE = "Tallenna uusi lajiluokka";
@@ -318,6 +322,16 @@ class Bongaustekstit{
     public static $havaintolomake_uusien_tallennus_ohje =
     "Valitse lajit, anna yhteiset tiedot ja paina Tallenna-nappia! (T&auml;hdelliset pakollisia.)";
     
+    public static $havaintolomake_havjaksohje = 
+        "Havaintotapahtuma: valitse tapahtuma tai anna uuden tiedot";
+    
+    public static $havaintolomake_havjaksohje_tarkempi = 
+        "Jokainen havainto liittyy johonkin tapahtumaan, oli se sitten
+        ikkunasta katselu, tornilla käynti tai viikon matka.
+        Tällä tavalla havainnot saadaan ryhmiteltyä ja näytettyä
+        vaihtoehtoisilla tavoilla erityisesti, kun tapahtumaan
+        liittyy useampia havaintoja." ;
+    
     public static $havaintolomakemuokkaus_ohje =
     "Havainnon muokkaus (T&auml;hdelliset pakollisia.)";
     
@@ -341,6 +355,14 @@ class Bongaustekstit{
     public static $havaintolomake_lkm = "Lkm";
     public static $havaintolomake_sukupuoli = "Sukupuoli";
     public static $havaintolomake_lisaluokitukset = "Lis&auml;luokitukset";
+    public static $havaintolomake_aloitus = "Aloitus";
+    public static $havaintolomake_kesto = "Kesto";
+    public static $havaintolomake_kellonaika = "Kellonaika";
+    public static $havaintolomake_vrk = "vrk";
+    public static $havaintolomake_h = "h";
+    public static $havaintolomake_min = "min";
+    public static $havaintolomake_uusi = "uusi";
+    
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)
     public static $paiva = "P&auml;iv&auml;";
@@ -349,6 +371,7 @@ class Bongaustekstit{
     public static $aika = "Aika";
     public static $paikka = "Paikka";
     public static $kommentti = "Kommentti";
+    public static $nimi = "Nimi";
     public static $laji = "Laji";
     public static $laji_siirto = "Kohdelaji";
     public static $laji_alkup = "Alkuper&auml;inen laji";

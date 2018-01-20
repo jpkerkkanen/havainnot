@@ -52,12 +52,18 @@ class Havaintokontrolleri extends Kontrolleripohja{
     public static $name_henkilo_id_havjaks= "henkilo_id_havjaks";
     public static $name_lajiluokka_id_havjaks= "lajiluokka_id_havjaks";
     public static $name_alkuaika_sek_havjaks= "alkuaika_sek_havjaks";
-    public static $name_alkuaika_date_havjaks= "alkuaika_date_havjaks";
-    public static $name_alkuaika_time_havjaks= "alkuaika_time_havjaks";
+    public static $name_alkuaika_min_havjaks= "alkuaika_min_havjaks";
+    public static $name_alkuaika_paiva_havjaks= "alkuaika_paiva_havjaks";
+    public static $name_alkuaika_kk_havjaks= "alkuaika_kk_havjaks";
+    public static $name_alkuaika_vuosi_havjaks= "alkuaika_vuosi_havjaks";
+    public static $name_alkuaika_h_havjaks= "alkuaika_h_havjaks";
     public static $name_kesto_min_havjaks= "kesto_min_havjaks";
+    public static $name_kesto_h_havjaks= "kesto_h_havjaks";
+    public static $name_kesto_vrk_havjaks= "kesto_vrk_havjaks";
     public static $name_nimi_havjaks= "nimi_havjaks";
     public static $name_kommentti_havjaks= "kommentti_havjaks";
     public static $name_nakyvyys_havjaks= "nakyvyys_havjaks";
+    public static $name_uusi_havjaks= "uusi_havjaks";
     
     // Name-arvot liittyen havaintojaksolinkkeihin:
     public static $name_id_havjakslink= "id_havjakslink";
