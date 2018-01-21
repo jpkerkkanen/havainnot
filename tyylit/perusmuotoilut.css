@@ -51,7 +51,7 @@ johon sitten värejä, taustoja ja muita tyylejä voi lisäillä.
     max-width: 1200px;
     min-width: 800px;
     min-height: 500px;
-    background-color: #dff;
+    background-color: #def;
 }
 
 #pohja {
@@ -60,7 +60,7 @@ johon sitten värejä, taustoja ja muita tyylejä voi lisäillä.
     max-width: 1400px;
     min-width: 600px;
     min-height: 500px;
-    background-color: #dff;
+    background-color: #f4f4fc;
 }
 
 /* Ylin vaakasuora palkki*/
@@ -71,7 +71,7 @@ johon sitten värejä, taustoja ja muita tyylejä voi lisäillä.
     overflow: auto;
     /*border-bottom: 1px solid green ;*/
     z-index: 0;
-    background-color: #aff;
+    background-color: #aef;
     /*border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     -moz-border-radius-topleft: 10px; /*Pyäreitä kulmia mozillaan*
@@ -326,8 +326,15 @@ yms. */
 
 #havaintojaksolomakeruutu{
     margin: 5px;
-    padding: 3px;
-    background-color:#daa;
+    padding: 5px;
+    background-color:#def;
+    border-radius: 10px;
+}
+
+#havaintolomake_osa1{
+    margin: 5px;
+    padding: 5px;
+    background-color:#def;
     border-radius: 10px;
 }
 .havaintolomakerivi{

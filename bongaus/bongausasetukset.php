@@ -355,18 +355,24 @@ class Bongaustekstit{
     public static $havaintolomake_lkm = "Lkm";
     public static $havaintolomake_sukupuoli = "Sukupuoli";
     public static $havaintolomake_lisaluokitukset = "Lis&auml;luokitukset";
-    public static $havaintolomake_aloitus = "Aloitus";
+    public static $havaintolomake_aloitus = "Alkupvm";
+    public static $havaintolomake_aloitusaika = "Aloitusaika (kello)";
     public static $havaintolomake_kesto = "Kesto";
     public static $havaintolomake_kellonaika = "Kellonaika";
     public static $havaintolomake_vrk = "vrk";
     public static $havaintolomake_h = "h";
     public static $havaintolomake_min = "min";
     public static $havaintolomake_uusi = "uusi";
-    public static $havaintolomake_jaksovalikko_otsikko = "Havaintojaksot";
+    public static $havaintolomake_jaksovalikko_otsikko = "Tapahtuma";
+    
+    public static $havaintolomake_jaksonimiohje = "Esim: Päivälintuilu";
+    public static $havaintolomake_jaksokommenttiohje = 
+        "Esim: Kiva päiväretki Mustasaareen";
     
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)
     public static $paiva = "P&auml;iv&auml;";
+    public static $pvm = "Pvm";
     public static $kk = "Kuu";
     public static $vuosi = "Vuosi";
     public static $aika = "Aika";
