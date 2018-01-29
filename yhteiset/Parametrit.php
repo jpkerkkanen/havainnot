@@ -143,7 +143,7 @@ class Parametrit {
     //==========================================================================
     // Havaintojaksomuuttujat:
     
-    // Name-arvot liittyen havaintojaksoihin:
+    // havaintojaksoihin liittyvät (jatkossa: havjaks eteen, niin löytäminen helpottuu):
     public $id_havjaks;
     public $henkilo_id_havjaks;
     public $lajiluokka_id_havjaks;
@@ -153,8 +153,6 @@ class Parametrit {
     public $alkuaika_paiva_havjaks;
     public $alkuaika_kk_havjaks;
     public $alkuaika_vuosi_havjaks;
-    public $alkuaika_date_havjaks;
-    public $alkuaika_time_havjaks;
     public $kesto_vrk_havjaks;
     public $kesto_h_havjaks;
     public $kesto_min_havjaks;

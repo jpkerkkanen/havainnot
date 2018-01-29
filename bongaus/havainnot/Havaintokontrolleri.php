@@ -891,6 +891,77 @@ class Havaintokontrolleri extends Kontrolleripohja{
         
         $tallentaja = new Henkilo($this->get_parametriolio()->get_omaid(), 
                                 $this->get_tietokantaolio());
+        
+        $param = $this->get_parametriolio();
+        //======================================================================
+        // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
+        // tallennettua.
+        $id_havjaks = $param->id_havjaks;
+        
+        if($id_havjaks === Parametrit::$EI_MAARITELTY){
+            $param->uusi_havjaks = true;
+            
+            $uusi = new Havaintojakso(Havaintojakso::$MUUTTUJAA_EI_MAARITELTY, 
+                                        $tietokantaolio);
+            
+            // Haetaan ja muotoillaan alkuaika (unix time stamp) ja kesto (min):
+            $vuosi = $param->alkuaika_vuosi_havjaks;
+            $kk = $param->alkuaika_kk_havjaks;
+            $paiva = $param->alkuaika_paiva_havjaks;
+            $h = $param->alkuaika_h_havjaks;
+            $min = $param->alkuaika_min_havjaks;
+            
+            $alkuaika = new DateTime("'".$vuosi."-".$kk."-".$paiva." ".
+                                        $h.":".$min.":00'");
+            $alkuaika_sek = $alkuaika->getTimestamp();
+            $param->alkuaika_sek_havjaks = $alkuaika;
+            
+            // Haetaan kesto minuutteina:
+            $kestovrk = $param->kesto_vrk_havjaks;
+            $kestoh = $param->kesto_h_havjaks;
+            $kestomin = $param->kesto_min_havjaks;
+            
+            // Ellei määritelty, pistetään nollaksi:
+            if($kestovrk < 1){
+                $kestovrk = 0;
+            }
+            if($kestoh < 1){
+                $kestoh = 0;
+            }
+            if($kestomin < 1){
+                $kestomin = 0;
+            }
+            
+            $kestomintotal = $kestovrk * 24 * 60 + $kestoh * 60 + $kestomin; 
+            
+            $uusi->set_arvo($param->alkuaika_sek_havjaks, 
+                    Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
+            
+            $uusi->set_arvo($kestomintotal, 
+                    Havaintojakso::$SARAKENIMI_KESTO_MIN);
+            
+            $uusi->set_arvo($tallentaja->get_id(), 
+                    Havaintojakso::$SARAKENIMI_HENKILO_ID);
+            
+            $uusi->set_arvo($param->nimi_havjaks, 
+                    Havaintojakso::$SARAKENIMI_NIMI);
+            
+            $uusi->set_arvo($param->kommentti_havjaks, 
+                    Havaintojakso::$SARAKENIMI_KOMMENTTI);
+            
+            $uusi->set_arvo($param->nakyvyys_havjaks, 
+                    Havaintojakso::$SARAKENIMI_NAKYVYYS);
+            
+            $palaute = $uusi->tallenna_uusi();
+            
+            if($palaute === Havaintojakso::$OPERAATIO_ONNISTUI){
+                $id_havjaks = $uusi->get_id();
+            }
+            
+        } else{
+            $param->uusi_havjaks = false;
+        }
+        //======================================================================
 
         foreach ($valinnat as $id_lj) {
                 

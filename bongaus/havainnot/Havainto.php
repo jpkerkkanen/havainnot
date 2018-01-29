@@ -1807,6 +1807,75 @@ class Havainto extends Malliluokkapohja {
         }
         return $palaute;
     }
+    
+    /**
+     * Tarkistaa tietokannasta, onko siellä jo havaintojaksolinkki tämän
+     * havainnon ja annetun havaintojakson välillä.
+     * Palauttaa true, jos linkki löytyy ja false muuten.
+     * @param int havaintojakso_id
+     */
+    public function havaintojaksolinkki_olemassa($havaintojakso_id){
+        $hakulause = "SELECT ". Havaintojaksolinkki::$SARAKENIMI_ID.
+                    " FROM ". Havaintojaksolinkki::$taulunimi.
+                    " WHERE ".Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID."=".
+                            $this->get_id().
+                    " AND ".Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID."=".
+                            $havaintojakso_id;
+        
+        $osumat = 
+            $this->tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
+        
+        if(empty($osumat)){
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    /**
+     * Luo Havintojaksolinkki-luokan olion yhdistämään tämän havainnon
+     * havaintojaksoon, jonka id annetaan parametrina.
+     * 
+     * Varmistaa ensin, ettei samaa havaintoa jo merkitty tapahtumaan. Tätä
+     * ei ole mielekästä tehdä, jos kyseessä on uuden havaintojakson tallennus
+     * samalla kun havaintojen!
+     * 
+     * Huomaa, että saman lajin voi toki havaita monta kertaa esimerkiksi
+     * matkan aikana eri päivinä.
+     * 
+     * Palauttaa arvon $OPERAATIO_ONNISTUI, jos linkki lisätään.
+     * Muuten palauttaa lisää selittävän kommentin tai virheilmoituksen 
+     * (Malliluokkapohja-oliolta). Tämähän ei ole yleensä 
+     * virhetoiminto, koska todennäköisesti törmäyksiä tulee aika usein, 
+     * vaan rutiinitarkastus.
+     * 
+     * @param int $havaintojakso_id
+     * @param bool $tarkista Jos true, tarkistetaan linkin olemassa olo, muuten ei.
+     */
+    function lisaa_havaintojaksoon($havaintojakso_id, $tarkista){
+        
+        $tarkistus_ok = true;
+        
+        if($tarkista){
+            if($this->havaintojaksolinkki_olemassa($havaintojakso_id)){
+                $palaute =  Bongaustekstit::$ilm_havaintojaksolinkki_jo_olemassa;
+                $tarkistus_ok = false;
+            } 
+        } 
+        
+        if($tarkistus_ok){
+            $linkki = new Havaintojaksolinkki(Havainto::$MUUTTUJAA_EI_MAARITELTY, 
+                                                    $this->tietokantaolio);
+            
+            $linkki->set_arvo($havaintojakso_id, 
+                            Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID);
+            $linkki->set_arvo($this->get_id(), 
+                            Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID);
+            
+            $palaute = $linkki->tallenna_uusi();
+        }
+        return $palaute;
+    }
 }
 
 ?>

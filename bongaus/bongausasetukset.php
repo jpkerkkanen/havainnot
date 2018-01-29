@@ -263,6 +263,16 @@ class Bongaustekstit{
     public static $ilm_havainnon_lisaluokkaa_tallennettu = 
             "havainnon lis&auml;luokkaa tallennettu!";
     
+    
+    public static $ilm_havaintojaksolinkin_tallennus_eiok = 
+            "Havaintojaksolinkin tallennus ei onnistunut!";
+    
+    public static $ilm_havaintojaksolinkki_jo_olemassa = 
+            "Havainto on jo liitetty kyseiseen tapahtumaan!";
+    
+    public static $ilm_havaintoa_ei_loytynyt = 
+            "Havaintoa ei löytynyt tietokannasta!";
+    
     // Seuraavat kaksi kuuluvat yhteen:
     public static $ilm_pikak_kpl_poistettu = 
             "pikakommenttia poistettu";

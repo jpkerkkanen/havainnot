@@ -156,4 +156,33 @@ class Havaintojakso extends Malliluokkapohja {
         }
         return $nimitaulu;
     }
+    /**
+     * Luo Havintojaksolinkki-luokan
+     * Hyödyntää Havainto-luokan metodia, jottei samaa tehdä moneen kertaa.
+     * Varmistaa ensin, ettei samaa havaintoa jo merkitty tapahtumaan. 
+     * 
+     * Huomaa, että saman lajin voi toki havaita monta kertaa esimerkiksi
+     * matkan aikana eri päivinä.
+     * 
+     * Palauttaa arvon $OPERAATIO_ONNISTUI, jos linkki lisätään.
+     * Muuten palauttaa lisää selittävän kommentin tai virheilmoituksen 
+     * (Malliluokkapohja-oliolta). Tämähän ei ole yleensä 
+     * virhetoiminto, koska todennäköisesti törmäyksiä tulee aika usein, 
+     * vaan rutiinitarkastus.
+     * 
+     * @param type $id_hav
+     * @param bool $tarkista Jos true, tarkistetaan linkin olemassa olo, muuten ei.
+     */
+    function lisaa_havainto($id_hav, $tarkista){
+        $hav = new Havainto($id_hav, $this->tietokantaolio);
+        
+        if($hav->olio_loytyi_tietokannasta){
+            $palaute = $hav->lisaa_havaintojaksoon($id_hav, $tarkista);
+        } else {
+            $palaute = Malliluokkapohja::$VIRHE;
+            $this->lisaa_virheilmoitus(Bongaustekstit::$ilm_havaintoa_ei_loytynyt);
+        }
+        
+    }
+    
 }
