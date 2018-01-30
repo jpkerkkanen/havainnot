@@ -264,6 +264,9 @@ class Bongaustekstit{
             "havainnon lis&auml;luokkaa tallennettu!";
     
     
+    public static $havaintojakso_virheilm_tallennus_eiok = 
+            "Havaintojakson tallennus ei onnistunut, eikä havaintoja tallennettu!";
+    
     public static $ilm_havaintojaksolinkin_tallennus_eiok = 
             "Havaintojaksolinkin tallennus ei onnistunut!";
     

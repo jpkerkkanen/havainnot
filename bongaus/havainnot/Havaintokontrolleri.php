@@ -896,9 +896,144 @@ class Havaintokontrolleri extends Kontrolleripohja{
         //======================================================================
         // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
         // tallennettua.
-        $id_havjaks = $param->id_havjaks;
+        $havjakstallennus = $this->luo_havaintojakso_olio($param, $tietokantaolio);
+        $havjaks = new Havaintojakso($param->id_havjaks, $tietokantaolio);
         
-        if($id_havjaks === Parametrit::$EI_MAARITELTY){
+        // Jatketaan vain, jos havaintojakso tietokannassa:
+        if($havjaks->olio_loytyi_tietokannasta){
+            foreach ($valinnat as $id_lj) {
+
+                $tallennus = $this->luo_havainto_olio($param, $id_lj);
+                $havainto = new Havainto($param->id_hav, $tietokantaolio);
+                
+                if($havainto->olio_loytyi_tietokannasta){
+                    
+                    $tallennusten_lkm++;
+
+                    // Tallennetaan havainnon lisäluokitukset:==========================
+                    $valitut = $this->get_parametriolio()->lisaluokitusvalinnat_hav;
+                    foreach ($valitut as $lisaluokitusarvo) {
+                        $palaute = $uusi->tallenna_uusi_lisaluokitus($lisaluokitusarvo);
+                        if($palaute === Havainto::$VIRHE){
+                            $palauteolio->lisaa_virheilmoitus(
+                                Bongaustekstit::$ilm_havainnon_lisaluokan_tallennus_eiok.
+                                " ".$uusi->tulosta_virheilmoitukset());
+                        }
+                    }
+
+                    // Haetaan nimi tallennetulle:
+                    $nimi = Bongaustekstit::$nimi_tuntematon;
+                    $lajiluokka = new Lajiluokka($tietokantaolio, $id_lj);
+                    if($lajiluokka->olio_loytyi_tietokannasta){
+                        $kuvaus = $lajiluokka->
+                                    hae_kuvaus($this->get_parametriolio()->kieli_id);
+                        if($kuvaus instanceof Kuvaus){
+                            if($laskuri == 0){
+                                $nimi = $kuvaus->get_nimi();
+
+                            }
+                            else{
+                                $nimi = ", ".$kuvaus->get_nimi();
+
+                            }
+                        }
+                    }
+
+                    $tallennetut_lajit.= $nimi;
+                    
+                    // Tallennetaan vielä linkki havaintojaksoon:
+                    $tarkista = 
+                    $havjaks->lisaa_havainto($havainto->get_id(), $tarkista);
+                }
+                else{
+                    $virheiden_lkm++;
+                    $virheilmot .= $this->tulosta_virheilmoitukset()."<br />";
+                }
+
+                $laskuri++;
+            }
+            // Aktiivisuusmerkintä (vain kerran):
+            $tallentaja->paivita_aktiivisuus(Aktiivisuus::$HAVAINTOTALLENNUS_UUSI);
+
+            // Palautteet:
+            if($tallennusten_lkm == sizeof($valinnat)){
+                $kommentti = $tallennusten_lkm." ".
+                                Bongaustekstit::$ilm_havaintojen_lisays_ok.
+                                " (".$tallennetut_lajit.")";
+            }
+            else{
+                $kommentti = $virheiden_lkm." ".
+                            Bongaustekstit::$ilm_havaintojen_lisays_eiok."<br/>".
+                            $virheilmot;
+            }
+
+            $palauteolio->set_ilmoitus($kommentti);
+
+            // Avataan havainnot.
+            $this->toteuta_nayta($palauteolio);
+            
+        } else{ // Kun havaintojakson tallennus ei onnistunut.
+            $kommentti = Bongaustekstit::$havaintojakso_virheilm_tallennus_eiok;
+            $palauteolio->set_ilmoitus($kommentti);
+            $this->toteuta_nayta_moniuusitallennuslomake($palauteolio);
+        }
+    }
+    /**
+     * Luo uuden Havainto-luokan olion ja tallentaa sen tietokantaan.
+     * Onnistuesssaan palauttaa arvon OPERAATIO_ONNISTUI. Muussa tapauksessa 
+     * palauttaa arvon VIRHE ja jättää tarvittaessa ilmoituksen 
+     * Havaintokontrollerioliolle.
+     * @param Parametrit $parametriolio
+     * @param int $id_lj Valitun lajin id.
+     */
+    private function luo_havainto_olio(&$parametriolio, $id_lj){
+        
+        $palautusarvo = Havainto::$OPERAATIO_ONNISTUI;
+        $tietokantaolio = $parametriolio->get_tietokantaolio();
+        
+        $uusi = new Havainto(Havainto::$MUUTTUJAA_EI_MAARITELTY,$tietokantaolio);
+        
+        $uusi->set_henkilo_id($parametriolio()->get_omaid());
+        $uusi->set_lajiluokka_id($id_lj);
+        $uusi->set_paiva($parametriolio()->paiva_hav);
+        $uusi->set_kk($parametriolio()->kk_hav);
+        $uusi->set_vuosi($parametriolio()->vuosi_hav);
+        $uusi->set_paikka($parametriolio()->paikka_hav);
+        $uusi->set_kommentti($parametriolio()->kommentti_hav);
+        $uusi->set_maa($parametriolio()->maa_hav);
+        $uusi->set_varmuus($parametriolio()->varmuus_hav);
+
+         // Uudet ominaisuudet:
+        $uusi->set_arvo($parametriolio()->sukupuoli_hav, 
+                        Havainto::$SARAKENIMI_SUKUPUOLI);
+        $uusi->set_arvo($parametriolio()->lkm_hav, 
+                        Havainto::$SARAKENIMI_LKM);
+        
+        if($uusi->tallenna_uusi() != Malliluokkapohja::$OPERAATIO_ONNISTUI){
+            $this->lisaa_virheilmoitus($uusi->tulosta_virheilmoitukset());
+            $palautusarvo = Havainto::$VIRHE;
+        } else{
+            $parametriolio->id_hav = $uusi->get_id();
+        }
+        return $palautusarvo;
+    }
+
+    /**
+     * Luo uuden Havaintojakso-luokan olion ja tallentaa sen tietokantaan.
+     * Onnistuesssaan, tai kun havaintojakso jo olemassa, palauttaa arvon 
+     * OPERAATIO_ONNISTUI. Muussa tapauksessa palauttaa muuten arvon VIRHE
+     * ja jättää tarvittaessa ilmoituksen Havaintokontrollerioliolle.
+     * @param Parametrit $parametriolio
+     * @param Tietokantaolio $tietokantaolio
+     */
+    private function luo_havaintojakso_olio(&$parametriolio, $tietokantaolio){
+        // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
+        // tallennettua.
+        $palautusarvo = Havaintojakso::$OPERAATIO_ONNISTUI;
+        
+        $param = $parametriolio;    // Lyhempi vain..
+        
+        if($param->id_havjaks === Parametrit::$EI_MAARITELTY){
             $param->uusi_havjaks = true;
             
             $uusi = new Havaintojakso(Havaintojakso::$MUUTTUJAA_EI_MAARITELTY, 
@@ -909,12 +1044,14 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $kk = $param->alkuaika_kk_havjaks;
             $paiva = $param->alkuaika_paiva_havjaks;
             $h = $param->alkuaika_h_havjaks;
+            if($h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
             $min = $param->alkuaika_min_havjaks;
-            
+            if($min < 0){ $min = 0;}
             $alkuaika = new DateTime("'".$vuosi."-".$kk."-".$paiva." ".
                                         $h.":".$min.":00'");
             $alkuaika_sek = $alkuaika->getTimestamp();
-            $param->alkuaika_sek_havjaks = $alkuaika;
+            
+            $param->alkuaika_sek_havjaks = $alkuaika_sek;
             
             // Haetaan kesto minuutteina:
             $kestovrk = $param->kesto_vrk_havjaks;
@@ -955,97 +1092,19 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $palaute = $uusi->tallenna_uusi();
             
             if($palaute === Havaintojakso::$OPERAATIO_ONNISTUI){
-                $id_havjaks = $uusi->get_id();
+                $param->id_havjaks = $uusi->get_id();
+            } else{
+                $palautusarvo = Havaintojakso::$VIRHE;
+                $this->lisaa_virheilmoitus($uusi->tulosta_kaikki_ilmoitukset());
             }
             
-        } else{
+        } else{ 
             $param->uusi_havjaks = false;
         }
-        //======================================================================
-
-        foreach ($valinnat as $id_lj) {
-                
-            $uusi = new Havainto(Havainto::$MUUTTUJAA_EI_MAARITELTY,
-                                $this->tietokantaolio());
-            $uusi->set_henkilo_id($this->get_parametriolio()->get_omaid());
-            $uusi->set_lajiluokka_id($id_lj);
-            $uusi->set_paiva($this->get_parametriolio()->paiva_hav);
-            $uusi->set_kk($this->get_parametriolio()->kk_hav);
-            $uusi->set_vuosi($this->get_parametriolio()->vuosi_hav);
-            $uusi->set_paikka($this->get_parametriolio()->paikka_hav);
-            $uusi->set_kommentti($this->get_parametriolio()->kommentti_hav);
-            $uusi->set_maa($this->get_parametriolio()->maa_hav);
-            $uusi->set_varmuus($this->get_parametriolio()->varmuus_hav);
-
-             // Uudet ominaisuudet:
-            $uusi->set_arvo($this->get_parametriolio()->sukupuoli_hav, 
-                            Havainto::$SARAKENIMI_SUKUPUOLI);
-            $uusi->set_arvo($this->get_parametriolio()->lkm_hav, 
-                            Havainto::$SARAKENIMI_LKM);
-            
-            if($uusi->tallenna_uusi() === Havainto::$OPERAATIO_ONNISTUI){
-                $tallennusten_lkm++;
-                
-                // Tallennetaan havainnon lisäluokitukset:==========================
-                $valitut = $this->get_parametriolio()->lisaluokitusvalinnat_hav;
-                foreach ($valitut as $lisaluokitusarvo) {
-                    $palaute = $uusi->tallenna_uusi_lisaluokitus($lisaluokitusarvo);
-                    if($palaute === Havainto::$VIRHE){
-                        $palauteolio->lisaa_virheilmoitus(
-                            Bongaustekstit::$ilm_havainnon_lisaluokan_tallennus_eiok.
-                            " ".$uusi->tulosta_virheilmoitukset());
-                    }
-                }
-                
-                // Haetaan nimi tallennetulle:
-                $nimi = Bongaustekstit::$nimi_tuntematon;
-                $lajiluokka = new Lajiluokka($tietokantaolio, $id_lj);
-                if($lajiluokka->olio_loytyi_tietokannasta){
-                    $kuvaus = $lajiluokka->
-                                hae_kuvaus($this->get_parametriolio()->kieli_id);
-                    if($kuvaus instanceof Kuvaus){
-                        if($laskuri == 0){
-                            $nimi = $kuvaus->get_nimi();
-
-                        }
-                        else{
-                            $nimi = ", ".$kuvaus->get_nimi();
-
-                        }
-                    }
-                }
-                
-                $tallennetut_lajit.= $nimi;
-            }
-            else{
-                $virheiden_lkm++;
-                $virheilmot .= $uusi->tulosta_virheilmoitukset()."<br />";
-            }
-            
-            $laskuri++;
-        }
         
-        // Aktiivisuusmerkintä (vain kerran):
-        $tallentaja->paivita_aktiivisuus(Aktiivisuus::$HAVAINTOTALLENNUS_UUSI);
-
-        // Palautteet:
-        if($tallennusten_lkm == sizeof($valinnat)){
-            $kommentti = $tallennusten_lkm." ".
-                            Bongaustekstit::$ilm_havaintojen_lisays_ok.
-                            " (".$tallennetut_lajit.")";
-        }
-        else{
-            $kommentti = $virheiden_lkm." ".
-                        Bongaustekstit::$ilm_havaintojen_lisays_eiok."<br/>".
-                        $virheilmot;
-        }
-        
-        $palauteolio->set_ilmoitus($kommentti);
-
-        // Avataan havainnot.
-        $this->toteuta_nayta($palauteolio);
+        return $palautusarvo;
     }
-
+    
     /**
      * Hakee havainnot nätisti muotoiltuna ja asettaa ne palauteolion
      * sisällöksi. Ei koske ilmoitukseen.
