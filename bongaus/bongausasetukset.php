@@ -173,6 +173,7 @@ class Bongaustekstit{
      * @var type 
      */
     public static $tuntematon = "Tuntematon";
+    public static $ja = "ja";
     
     public static $havtauluots_nro = "Nro";
     public static $havtauluots_laji = "Laji";
@@ -272,6 +273,9 @@ class Bongaustekstit{
     
     public static $ilm_havaintojaksolinkki_jo_olemassa = 
             "Havainto on jo liitetty kyseiseen tapahtumaan!";
+    
+    public static $ilm_havaintojaksolinkkeja_luotu_kpl = 
+            "kpl havaintoja liitetty havaintotapahtumaan.";
     
     public static $ilm_havaintoa_ei_loytynyt = 
             "Havaintoa ei löytynyt tietokannasta!";

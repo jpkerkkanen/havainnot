@@ -1716,18 +1716,18 @@ class Havaintonakymat extends Nakymapohja{
      * Palauttaa havaintolomakkeen havaintojakso-osion html-koodin:
      * @return type
      */
-    function luo_havaintojaksolomakeruutu($uusi, 
-                                            $nimi, 
-                                            $kommentti, 
-                                            $alkuaikapaiva, 
-                                            $alkuaikakk,
-                                            $alkuaikavuosi,
-                                            $alkuaikah,
-                                            $alkuaikamin,
-                                            $kestomin,
-                                            $kestoh,
-                                            $kestovrk,
-                                            $valittu){
+    function luo_havaintojaksolomakeruutu(&$uusi, 
+                                            &$nimi, 
+                                            &$kommentti, 
+                                            &$alkuaikapaiva, 
+                                            &$alkuaikakk,
+                                            &$alkuaikavuosi,
+                                            &$alkuaikah,
+                                            &$alkuaikamin,
+                                            &$kestomin,
+                                            &$kestoh,
+                                            &$kestovrk,
+                                            &$valittu){
         
         $nimi = Parametrit::$EI_MAARITELTY ? "" : $nimi;
         $kommentti = Parametrit::$EI_MAARITELTY ? "" : $kommentti;

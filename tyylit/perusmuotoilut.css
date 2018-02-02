@@ -60,7 +60,7 @@ johon sitten värejä, taustoja ja muita tyylejä voi lisäillä.
     max-width: 1400px;
     min-width: 600px;
     min-height: 500px;
-    background-color: #f4f4fc;
+    /*background-color: #f4f4fc;*/
 }
 
 /* Ylin vaakasuora palkki*/

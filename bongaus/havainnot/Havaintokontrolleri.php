@@ -762,7 +762,10 @@ class Havaintokontrolleri extends Kontrolleripohja{
         }
     }
     
-    
+    /**
+     * Toteuttaa monen havainnon tallennuslomakkeen näyttämisen.
+     * @param type $palauteolio
+     */
     public function toteuta_nayta_moniuusitallennuslomake(&$palauteolio){
         
         // Paikka ja kommentti muutetaan tyhjiksi, jos ovat epämääriteltyjä:
@@ -884,6 +887,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $valinnat = $this->get_parametriolio()->lajivalinnat_hav; 
 
         $laskuri = 0;
+        $havjakslinkit_lkm = 0;
         $tallennusten_lkm = 0;
         $virheiden_lkm = 0;
         $virheilmot = "";
@@ -942,8 +946,13 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     $tallennetut_lajit.= $nimi;
                     
                     // Tallennetaan vielä linkki havaintojaksoon:
-                    $tarkista = 
-                    $havjaks->lisaa_havainto($havainto->get_id(), $tarkista);
+                    $tarkista = !$param->uusi_havjaks;
+                    $lisays = $havjaks->lisaa_havainto($havainto->get_id(), 
+                                                        $tarkista);
+                    // Lasketaan lisäykset:
+                    if($lisays === Havainto::$OPERAATIO_ONNISTUI){
+                        $havjakslinkit_lkm ++;
+                    }
                 }
                 else{
                     $virheiden_lkm++;
@@ -958,6 +967,9 @@ class Havaintokontrolleri extends Kontrolleripohja{
             // Palautteet:
             if($tallennusten_lkm == sizeof($valinnat)){
                 $kommentti = $tallennusten_lkm." ".
+                                Bongaustekstit::$ja.
+                                $havjakslinkit_lkm." ".
+                                Bongaustekstit::$ilm_havaintojaksolinkkeja_luotu_kpl." ".
                                 Bongaustekstit::$ilm_havaintojen_lisays_ok.
                                 " (".$tallennetut_lajit.")";
             }
@@ -973,7 +985,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $this->toteuta_nayta($palauteolio);
             
         } else{ // Kun havaintojakson tallennus ei onnistunut.
-            $kommentti = Bongaustekstit::$havaintojakso_virheilm_tallennus_eiok;
+            $kommentti = Bongaustekstit::$havaintojakso_virheilm_tallennus_eiok.
+                        " ".$this->tulosta_kaikki_ilmoitukset();
             $palauteolio->set_ilmoitus($kommentti);
             $this->toteuta_nayta_moniuusitallennuslomake($palauteolio);
         }
@@ -1021,7 +1034,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
     /**
      * Luo uuden Havaintojakso-luokan olion ja tallentaa sen tietokantaan.
      * Onnistuesssaan, tai kun havaintojakso jo olemassa, palauttaa arvon 
-     * OPERAATIO_ONNISTUI. Muussa tapauksessa palauttaa muuten arvon VIRHE
+     * OPERAATIO_ONNISTUI. Muussa tapauksessa palauttaa arvon VIRHE
      * ja jättää tarvittaessa ilmoituksen Havaintokontrollerioliolle.
      * @param Parametrit $parametriolio
      * @param Tietokantaolio $tietokantaolio
@@ -1094,6 +1107,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             if($palaute === Havaintojakso::$OPERAATIO_ONNISTUI){
                 $param->id_havjaks = $uusi->get_id();
             } else{
+                echo "PIIP";
                 $palautusarvo = Havaintojakso::$VIRHE;
                 $this->lisaa_virheilmoitus($uusi->tulosta_kaikki_ilmoitukset());
             }
