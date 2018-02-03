@@ -674,7 +674,7 @@ class Parametrit {
         $this->nakyvyys_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_nakyvyys_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_nakyvyys_havjaks]: 
-                Parametrit::$EI_MAARITELTY;
+                Nakyvyys::$JULKINEN;
         $this->uusi_havjaks = 
             isset($_REQUEST[Havaintokontrolleri::$name_uusi_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_uusi_havjaks]: 

@@ -1768,35 +1768,38 @@ class Havaintonakymat extends Nakymapohja{
                                 Maarite::onclick("nayta_ed", array(2)))).
 
                 " ".
-                Html::luo_input(array(Maarite::type("text"),
-                                        Maarite::id("paiva2"),
-                                        Maarite::name("paiva_havjaks"),
-                                        Maarite::value($alkuaikapaiva),
-                                        Maarite::size(2),
-                                        Maarite::max_length(2),
-                                        Maarite::onchange("nayta_pvm_havjaks", ""),
-                                        Maarite::onkeyup("nayta_pvm_havjaks", ""))).   
+                Html::luo_input(array(
+                    Maarite::type("text"),
+                    Maarite::id("paiva2"),
+                    Maarite::name(Havaintokontrolleri::$name_alkuaika_paiva_havjaks),
+                    Maarite::value($alkuaikapaiva),
+                    Maarite::size(2),
+                    Maarite::max_length(2),
+                    Maarite::onchange("nayta_pvm_havjaks", ""),
+                    Maarite::onkeyup("nayta_pvm_havjaks", ""))).   
 
 
                 
-                Html::luo_input(array(Maarite::type("text"),
-                                    Maarite::id("kk2"),
-                                    Maarite::name("kk_havjaks"),
-                                    Maarite::value($alkuaikakk),
-                                    Maarite::size(2),
-                                    Maarite::max_length(2),
-                                    Maarite::onchange("nayta_pvm_havjaks", ""),
-                                    Maarite::onkeyup("nayta_pvm_havjaks", ""))).     
+                Html::luo_input(array(
+                    Maarite::type("text"),
+                    Maarite::id("kk2"),
+                    Maarite::name(Havaintokontrolleri::$name_alkuaika_kk_havjaks),
+                    Maarite::value($alkuaikakk),
+                    Maarite::size(2),
+                    Maarite::max_length(2),
+                    Maarite::onchange("nayta_pvm_havjaks", ""),
+                    Maarite::onkeyup("nayta_pvm_havjaks", ""))).     
 
                 
-                Html::luo_input(array(Maarite::type("text"),
-                                    Maarite::id("vuosi2"),
-                                    Maarite::name("vuosi_havjaks"),
-                                    Maarite::value($alkuaikavuosi),
-                                    Maarite::size(4),
-                                    Maarite::max_length(4),
-                                    Maarite::onchange("nayta_pvm_havjaks", ""),
-                                    Maarite::onkeyup("nayta_pvm_havjaks", "")))." ".         
+                Html::luo_input(array(
+                    Maarite::type("text"),
+                    Maarite::id("vuosi2"),
+                    Maarite::name(Havaintokontrolleri::$name_alkuaika_vuosi_havjaks),
+                    Maarite::value($alkuaikavuosi),
+                    Maarite::size(4),
+                    Maarite::max_length(4),
+                    Maarite::onchange("nayta_pvm_havjaks", ""),
+                    Maarite::onkeyup("nayta_pvm_havjaks", "")))." ".         
 
 
                 Html::luo_span(" ", array(Maarite::id("pvm_naytto2")))." ". 

@@ -1871,7 +1871,7 @@ class Havainto extends Malliluokkapohja {
                             Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID);
             $linkki->set_arvo($this->get_id(), 
                             Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID);
-            
+
             $palaute = $linkki->tallenna_uusi();
         }
         return $palaute;

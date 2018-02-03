@@ -22,6 +22,15 @@ class Oliotyyppi{
     public static $MUU = 50; //
 }
 
+/**
+ * Tämä luokka sisältää arvot muuttujalle, joka määrää, miten olio
+ * käyttäjälle näytetään. 
+ */
+class Nakyvyys{
+    public static $JULKINEN = 10; //
+    public static $YKSITYINEN = 5; //
+}
+
 
 
 /**

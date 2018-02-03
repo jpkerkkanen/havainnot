@@ -177,12 +177,12 @@ class Havaintojakso extends Malliluokkapohja {
         $hav = new Havainto($id_hav, $this->tietokantaolio);
         
         if($hav->olio_loytyi_tietokannasta){
-            $palaute = $hav->lisaa_havaintojaksoon($id_hav, $tarkista);
+            $palaute = $hav->lisaa_havaintojaksoon($this->get_id(), $tarkista);
         } else {
             $palaute = Malliluokkapohja::$VIRHE;
             $this->lisaa_virheilmoitus(Bongaustekstit::$ilm_havaintoa_ei_loytynyt);
         }
-        
+        return $palaute;
     }
     
 }

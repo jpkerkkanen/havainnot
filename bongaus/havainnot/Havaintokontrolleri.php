@@ -907,7 +907,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         if($havjaks->olio_loytyi_tietokannasta){
             foreach ($valinnat as $id_lj) {
 
-                $tallennus = $this->luo_havainto_olio($param, $id_lj);
+                $this->luo_havainto_olio($param, $id_lj);
                 $havainto = new Havainto($param->id_hav, $tietokantaolio);
                 
                 if($havainto->olio_loytyi_tietokannasta){
@@ -952,6 +952,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     // Lasketaan lisäykset:
                     if($lisays === Havainto::$OPERAATIO_ONNISTUI){
                         $havjakslinkit_lkm ++;
+                    } else{
+                        //$this->lisaa_virheilmoitus($lisays);    //Testiä varten
                     }
                 }
                 else{
@@ -967,11 +969,11 @@ class Havaintokontrolleri extends Kontrolleripohja{
             // Palautteet:
             if($tallennusten_lkm == sizeof($valinnat)){
                 $kommentti = $tallennusten_lkm." ".
-                                Bongaustekstit::$ja.
-                                $havjakslinkit_lkm." ".
-                                Bongaustekstit::$ilm_havaintojaksolinkkeja_luotu_kpl." ".
                                 Bongaustekstit::$ilm_havaintojen_lisays_ok.
-                                " (".$tallennetut_lajit.")";
+                                " (".$tallennetut_lajit.") ".
+                                Bongaustekstit::$ja." ".
+                                $havjakslinkit_lkm." ".
+                                Bongaustekstit::$ilm_havaintojaksolinkkeja_luotu_kpl;
             }
             else{
                 $kommentti = $virheiden_lkm." ".
@@ -1006,20 +1008,26 @@ class Havaintokontrolleri extends Kontrolleripohja{
         
         $uusi = new Havainto(Havainto::$MUUTTUJAA_EI_MAARITELTY,$tietokantaolio);
         
-        $uusi->set_henkilo_id($parametriolio()->get_omaid());
+        $uusi->set_henkilo_id($parametriolio->get_omaid());
         $uusi->set_lajiluokka_id($id_lj);
-        $uusi->set_paiva($parametriolio()->paiva_hav);
-        $uusi->set_kk($parametriolio()->kk_hav);
-        $uusi->set_vuosi($parametriolio()->vuosi_hav);
-        $uusi->set_paikka($parametriolio()->paikka_hav);
-        $uusi->set_kommentti($parametriolio()->kommentti_hav);
-        $uusi->set_maa($parametriolio()->maa_hav);
-        $uusi->set_varmuus($parametriolio()->varmuus_hav);
+        $uusi->set_paiva($parametriolio->paiva_hav);
+        $uusi->set_kk($parametriolio->kk_hav);
+        $uusi->set_vuosi($parametriolio->vuosi_hav);
+        $uusi->set_paikka($parametriolio->paikka_hav);
+        
+        // Ellei kommenttia määritelty, tallennetaan tyhjä merkkijono:
+        if($parametriolio->kommentti_hav+0 === Parametrit::$EI_MAARITELTY){
+            $parametriolio->kommentti_hav = "";
+        }
+        
+        $uusi->set_kommentti($parametriolio->kommentti_hav);
+        $uusi->set_maa($parametriolio->maa_hav);
+        $uusi->set_varmuus($parametriolio->varmuus_hav);
 
          // Uudet ominaisuudet:
-        $uusi->set_arvo($parametriolio()->sukupuoli_hav, 
+        $uusi->set_arvo($parametriolio->sukupuoli_hav, 
                         Havainto::$SARAKENIMI_SUKUPUOLI);
-        $uusi->set_arvo($parametriolio()->lkm_hav, 
+        $uusi->set_arvo($parametriolio->lkm_hav, 
                         Havainto::$SARAKENIMI_LKM);
         
         if($uusi->tallenna_uusi() != Malliluokkapohja::$OPERAATIO_ONNISTUI){
@@ -1045,8 +1053,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $palautusarvo = Havaintojakso::$OPERAATIO_ONNISTUI;
         
         $param = $parametriolio;    // Lyhempi vain..
-        
-        if($param->id_havjaks === Parametrit::$EI_MAARITELTY){
+ 
+        if($param->id_havjaks+0 === Parametrit::$EI_MAARITELTY){
             $param->uusi_havjaks = true;
             
             $uusi = new Havaintojakso(Havaintojakso::$MUUTTUJAA_EI_MAARITELTY, 
@@ -1057,13 +1065,19 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $kk = $param->alkuaika_kk_havjaks;
             $paiva = $param->alkuaika_paiva_havjaks;
             $h = $param->alkuaika_h_havjaks;
-            if($h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
+            if($h == "" || $h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
             $min = $param->alkuaika_min_havjaks;
-            if($min < 0){ $min = 0;}
-            $alkuaika = new DateTime("'".$vuosi."-".$kk."-".$paiva." ".
-                                        $h.":".$min.":00'");
-            $alkuaika_sek = $alkuaika->getTimestamp();
+            if($min == "" ||$min < 0){ $min = 0;}
             
+            $sek = 0;   // Sekunteja ei tallenneta.
+            
+            /*$alkuaika = new DateTime($vuosi."-".$kk."-".$paiva." ".
+                                        $h.":".$min.":01");
+
+            $alkuaika_sek = $alkuaika->getTimestamp();*/ // Ei parsinta onnannu.
+            
+            $alkuaika_sek = mktime($h, $min, $sek, $kk, $paiva, $vuosi);
+
             $param->alkuaika_sek_havjaks = $alkuaika_sek;
             
             // Haetaan kesto minuutteina:
@@ -1083,14 +1097,14 @@ class Havaintokontrolleri extends Kontrolleripohja{
             }
             
             $kestomintotal = $kestovrk * 24 * 60 + $kestoh * 60 + $kestomin; 
-            
+
             $uusi->set_arvo($param->alkuaika_sek_havjaks, 
                     Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
             
             $uusi->set_arvo($kestomintotal, 
                     Havaintojakso::$SARAKENIMI_KESTO_MIN);
             
-            $uusi->set_arvo($tallentaja->get_id(), 
+            $uusi->set_arvo($parametriolio->get_omaid(), 
                     Havaintojakso::$SARAKENIMI_HENKILO_ID);
             
             $uusi->set_arvo($param->nimi_havjaks, 
@@ -1107,7 +1121,6 @@ class Havaintokontrolleri extends Kontrolleripohja{
             if($palaute === Havaintojakso::$OPERAATIO_ONNISTUI){
                 $param->id_havjaks = $uusi->get_id();
             } else{
-                echo "PIIP";
                 $palautusarvo = Havaintojakso::$VIRHE;
                 $this->lisaa_virheilmoitus($uusi->tulosta_kaikki_ilmoitukset());
             }
