@@ -31,6 +31,27 @@ function kirjoita_elementtiin(id, sisalto, kayta_value){
     return onnistuminen;
 }
 
+/** 
+ * Hakee sen input / form-elementin value-arvon, jonka id annetaan
+ * parametrina. Ellei elementtiä löydy, palauttaa arvon virhepalaute, joka
+ * annetaan parametrina.
+ * 
+ * Ei tarkisteta elementin laatua (kehittäjän vastuulla, jotta value toimii :)
+ * 
+ * @param {String} id
+ * @returns {Mixed}
+ */
+function hae_value(id, virhepalaute){
+    var elem = document.getElementById(id);
+    
+    if(elem){  
+      return elem.value;
+        
+    } else{
+        return virhepalaute;
+    }
+}
+
 /**
  * Palauttaa annetusta xml-koodista haetun elementin sisällön
  * (getElementsByTagName(tagname)[0].childNodes[0].nodeValue;). 
@@ -832,7 +853,7 @@ function nayta_pvm(idpaiva, idkk, idvuosi, idpvm)
             viikonpaivataulukko[6]="la";
 
             var viikonpaiva = viikonpaivataulukko[pvm.getDay()];
-            if((viikonpaiva == undefined) || (paiva<1) ||
+            if((viikonpaiva === undefined) || (paiva<1) ||
                 (paiva>31) ||(kk<1) ||(kk>12))
             {
                  tulos = "VIRHEELLINEN PVM!";
@@ -913,24 +934,52 @@ function nayta_ed(id_erotin)
 {
     muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+                  
+    // Päivitys tapahtuman aikaan:
+    if(id_erotin === "" || id_erotin === 0){
+      id_erotin = 2;
+      muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
+    }
 }
 
 function nayta_seur(id_erotin)
 {
     muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+                  
+    // Päivitys tapahtuman aikaan:
+    if(id_erotin === "" || id_erotin === 0){
+      id_erotin = 2;
+      muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
+    }
 }
 
 function nayta_seur_vko(id_erotin)
 {
     muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+                  
+    // Päivitys tapahtuman aikaan:
+    if(id_erotin === "" || id_erotin === 0){
+      id_erotin = 2;
+      muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
+    }
 }
 
 function nayta_ed_vko(id_erotin)
 {
     muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+                  
+    // Päivitys tapahtuman aikaan:
+    if(id_erotin === "" || id_erotin === 0){
+      id_erotin = 2;
+      muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
+    }
 }
 function nayta_nyk_pvm(id_erotin){
    
@@ -939,5 +988,18 @@ function nayta_nyk_pvm(id_erotin){
 }
 function nayta_pvm_havjaks(){
   nayta_pvm("paiva2", "kk2", "vuosi2", "pvm_naytto2");
+}
+
+function nayta_pvm_hav(){
+  nayta_pvm("paiva", "kk", "vuosi", "pvm_naytto");
+  
+  // Muutetaan havaintojakson päivämäärä samaksi kuin havainnon, jos kyseessä
+  // uusi havaintojakso (miten varmistus?)
+  kirjoita_elementtiin("paiva2", hae_value("paiva", -123), 1);
+  kirjoita_elementtiin("kk2", hae_value("kk", -123), 1);
+  kirjoita_elementtiin("vuosi2", hae_value("vuosi", -123), 1);
+  
+  nayta_pvm("paiva2", "kk2", "vuosi2", "pvm_naytto2");
+  
 }
 

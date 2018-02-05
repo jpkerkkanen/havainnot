@@ -1574,8 +1574,8 @@ class Havaintonakymat extends Nakymapohja{
                         Maarite::size(2),
                         Maarite::max_length(2),
                         Maarite::title(Bongaustekstit::$havaintolomake_paiva),
-                        Maarite::onchange("nayta_pvm", ""),
-                        Maarite::onkeyup("nayta_pvm", ""))).   
+                        Maarite::onchange("nayta_pvm_hav", ""),
+                        Maarite::onkeyup("nayta_pvm_hav", ""))).   
 
                 Html::luo_input(array(
                         Maarite::type("text"),
@@ -1585,8 +1585,8 @@ class Havaintonakymat extends Nakymapohja{
                         Maarite::size(2),
                         Maarite::max_length(2),
                         Maarite::title(Bongaustekstit::$havaintolomake_kk),
-                        Maarite::onchange("nayta_pvm", ""),
-                        Maarite::onkeyup("nayta_pvm", ""))).     
+                        Maarite::onchange("nayta_pvm_hav", ""),
+                        Maarite::onkeyup("nayta_pvm_hav", ""))).     
 
                 Html::luo_input(array(
                         Maarite::type("text"),
@@ -1596,8 +1596,8 @@ class Havaintonakymat extends Nakymapohja{
                         Maarite::size(4),
                         Maarite::max_length(4),
                         Maarite::title(Bongaustekstit::$havaintolomake_vuosi),
-                        Maarite::onchange("nayta_pvm", ""),
-                        Maarite::onkeyup("nayta_pvm", "")))." ".         
+                        Maarite::onchange("nayta_pvm_hav", ""),
+                        Maarite::onkeyup("nayta_pvm_hav", "")))." ".         
 
 
                 Html::luo_span(" ", array(Maarite::id("pvm_naytto")))." ". 
