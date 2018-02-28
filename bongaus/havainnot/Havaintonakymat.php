@@ -1686,24 +1686,24 @@ class Havaintonakymat extends Nakymapohja{
             Yleismetodit::array_add_first_elem(
                 Bongaustekstit::$havaintolomake_uusi, $nimet);
             
-            $name_arvo = Havaintokontrolleri::$name_id_havjaks;
-            $id_arvo = "havaintojaksovalikko";
-            $class_arvo = "havaintojaksovalikko";
             $oletusvalinta_arvo = $valittu;
             $otsikko = Bongaustekstit::$havaintolomake_jaksovalikko_otsikko;
-            $onchange_metodinimi = "edit_lomake";   // Muokkaa lomaketta.
-            $onchange_metodiparametrit_array = array();
-
-            $valikkohtml.= Html::luo_pudotusvalikko_onChange($arvot,
-                                                            $nimet,
-                                                            $name_arvo,
-                                                            $id_arvo,
-                                                            $class_arvo,
-                                                            $oletusvalinta_arvo,
-                                                            $otsikko,
-                                                            $onchange_metodinimi,
-                                                $onchange_metodiparametrit_array);
-
+            
+            $select_maaritteet = array(
+                Maarite::classs("havaintojaksovalikko"),
+                Maarite::id("havaintojaksovalikko"),
+                Maarite::name(Havaintokontrolleri::$name_id_havjaks),
+                Maarite::onchange("edit_lomake", array("this"))
+            );
+            $option_maaritteet = array();
+            
+            $valikkohtml .= Html::luo_pudotusvalikko_uusi(
+                $arvot,
+                $nimet,
+                $select_maaritteet,
+                $option_maaritteet,
+                $oletusvalinta_arvo,
+                $otsikko);
         }
         catch(Exception $poikkeus){
             $valikkohtml =  "Virhe havaintojaksovalikossa! (".

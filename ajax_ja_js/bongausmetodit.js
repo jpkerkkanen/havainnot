@@ -665,3 +665,61 @@ function nayta_viesti(viesti){
 function bongaus_kopioi_havainto(param){
     return false;
 }
+
+/*
+ * Vaihtaa monivalintalomakkeen havaintojaksoruudun tiedot, 
+ * kun havaintojaksoa vaihdetaan (default uusi).
+ */
+function vaihda_havjaks(new_id, havjaks_idname){
+  try{
+    
+      kysely = "kysymys=vaihda_havjakso_lomake"+
+          "&"+havjaks_idname+"="+id_lj;
+      nayta_viiveilmoitus = 0;
+      toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                  'nayta_havjakstiedot','post', 'xml',
+                  nayta_viiveilmoitus);
+    
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/vaihda_havjaks): "+virhe.description;
+    }
+  //var e = document.getElementById("havaintojaksovalikko");
+  //var strUser = e.options[e.selectedIndex].value;
+}
+/**
+ * Näyttää vaihdetun havaintojakson tiedot kentissä ja muuttaa
+ * ne ei-muokattaviksi.
+ * @param {type} xml
+ * @returns {undefined}
+ */
+function nayta_havjakstiedot(xml){
+    var ilmoitus = "";
+    var ilmoituselem =
+        xml.getElementsByTagName("ilmoitus")[0].childNodes[0];
+    if(ilmoituselem){
+        ilmoitus = ilmoituselem.nodeValue;
+    }
+    
+    var onnistuminen = "";
+    var onnistuminenelem =
+        xml.getElementsByTagName("onnistuminen")[0].childNodes[0];
+    if(onnistuminenelem){
+        onnistuminen = onnistuminenelem.nodeValue;
+    }
+    
+    var ylaluokka_id =
+        xml.getElementsByTagName("ylaluokka_id")[0].childNodes[0].nodeValue;
+    
+    nayta_viesti(ilmoitus);
+    
+    if(onnistuminen){
+        // laatikot pois:
+        sulje_ruutu2("nimikuvauslaatikko");
+
+        // Haetaan lajinäkymä uudelleen:
+        hae_lajiluokat(ylaluokka_id); 
+    }
+}
