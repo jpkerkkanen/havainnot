@@ -674,7 +674,7 @@ function vaihda_havjaks(new_id, havjaks_idname){
   try{
     
       kysely = "kysymys=vaihda_havjakso_lomake"+
-          "&"+havjaks_idname+"="+id_lj;
+          "&"+havjaks_idname+"="+id_lj;sdfgsdfgsdfg
       nayta_viiveilmoitus = 0;
       toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
                   'nayta_havjakstiedot','post', 'xml',
