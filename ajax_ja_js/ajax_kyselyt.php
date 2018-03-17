@@ -547,6 +547,80 @@ else    // Jos tunnistus on kunnossa.
             echo '</tiedot>';
         }
 
+        else if($kysymys === "vaihda_havjakso_lomake"){
+            
+            $id = $parametriolio->id_havjaks;
+            $havjakso = new Havaintojakso($id, $tietokantaolio);
+            $onUusi = false;
+            
+            if($havjakso->olio_loytyi_tietokannasta){
+                $alkusek = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
+                $kestomintotal = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_KESTO_MIN);
+                
+                $nimi = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $kommentti = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_KOMMENTTI);
+                $alkuvuosi = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
+                $alkukk = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $alkupaiva = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $alkuh = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $alkumin = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $kestovrk = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $kestoh = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $kestomin = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+            } else{
+                $onUusi = true;
+                $nimi = "";
+                $kommentti = "";
+                $alkuvuosi = "";
+                $alkukk = "";
+                $alkupaiva = "";
+                $alkuh = "";
+                $alkumin = "";
+                $kestovrk = "";
+                $kestoh = "";
+                $kestomin = "";
+            }
+            
+            // xml-muodossa saadaan muutkin tiedot mukaan:
+            header('Content-type: text/xml');
+            echo '<?xml version="1.0" encoding="'.$koodaus.'"?>';
+            echo '<tiedot>';
+            echo '<onUusi>'.$onUusi.'</onUusi>';
+            echo '<id_nimi>'.Bongausasetuksia::$havjaksolomake_nimi_id.
+                    '</id_nimi>';
+            echo '<id_kommentti>'.Bongausasetuksia::$havjaksolomake_kommentti_id.
+                    '</id_kommentti>';
+            echo '<id_alkuh>'.Bongausasetuksia::$havjaksolomake_alkuh_id.
+                    '</id_alkuh>';
+            echo '<id_alkukk>'.Bongausasetuksia::$havjaksolomake_alkukk_id.
+                    '</id_alkukk>';
+            echo '<id_alkumin>'.Bongausasetuksia::$havjaksolomake_alkumin_id.
+                    '</id_alkumin>';
+            echo '<id_alkupaiva>'.Bongausasetuksia::$havjaksolomake_alkupäiva_id.
+                    '</id_alkupaiva>';
+            echo '<id_alkuvuosi>'.Bongausasetuksia::$havjaksolomake_alkuvuosi_id.
+                    '</id_alkuvuosi>';
+            echo '<id_kestoh>'.Bongausasetuksia::$havjaksolomake_kestoh_id.
+                    '</id_kestoh>';
+            echo '<id_kestomin>'.Bongausasetuksia::$havjaksolomake_kestomin_id.
+                    '</id_kestomin>';
+            echo '<id_kestovrk>'.Bongausasetuksia::$havjaksolomake_kestovrk_id.
+                    '</id_kestovrk>';
+            
+            
+            echo '<nimi>'.$nimi.'</nimi>';
+            echo '<kommentti>'.$kommentti.'</kommentti>';
+            echo '<alkuh>'.$alkuh.'</alkuh>';
+            echo '<alkukk>'.$alkukk.'</alkukk>';
+            echo '<alkumin>'.$alkumin.'</alkumin>';
+            echo '<alkupaiva>'.$alkupaiva.'</alkupaiva>';
+            echo '<alkuvuosi>'.$alkuvuosi.'</alkuvuosi>';
+            echo '<kestoh>'.$kestoh.'</kestoh>';
+            echo '<kestomin>'.$kestomin.'</kestomin>';
+            echo '<kestovrk>'.$kestovrk.'</kestovrk>';
+            echo '</tiedot>';
+        }
+        
         else if($kysymys == "nayta_siirtolomake"){
 
 

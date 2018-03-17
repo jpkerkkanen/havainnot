@@ -695,6 +695,18 @@ class Bongausasetuksia{
     public static $havaintokuvakommentti_class = "havaintokuvakommentti";
     public static $havaintotaulu_parillinenrivi_class = 
         "havaintotaulu_parillinen_rivi";
+    
+    public static $havjaksolomake_nimi_id = "havjakslomakenimi_id";
+    public static $havjaksolomake_kommentti_id = "havjakslomakekommentti_id";
+    public static $havjaksolomake_alkupäiva_id = "paiva2";
+    public static $havjaksolomake_alkukk_id = "kk2";
+    public static $havjaksolomake_alkuvuosi_id = "vuosi2";
+    public static $havjaksolomake_alkuh_id = "havjakslomake_alkuh_id";
+    public static $havjaksolomake_alkumin_id = "havjakslomake_alkumin_id";
+    public static $havjaksolomake_kestomin_id = "havjakslomake_kestomin_id";
+    public static $havjaksolomake_kestoh_id = "havjakslomake_kestoh_id";
+    public static $havjaksolomake_kestovrk_id = "havjakslomake_kestovrk_id";
+    
     // Tietotaulu (yleisempi)
     public static $tietotaulun_id = "tietotaulu";
     public static $tietotaulun_class = "tietotaulu";

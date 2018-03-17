@@ -13,6 +13,8 @@
 class Yleistestimetodeita {
     //put your code here
     
+    
+    
     /** 
      * Seuraava saattaa vaatia viilausta. Virheiden lkm ei nyt näy mitenkään
      * palautteessa. 

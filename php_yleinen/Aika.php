@@ -5,10 +5,126 @@ date_default_timezone_set('Europe/Helsinki');
 
 /**
  * Tämä luokka sisältää staattisia metodeita, joiden avulla voidaan
- * käsitellä ja muokata päivämääriä ja aikoja.
+ * käsitellä ja muokata päivämääriä ja aikoja. Lisäksi täällä on toiminnot
+ * eri aikamuotojen muunteluun.
  */
 class Aika {
+    
+    private $unixTimeStamp;
+    private $datetime;
+    /*private $year;
+    private $month;
+    private $day;
+    private $hour24;
+    private $min;
+    private $sec;*/
+    
+    function __construct($unixTimeStamp){
+        $this->unixTimeStamp = $unixTimeStamp;
+        
+        $datetime = new DateTime();
+        $datetime->setTimestamp($unixTimeStamp);
+        $this->datetime = $datetime;
+        //echo $date->format('U = Y-m-d H:i:s') . "\n";
 
+        
+    }
+    /**
+     * Returns year as integer.
+     * @return int
+     */
+    function getYearAsInt4digits(){
+        return intval($this->datetime->format("Y"));
+    }
+    
+    /**
+     * Returns year as string.
+     * @return string
+     */
+    function getYear4digits(){
+        return $this->datetime->format("Y");
+    }
+    
+    /**
+     * Returns month as integer.
+     * @return int
+     */
+    function getMonthAsInt(){
+        return intval($this->datetime->format("m"));
+    }
+    
+    /**
+     * Returns month as string.
+     * @return string
+     */
+    function getMonth(){
+        return $this->datetime->format("m");
+    }
+    
+    /**
+     * Returns day as integer.
+     * @return int
+     */
+    function getDayAsInt(){
+        return intval($this->datetime->format("d"));
+    }
+    
+    /**
+     * Returns day.
+     * @return string
+     */
+    function getDay(){
+        return $this->datetime->format("d");
+    }
+    
+    /**
+     * Returns hour as integer.
+     * @return type
+     */
+    function getHourAsInt(){
+        return intval($this->datetime->format("H"));
+    }
+    
+    /**
+     * Returns hour as a string.
+     * @return type
+     */
+    function getHour(){
+        return $this->datetime->format("H");
+    }
+    
+    /**
+     * Returns min as integer.
+     * @return int
+     */
+    function getminAsInt(){
+        return intval($this->datetime->format("i"));
+    }
+    
+    /**
+     * Returns min as string.
+     * @return string
+     */
+    function getmin(){
+        return $this->datetime->format("i");
+    }
+    
+    /**
+     * Returns sec as integer.
+     * @return type
+     */
+    function getSecAsInt(){
+        return intval($this->datetime->format("s"));
+    }
+    
+    /**
+     * Returns sec as string.
+     * @return string
+     */
+    function getSec(){
+        return $this->datetime->format("s");
+    }
+    
     /** Näyttää nykyisen päivän numeron (kuukauden päivä) */
     static function anna_nyk_paivan_nro() {
         $pvm_taulukko = getdate(time());
@@ -183,6 +299,20 @@ class Aika {
 
 
         return $tuloshtml;
+    }
+    
+    /**
+     * Test for instance on http://phptester.net/
+     */
+    static function test(){
+        $datetime = new DateTime();
+        
+        
+        echo $datetime->format('U = Y-m-d H:i:s')."<br>";
+        echo $datetime->format('M')."<br>";
+        echo $datetime->format('m')."<br>";
+        echo (int)($datetime->format('m')*3)."<br>";
+        echo intval($datetime->format('m')*3)."<br>";
     }
 
 }
