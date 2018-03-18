@@ -234,7 +234,7 @@ class Havaintojakso extends Malliluokkapohja {
             if($jakso instanceof Havaintojakso){
                 
                 $time = $jakso->get_arvo(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
-                $date = date("m.d.Y", $time);
+                $date = date("d.m.Y", $time);
                 
                 $nimi = $date." ".$jakso->
                         get_arvo(Havaintojakso::$SARAKENIMI_NIMI);

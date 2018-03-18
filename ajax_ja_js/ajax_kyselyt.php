@@ -553,7 +553,7 @@ else    // Jos tunnistus on kunnossa.
             
             $id = $parametriolio->id_havjaks;
             $havjakso = new Havaintojakso($id, $tietokantaolio);
-            $onUusi = false;
+            $onUusi = 0;
             
             if($havjakso->olio_loytyi_tietokannasta){
                 
@@ -568,7 +568,7 @@ else    // Jos tunnistus on kunnossa.
                 $kestoh = $havjakso->get_keston_h();
                 $kestomin = $havjakso->get_keston_min();
             } else{
-                $onUusi = true;
+                $onUusi = 1;
                 $nimi = "";
                 $kommentti = "";
                 $alkuvuosi = "";

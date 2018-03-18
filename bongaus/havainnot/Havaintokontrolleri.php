@@ -917,11 +917,11 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     // Tallennetaan havainnon lisäluokitukset:==========================
                     $valitut = $this->get_parametriolio()->lisaluokitusvalinnat_hav;
                     foreach ($valitut as $lisaluokitusarvo) {
-                        $palaute = $uusi->tallenna_uusi_lisaluokitus($lisaluokitusarvo);
+                        $palaute = $havainto->tallenna_uusi_lisaluokitus($lisaluokitusarvo);
                         if($palaute === Havainto::$VIRHE){
                             $palauteolio->lisaa_virheilmoitus(
                                 Bongaustekstit::$ilm_havainnon_lisaluokan_tallennus_eiok.
-                                " ".$uusi->tulosta_virheilmoitukset());
+                                " ".$havainto->tulosta_virheilmoitukset());
                         }
                     }
 

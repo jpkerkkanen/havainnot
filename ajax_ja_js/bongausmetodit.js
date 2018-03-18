@@ -701,8 +701,15 @@ function nayta_havjakstiedot(xml){
   var nimet = ["nimi", "kommentti", "alkuh", "alkukk", "alkumin",
           "alkupaiva", "alkuvuosi", "kestoh", "kestovrk", "kestomin"];
 
-  var arvo, id, xmlElem_arvo, xmlElem_id;
+  var arvo, id, xmlElem_arvo, xmlElem_id, onUusi_raaka, onUusi, elem;
 
+  onUusi_raaka = xml.getElementsByTagName("onUusi")[0].childNodes[0].nodeValue;
+  if(onUusi_raaka === "1"){
+    onUusi = true;
+  } else{
+    onUusi = false;
+  }
+  
   for (var i=0; i < nimet.length; i++){
     arvo = "";
     id = "";
@@ -715,9 +722,17 @@ function nayta_havjakstiedot(xml){
     xmlElem_arvo = xml.getElementsByTagName(nimet[i])[0].childNodes[0];
     if(xmlElem_arvo){
         arvo = xmlElem_arvo.nodeValue;
-   
     }
     
-    document.getElementById(id).value = arvo;
+    elem = document.getElementById(id);
+    
+    if(elem){
+      elem.value = arvo;
+      if(onUusi){
+        elem.disabled = false;
+      } else{
+        elem.disabled = true;
+      }
+    }
   }
 }

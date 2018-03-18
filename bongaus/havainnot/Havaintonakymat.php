@@ -1829,7 +1829,7 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::value($alkuaikah),
                     Maarite::size(2),
                     Maarite::placeholder("hh"))).":".
-                /*" ".Bongaustekstit::$havaintolomake_h.*/ 
+                //Bongaustekstit::$havaintolomake_h.
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
@@ -1838,7 +1838,7 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::value($alkuaikamin),
                     Maarite::size(2),
                     Maarite::placeholder("mm"))).
-                //" ".Bongaustekstit::$havaintolomake_min
+                //Bongaustekstit::$havaintolomake_min.
                     
                 " *".Bongaustekstit::$havaintolomake_kesto.": ".
                 Html::luo_input(array(
@@ -1848,6 +1848,7 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::value($kestovrk),
                     Maarite::size(2),
                     Maarite::placeholder("vrk"))).
+                Bongaustekstit::$havaintolomake_vrk." ".
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
@@ -1856,6 +1857,7 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::value($kestoh),
                     Maarite::size(2),
                     Maarite::placeholder("tunnit"))).
+                Bongaustekstit::$havaintolomake_h." ".
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
@@ -1863,7 +1865,8 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::name(Havaintokontrolleri::$name_kesto_min_havjaks),
                     Maarite::value($kestomin),
                     Maarite::size(2),
-                    Maarite::placeholder("min"))),
+                    Maarite::placeholder("min"))).
+                Bongaustekstit::$havaintolomake_min,
                 
             array(Maarite::classs("havaintolomakerivi")));  // Div määritteet
         
