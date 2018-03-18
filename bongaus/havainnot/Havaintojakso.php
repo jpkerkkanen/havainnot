@@ -48,6 +48,8 @@ class Havaintojakso extends Malliluokkapohja {
     public static $SARAKENIMI_NAKYVYYS= "nakyvyys";
     
     public static $taulunimi = "havaintojaksot";
+    
+    
     /**
      * @param Tietokantaolio $tietokantaolio
      * @param int $id olion id tietokannassa
@@ -74,6 +76,92 @@ class Havaintojakso extends Malliluokkapohja {
         
         $this->poistetut_pikakommentit_lkm = 0;
     }
+    /**
+     * Palauttaa havaintojakson kokonaiskeston minuutteina.
+     */
+    public function get_kestomin_total(){
+        return $this->get_arvo(Havaintojakso::$SARAKENIMI_KESTO_MIN);
+    }
+    
+    /**
+     * Palauttaa lasketun keston vuorokausiosan.
+     * @return type
+     */
+    public function get_keston_vrk(){
+        $kestomin = intval($this->get_kestomin_total());
+        $vrk = floor($kestomin / (60*24));
+        return $vrk;
+    }
+    
+    /**
+     * Palauttaa lasketun keston tuntiosan.
+     * @return type
+     */
+    public function get_keston_h(){
+        $kestomin = intval($this->get_kestomin_total());
+        $vrk = $this->get_keston_vrk();
+        $hours = floor(($kestomin-$vrk*60*24)/60);
+        return $hours;
+    }
+    
+    /**
+     * Palauttaa lasketun keston minuuttiosan.
+     * @return type
+     */
+    public function get_keston_min(){
+        $kestomin = intval($this->get_kestomin_total());
+        $vrk = intval($this->get_keston_vrk());
+        $hours = intval($this->get_keston_h());
+        $min = $kestomin-$vrk*60*24-$hours*60;
+        return $min;
+    }
+    
+    public function get_nimi(){
+        return $this->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+    }
+    public function get_kommentti(){
+        return $this->get_arvo(Havaintojakso::$SARAKENIMI_KOMMENTTI);
+    }
+    /**
+     * Palauttaa alkuajan unix time stampin eli sekunteina vuodesta 1970.
+     * @return type
+     */
+    public function get_alkutime(){
+        return $this->get_arvo(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
+    }
+    
+    /**
+     * Palauttaa alkuajan vuoden.
+     * @return type
+     */
+    public function get_alkuvuosi(){
+        $datetime = new Aika($this->get_alkutime());
+        return $datetime->getYear4digits();
+    }
+    public function get_alkukk(){
+        $datetime = new Aika($this->get_alkutime());
+        return $datetime->getMonth();
+    }
+    public function get_alkupaiva(){
+        $datetime = new Aika($this->get_alkutime());
+        return $datetime->getDay();
+    }
+    public function get_alkutunti(){
+        $datetime = new Aika($this->get_alkutime());
+        return $datetime->getHour();
+    }
+    public function get_alkumin(){
+        $datetime = new Aika($this->get_alkutime());
+        return $datetime->getMinutes();
+    }
+    public function get_henkilo_id(){
+        return $this->get_arvo(Havaintojakso::$SARAKENIMI_HENKILO_ID);
+    }
+    public function get_nakyvyys(){
+        return $this->get_arvo(Havaintojakso::$SARAKENIMI_NAKYVYYS);
+    }
+    
+    
     /**
      * Hakee tietokannasta max uusinta havaintojakso-oliota ja palauttaa ne
      * Havaintojakso-luokan olioina taulukossa (array).
