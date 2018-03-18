@@ -1693,7 +1693,8 @@ class Havaintonakymat extends Nakymapohja{
                 Maarite::classs("havaintojaksovalikko"),
                 Maarite::id("havaintojaksovalikko"),
                 Maarite::name(Havaintokontrolleri::$name_id_havjaks),
-                Maarite::onchange("edit_lomake", array("this"))
+                Maarite::onchange("vaihda_havjaks", 
+                        array("this", Havaintokontrolleri::$name_id_havjaks))
             );
             $option_maaritteet = array();
             
@@ -1770,7 +1771,7 @@ class Havaintonakymat extends Nakymapohja{
                 " ".
                 Html::luo_input(array(
                     Maarite::type("text"),
-                    Maarite::id("paiva2"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_alkupäiva_id),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_paiva_havjaks),
                     Maarite::value($alkuaikapaiva),
                     Maarite::size(2),
@@ -1782,7 +1783,7 @@ class Havaintonakymat extends Nakymapohja{
                 
                 Html::luo_input(array(
                     Maarite::type("text"),
-                    Maarite::id("kk2"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_alkukk_id),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_kk_havjaks),
                     Maarite::value($alkuaikakk),
                     Maarite::size(2),
@@ -1793,7 +1794,7 @@ class Havaintonakymat extends Nakymapohja{
                 
                 Html::luo_input(array(
                     Maarite::type("text"),
-                    Maarite::id("vuosi2"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_alkuvuosi_id),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_vuosi_havjaks),
                     Maarite::value($alkuaikavuosi),
                     Maarite::size(4),
@@ -1823,6 +1824,7 @@ class Havaintonakymat extends Nakymapohja{
                 " *".Bongaustekstit::$havaintolomake_aloitusaika." ".
                 Html::luo_input(array(
                     Maarite::type("text"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_alkuh_id),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_h_havjaks),
                     Maarite::value($alkuaikah),
                     Maarite::size(2),
@@ -1831,6 +1833,7 @@ class Havaintonakymat extends Nakymapohja{
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_alkumin_id),
                     Maarite::name(Havaintokontrolleri::$name_alkuaika_min_havjaks),
                     Maarite::value($alkuaikamin),
                     Maarite::size(2),
@@ -1840,6 +1843,7 @@ class Havaintonakymat extends Nakymapohja{
                 " *".Bongaustekstit::$havaintolomake_kesto.": ".
                 Html::luo_input(array(
                     Maarite::type("text"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_kestovrk_id),
                     Maarite::name(Havaintokontrolleri::$name_kesto_vrk_havjaks),
                     Maarite::value($kestovrk),
                     Maarite::size(2),
@@ -1847,6 +1851,7 @@ class Havaintonakymat extends Nakymapohja{
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_kestoh_id),
                     Maarite::name(Havaintokontrolleri::$name_kesto_h_havjaks),
                     Maarite::value($kestoh),
                     Maarite::size(2),
@@ -1854,6 +1859,7 @@ class Havaintonakymat extends Nakymapohja{
                     
                 Html::luo_input(array(
                     Maarite::type("text"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_kestomin_id),
                     Maarite::name(Havaintokontrolleri::$name_kesto_min_havjaks),
                     Maarite::value($kestomin),
                     Maarite::size(2),
@@ -1895,6 +1901,7 @@ class Havaintonakymat extends Nakymapohja{
                 " *".Bongaustekstit::$nimi.": ".
                 Html::luo_input(array(
                     Maarite::type("text"),
+                    Maarite::id(Bongausasetuksia::$havjaksolomake_nimi_id),
                     Maarite::name(Havaintokontrolleri::$name_nimi_havjaks),
                     Maarite::placeholder(
                         Bongaustekstit::$havaintolomake_jaksonimiohje),
@@ -1904,6 +1911,7 @@ class Havaintonakymat extends Nakymapohja{
                 Bongaustekstit::$kommentti.": ".
                     Html::luo_input(array(
                         Maarite::type("text"),
+                        Maarite::id(Bongausasetuksia::$havjaksolomake_kommentti_id),
                         Maarite::name(Havaintokontrolleri::$name_kommentti_havjaks),
                         Maarite::placeholder(
                             Bongaustekstit::$havaintolomake_jaksokommenttiohje),
