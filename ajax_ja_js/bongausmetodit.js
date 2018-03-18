@@ -672,7 +672,7 @@ function bongaus_kopioi_havainto(param){
  */
 function vaihda_havjaks(new_id, havjaks_idname){
   try{
-    
+    //alert("Kukkuu! Havaintojakson id="+new_id);
       kysely = "kysymys=vaihda_havjakso_lomake"+
           "&"+havjaks_idname+"="+new_id;
       nayta_viiveilmoitus = 0;
@@ -684,7 +684,8 @@ function vaihda_havjaks(new_id, havjaks_idname){
 
     catch(virhe){
         document.getElementById("ilmoitus").innerHTML =
-            "Virhe (bongausmetodit.js/vaihda_havjaks): "+virhe.description;
+            "Virhe (bongausmetodit.js/vaihda_havjaks): "+
+            virhe.description;
     }
   //var e = document.getElementById("havaintojaksovalikko");
   //var strUser = e.options[e.selectedIndex].value;
@@ -696,30 +697,27 @@ function vaihda_havjaks(new_id, havjaks_idname){
  * @returns {undefined}
  */
 function nayta_havjakstiedot(xml){
-    var ilmoitus = "";
-    var ilmoituselem =
-        xml.getElementsByTagName("ilmoitus")[0].childNodes[0];
-    if(ilmoituselem){
-        ilmoitus = ilmoituselem.nodeValue;
-    }
-    
-    var onnistuminen = "";
-    var onnistuminenelem =
-        xml.getElementsByTagName("onnistuminen")[0].childNodes[0];
-    if(onnistuminenelem){
-        onnistuminen = onnistuminenelem.nodeValue;
-    }
-    
-    var ylaluokka_id =
-        xml.getElementsByTagName("ylaluokka_id")[0].childNodes[0].nodeValue;
-    
-    nayta_viesti(ilmoitus);
-    
-    if(onnistuminen){
-        // laatikot pois:
-        sulje_ruutu2("nimikuvauslaatikko");
+  //alert("xml="+xml);
+  var nimet = ["nimi", "kommentti", "alkuh", "alkukk", "alkumin",
+          "alkupaiva", "alkuvuosi", "kestoh", "kestovrk", "kestomin"];
 
-        // Haetaan lajinäkymä uudelleen:
-        hae_lajiluokat(ylaluokka_id); 
+  var arvo, id, xmlElem_arvo, xmlElem_id;
+
+  for (var i=0; i < nimet.length; i++){
+    arvo = "";
+    id = "";
+    
+    xmlElem_id = xml.getElementsByTagName("id_"+nimet[i])[0].childNodes[0];
+    if(xmlElem_id){
+        id = xmlElem_id.nodeValue;
     }
+    
+    xmlElem_arvo = xml.getElementsByTagName(nimet[i])[0].childNodes[0];
+    if(xmlElem_arvo){
+        arvo = xmlElem_arvo.nodeValue;
+   
+    }
+    
+    document.getElementById(id).value = arvo;
+  }
 }
