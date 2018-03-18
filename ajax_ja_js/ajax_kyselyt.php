@@ -96,6 +96,8 @@ else    // Jos tunnistus on kunnossa.
         require_once('../bongaus/havainnot/Havainto.php');
         require_once('../bongaus/havainnot/Havaintokontrolleri.php');
         require_once('../bongaus/havainnot/Havaintonakymat.php');
+        require_once('../bongaus/havainnot/Havaintojakso.php');
+        require_once('../bongaus/havainnot/Havaintojaksolinkki.php');
         require_once('../bongaus/havainnot/Lisaluokitus.php');
         require_once('../bongaus/lajiluokat/Lajiluokka.php');
         require_once('../bongaus/lajiluokat/Kuvaus.php');
@@ -554,19 +556,17 @@ else    // Jos tunnistus on kunnossa.
             $onUusi = false;
             
             if($havjakso->olio_loytyi_tietokannasta){
-                $alkusek = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
-                $kestomintotal = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_KESTO_MIN);
                 
-                $nimi = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $kommentti = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_KOMMENTTI);
-                $alkuvuosi = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
-                $alkukk = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $alkupaiva = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $alkuh = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $alkumin = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $kestovrk = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $kestoh = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
-                $kestomin = $havjakso->get_arvo(Havaintojakso::$SARAKENIMI_NIMI);
+                $nimi = $havjakso->get_nimi();
+                $kommentti = $havjakso->get_kommentti();
+                $alkuvuosi = $havjakso->get_alkuvuosi();
+                $alkukk = $havjakso->get_alkukk();
+                $alkupaiva = $havjakso->get_alkupaiva();
+                $alkuh = $havjakso->get_alkutunti();
+                $alkumin = $havjakso->get_alkumin();
+                $kestovrk = $havjakso->get_keston_vrk();
+                $kestoh = $havjakso->get_keston_h();
+                $kestomin = $havjakso->get_keston_min();
             } else{
                 $onUusi = true;
                 $nimi = "";
