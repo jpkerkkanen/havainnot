@@ -97,7 +97,7 @@ class Aika {
      * Returns min as integer.
      * @return int
      */
-    function getminAsInt(){
+    function getMinutesAsInt(){
         return intval($this->datetime->format("i"));
     }
     
@@ -105,7 +105,7 @@ class Aika {
      * Returns min as string.
      * @return string
      */
-    function getmin(){
+    function getMinutes(){
         return $this->datetime->format("i");
     }
     
@@ -113,7 +113,7 @@ class Aika {
      * Returns sec as integer.
      * @return type
      */
-    function getSecAsInt(){
+    function getSecondsAsInt(){
         return intval($this->datetime->format("s"));
     }
     
@@ -121,7 +121,7 @@ class Aika {
      * Returns sec as string.
      * @return string
      */
-    function getSec(){
+    function getSeconds(){
         return $this->datetime->format("s");
     }
     
