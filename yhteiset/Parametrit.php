@@ -167,6 +167,12 @@ class Parametrit {
     public $havainto_id_havjakslink;
     public $havaintojakso_id_havjakslink;
     
+    //==========================================================================
+    // Havaintopaikkamuuttujat:
+    public $havaintopaikka_id;
+    public $havaintopaikka_henkilo_id;
+    public $havaintopaikka_nimi;
+    public $havaintopaikka_selitys;
     
     /** 
      * Huom! Vältä tämän käyttöä entiteettiluokan id-tunnisteen kohdalla.
@@ -695,6 +701,29 @@ class Parametrit {
                 $_REQUEST[Havaintokontrolleri::$name_havaintojakso_id_havjakslink]: 
                 Parametrit::$EI_MAARITELTY;
         //================ Havaintojaksolinkkimuuttujat loppu ==================
+        // ============= Havaintopaikkamuuttujat alku: =========================
+        $this->havaintopaikka_id = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_id]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_id]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_henkilo_id = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_henkilo_id]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_henkilo_id]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_nimi = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_nimi]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_nimi]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_selitys = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_selitys]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_selitys]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_maa = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_maa]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_maa]: 
+                    Parametrit::$EI_MAARITELTY;
+        
+        // ============= Havaintopaikkamuuttujat alku: =========================
         
     }
     // Setterit ja getterit (osa vähän turhia..):
