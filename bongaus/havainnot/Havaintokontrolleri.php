@@ -69,6 +69,13 @@ class Havaintokontrolleri extends Kontrolleripohja{
     public static $name_havainto_id_havjakslink= "havainto_id_havjakslink";
     public static $name_havaintojakso_id_havjakslink= "havaintojakso_id_havjakslink";
     
+    // Name-arvot liittyen havaintopaikkoihin:
+    public static $name_havaintopaikka_id = "id_havpaikka";
+    public static $name_havaintopaikka_henkilo_id = "id_henkilo_havpaikka";
+    public static $name_havaintopaikka_paikannimi = "nimi_havpaikka";
+    public static $name_havaintopaikka_selitys = "selitys_havpaikka";
+    public static $name_havaintopaikka_maa = "maa_havpaikka";
+    
     //=========================================================================
     
     /**
