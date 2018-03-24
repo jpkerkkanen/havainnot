@@ -6,7 +6,7 @@
  */
 class Bongauspainikkeet{
 
-    // Havainnot (toiminnot): Ääkköset aiheuttaa ongelmia painikkeissa!
+    // Havainnot (toiminnot)
     public static $NAYTA_MONEN_HAVAINNON_VALINTA_VALUE = 
             "Lisää monta kerralla";
     public static $NAYTA_MONEN_HAVAINNON_VALINTA_TITLE = 
@@ -198,8 +198,12 @@ class Bongaustekstit{
     public static $havtaul_lisaluok_tornien_taisto = "TORNIENTAISTO";
     public static $havtaul_lisaluok_vesilla = "VESILL&Auml;";
     //=========================================================================
+    public static $havaintopaikkavalikko_otsikko = "Havaintopaikka";
     
+    //=========================================================================
     public static $otsikko1_bongaussivu1 = "Bong!";
+    
+    
     
     public static $otsikko1_tilastot_puolivuotis = 
             "Havaittujen lajien lukum&auml;&auml;r&auml; puolivuosittain. 
