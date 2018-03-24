@@ -1670,7 +1670,53 @@ class Havaintonakymat extends Nakymapohja{
         return $mj.Html::luo_script_js("nayta_nyk_pvm('');nayta_nyk_pvm(2);");
 
     }
+    /**
+     * Luo havaintopaikkavalikon html-koodin. Parametrina annetaan valittu
+     * vaihtoehto.
+     * @param type $valittu
+     * @param type $henk_id
+     * @return string
+     */
+    function luo_havaintopaikkavalikko($valittu, $henk_id){
+        
+        $valikkohtml = "";
+
+        try{
+            $paikat = 
+                Havaintopaikka::hae_omat_paikat($this->tietokantaolio, $henk_id);
+            $arvot = Havaintopaikka::hae_paikkojen_idt($paikat);
+            $nimet = Havaintopaikka::hae_paikkojen_valikkonimet($paikat);
+            
+            $oletusvalinta_arvo = $valittu;
+            $otsikko = Bongaustekstit::$havaintopaikkavalikko_otsikko;
+            
+            $select_maaritteet = array(
+                Maarite::classs("havaintopaikkavalikko"),
+                Maarite::id("havaintopaikkavalikkoid"),
+                Maarite::name(Havaintokontrolleri::$name_havaintopaikka_id)
+            );
+            $option_maaritteet = array();
+            
+            $valikkohtml .= Html::luo_pudotusvalikko_uusi(
+                $arvot,
+                $nimet,
+                $select_maaritteet,
+                $option_maaritteet,
+                $oletusvalinta_arvo,
+                $otsikko);
+        }
+        catch(Exception $poikkeus){
+            $valikkohtml =  "Virhe havaintopaikkavalikossa! (".
+                $poikkeus->getMessage().")";
+        }
+        return $valikkohtml;
+    }
     
+    /**
+     * Luo havaintojaksovalikon html-koodin.
+     * @param type $valittu
+     * @return string
+     */
     function luo_havaintojaksovalikko($valittu){
         
         $valikkohtml = "";
