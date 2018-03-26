@@ -26,9 +26,9 @@
  *
  * @author J-P
  */
-class Havaintopaikka {
+class Havaintopaikka extends Malliluokkapohja{
     public static $SARAKENIMI_HENKILO_ID= "henkilo_id";
-    public static $SARAKENIMI_NIMI= "nimi";
+    public static $SARAKENIMI_NIMI= "paikannimi";
     public static $SARAKENIMI_SELITYS= "selitys";
     public static $SARAKENIMI_MAA= "maa";
     
@@ -65,9 +65,9 @@ class Havaintopaikka {
      * @param Tietokantaolio $tietokantaolio
      * @param int $id_henk Käyttäjän id
      */
-    public static function hae_omat_paikat($tietokantaolio, $id_henk){
-        
-        $id_henk = $in_henk+0;  // Muutos integeriksi varmuuden vuoksi.
+    public static function hae_omat_paikat($tietokantaolio, $id_henk_para){
+
+        $id_henk = $id_henk_para+0;  // Muutos integeriksi varmuuden vuoksi.
         
         if(is_int($id_henk) && $id_henk > 0){
             
