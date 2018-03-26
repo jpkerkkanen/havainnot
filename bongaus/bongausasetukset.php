@@ -157,6 +157,12 @@ class Bongauspainikkeet{
     public static $NAYTA_ESIKATSELUKUVAT_TITLE = "Avaa albumin esikatselukuvat";
     public static $KAYNNISTA_DIAESITYS_TITLE = 
                 "Käynnistää automaattisen kuvaesityksen";
+    
+    // Vakihavaintopaikat;
+    public static $vakipaikka_luo_uusi_value = "Luo uusi";
+    public static $vakipaikka_luo_uusi_title = 
+            "Luo uusi vakipaikka, jos käyt siellä toistuvasti";
+    
 
     // YLEISET:
     public static $KIRJAUDU_ULOS_VALUE = "Kirjaudu ulos";
@@ -369,6 +375,7 @@ class Bongaustekstit{
     public static $havaintolomake_kk = "Kuukausi";
     public static $havaintolomake_paiva = "P&auml;iv&auml;";
     public static $havaintolomake_paikka = "Paikka";
+    public static $havaintolomake_vakipaikka = "Vakipaikka";
     public static $havaintolomake_kommentti = "Kommentti";
     public static $havaintolomake_henkilo_id = "Henkil&ouml;n id";
     public static $havaintolomake_maa = "Maa";
@@ -724,6 +731,9 @@ class Bongausasetuksia{
     public static $havaintolomake_lajivalintaohje_id = "lajivalintaohje";
     public static $havaintolomake_lajivalikko_id = "lajivalikko";
     public static $havaintolomake_lajivalikkopainike_id = "lajivalikkopainike";
+    public static $havaintolomake_vakipaikkavalikko_id = "paikkavalikko";
+    public static $havaintolomake_vakipaikkavalikkopainike_id = 
+            "paikkavalikkopainike";
     public static $havaintolomake_tallennustiedote_id = "tallennustiedote";
     
     public static $lajiluokkalomakkeen_id = "tietolomake_rajaton";
