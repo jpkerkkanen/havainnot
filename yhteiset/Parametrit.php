@@ -711,8 +711,8 @@ class Parametrit {
                     $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_henkilo_id]: 
                     Parametrit::$EI_MAARITELTY;
         $this->havaintopaikka_nimi = 
-            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_nimi]) ? 
-                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_nimi]: 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_paikannimi]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_paikannimi]: 
                     Parametrit::$EI_MAARITELTY;
         $this->havaintopaikka_selitys = 
             isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_selitys]) ? 
