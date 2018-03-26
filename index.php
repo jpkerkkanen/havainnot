@@ -52,6 +52,7 @@ require_once('bongaus/havainnot/Havainto.php');
 require_once('bongaus/havainnot/Havaintokontrolleri.php');
 require_once('bongaus/havainnot/Havaintonakymat.php');
 require_once('bongaus/havainnot/Havaintojakso.php');
+require_once('bongaus/havainnot/Havaintopaikka.php');
 require_once('bongaus/havainnot/Havaintojaksolinkki.php');
 require_once('bongaus/havainnot/Lisaluokitus.php');
 require_once('bongaus/lajiluokat/Lajiluokka.php');
