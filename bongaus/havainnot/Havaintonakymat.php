@@ -1688,7 +1688,8 @@ class Havaintonakymat extends Nakymapohja{
             $nimet = Havaintopaikka::hae_paikkojen_valikkonimet($paikat);
             
             $oletusvalinta_arvo = $valittu;
-            $otsikko = Bongaustekstit::$havaintopaikkavalikko_otsikko;
+            // $otsikko = Bongaustekstit::$havaintopaikkavalikko_otsikko;
+            $otsikko = "";
             
             $select_maaritteet = array(
                 Maarite::classs("havaintopaikkavalikko"),
@@ -2274,6 +2275,34 @@ class Havaintonakymat extends Nakymapohja{
 
                     $maar_array);   // taulukkorivi 
         
+        // rivi5_1: Vakipaikkavalinta 
+        $paikkavalikko = 
+            $this->luo_havaintopaikkavalikko("ekavaan", $this->parametriolio->get_omaid());
+        $uusi_paikka_nappi = $this->luo_havaintopaikka_uusipainike();
+        $rivi5_1 =
+                Html::luo_tablerivi(
+                    Html::luo_tablesolu(
+                        Html::luo_label_for("lisaa_myohemmin", 
+                            Bongaustekstit::$havaintolomake_vakipaikka.": ", ""),
+                        array(Maarite::align("left"))). // solu
+
+                    Html::luo_tablesolu(
+                        Html::luo_span($paikkavalikko, 
+                            array(Maarite::id(Bongausasetuksia::
+                                    $havaintolomake_vakipaikkavalikko_id))).   //span
+
+                        Html::luo_span($uusi_paikka_nappi, 
+                            array(Maarite::id(Bongausasetuksia::
+                                    $havaintolomake_vakipaikkavalikkopainike_id))).   //span
+
+                        Html::luo_span("", 
+                            array(Maarite::id(Bongausasetuksia::$havaintolomake_lajivalintaohje_id))),   //span
+
+                        array(Maarite::align("left"),
+                            Maarite::id(Bongausasetuksia::
+                                $havaintolomake_lajivalintarivi_id))), // solu   
+
+                    $maar_array);   // taulukkorivi 
 
 
         // rivi6: Paikka ja maa:
@@ -2368,7 +2397,7 @@ class Havaintonakymat extends Nakymapohja{
         // Rivit taulukon sisään:
         $taulukko = 
             Html::luo_table(
-                $rivi1.$rivi2.$rivi3.$rivi4.$rivi5.$rivi6.$rivi7.$rivi8.$rivi8_2.$rivi9, 
+                $rivi1.$rivi2.$rivi3.$rivi4.$rivi5.$rivi5_1.$rivi6.$rivi7.$rivi8.$rivi8_2.$rivi9, 
                 array(Maarite::summary("uudet_tiedot")));
 
 
@@ -2520,5 +2549,18 @@ class Havaintonakymat extends Nakymapohja{
        
        return $lomake;
    }
+
+    public function luo_havaintopaikka_uusipainike() {
+        $painike = 
+            Html::luo_button(Bongauspainikkeet::
+                                $vakipaikka_luo_uusi_value,
+                array(
+                    Maarite::classs("rinnakkain"),
+                    Maarite::value(Bongauspainikkeet::
+                                $vakipaikka_luo_uusi_title),
+                    Maarite::onclick("luo_uusi_paikka", array())));
+        return $painike;
+    }
+
 }
 ?>
