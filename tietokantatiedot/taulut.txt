@@ -313,10 +313,10 @@ create table havaintopaikat
   henkilo_id            int default -1 not null,
   paikannimi            varchar(30) not null,
   selitys               varchar(200) not null,
-  maa                   int not null,
+  maa_id                int not null,
   primary key (id),
   index(henkilo_id),
-  index(maa),
+  index(maa_id),
   FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
                       ON DELETE CASCADE
 ) ENGINE=INNODB;

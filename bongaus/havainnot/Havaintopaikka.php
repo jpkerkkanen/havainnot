@@ -23,6 +23,8 @@
  * lisäluokitusten ongelma on se, että vaikkapa kotipiha voi muuttua, eikä
  * tieto siitä jää talteen. Omien paikkojen avulla päästään eroon tästä
  * ongelmasta.
+ * 
+ * Henkilö_id
  *
  * @author J-P
  */
@@ -30,7 +32,7 @@ class Havaintopaikka extends Malliluokkapohja{
     public static $SARAKENIMI_HENKILO_ID= "henkilo_id";
     public static $SARAKENIMI_NIMI= "paikannimi";
     public static $SARAKENIMI_SELITYS= "selitys";
-    public static $SARAKENIMI_MAA= "maa";
+    public static $SARAKENIMI_MAA_ID= "maa_id";
     
     public static $taulunimi = "havaintopaikat";
     
@@ -49,13 +51,12 @@ class Havaintopaikka extends Malliluokkapohja{
                                                     Tietokantasolu::$mj_tyhja_EI_ok), 
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_SELITYS, 
                                                     Tietokantasolu::$mj_tyhja_ok),
-                new Tietokantasolu(Havaintopaikka::$SARAKENIMI_MAA, 
+                new Tietokantasolu(Havaintopaikka::$SARAKENIMI_MAA_ID, 
                                                     Tietokantasolu::$luku_int));
         
         $taulunimi = Havaintopaikka::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
-        
-        $this->poistetut_pikakommentit_lkm = 0;
+       
     }
     
     /**
@@ -69,6 +70,8 @@ class Havaintopaikka extends Malliluokkapohja{
 
         $id_henk = $id_henk_para+0;  // Muutos integeriksi varmuuden vuoksi.
         
+        $oliot = array();   // Tämä sisältää Havaintopaikka-luokan oliot.
+        
         if(is_int($id_henk) && $id_henk > 0){
             
             $hakulause = "SELECT ".Havaintopaikka::$SARAKENIMI_ID.
@@ -78,8 +81,6 @@ class Havaintopaikka extends Malliluokkapohja{
         
             $tulostaulu = 
                 $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
-
-            $oliot = array();   // Tämä sisältää Havaintojakso-luokan oliot.
 
             if(!empty($tulostaulu)){
                 foreach ($tulostaulu as $tk_olio) {
