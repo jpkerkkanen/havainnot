@@ -420,7 +420,7 @@ abstract class Malliluokkapohja extends Pohja{
             if($tallennuspalaute === Tietokantaolio::$HAKU_ONNISTUI){
 
                 // Otetaan ylös tallennetun id:
-                $uuden_id = $this->tietokantaolio->get_insert_id;
+                $uuden_id = $this->tietokantaolio->get_insert_id();
                 $this->set_id($uuden_id);
                 $this->set_id_tietokanta($uuden_id);
                 $this->olio_loytyi_tietokannasta = true;
@@ -552,7 +552,7 @@ abstract class Malliluokkapohja extends Pohja{
                                 $malliluokkapohja_virheilm_muutostallennuksen_tietokantavirhe.
                             //$this->tietokantaolio->tulosta_virheilmoitukset().
                             $this->tietokantarivi->toString());
-echo $this->tietokantaolio->tulosta_virheilmoitukset();
+//echo $this->tietokantaolio->tulosta_virheilmoitukset();
                     }
                 }
                 else{

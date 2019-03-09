@@ -57,19 +57,19 @@ class Havaintojakso extends Malliluokkapohja {
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
             array(new Tietokantasolu(Havaintojakso::$SARAKENIMI_ID, 
-                                                    Tietokantasolu::$luku_int),  
+                                                    Tietokantasolu::$luku_int, $tietokantaolio),  
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_HENKILO_ID, 
-                                                    Tietokantasolu::$luku_int), 
+                                                    Tietokantasolu::$luku_int, $tietokantaolio), 
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK, 
-                                                    Tietokantasolu::$luku_int), 
+                                                    Tietokantasolu::$luku_int, $tietokantaolio), 
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_KESTO_MIN,
-                                                    Tietokantasolu::$luku_int), 
+                                                    Tietokantasolu::$luku_int, $tietokantaolio), 
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_NIMI, 
-                                                    Tietokantasolu::$mj_tyhja_EI_ok), 
+                                                    Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_KOMMENTTI, 
-                                                    Tietokantasolu::$mj_tyhja_ok), 
+                                                    Tietokantasolu::$mj_tyhja_ok, $tietokantaolio), 
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_NAKYVYYS, 
-                                                    Tietokantasolu::$luku_int));
+                                                    Tietokantasolu::$luku_int, $tietokantaolio));
         
         $taulunimi = Havaintojakso::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
@@ -245,7 +245,7 @@ class Havaintojakso extends Malliluokkapohja {
         return $nimitaulu;
     }
     /**
-     * Luo Havintojaksolinkki-luokan
+     * Luo Havintojaksolinkki-luokan olion, jolloin havainto liittyy jaksoon.
      * Hyödyntää Havainto-luokan metodia, jottei samaa tehdä moneen kertaa.
      * Varmistaa ensin, ettei samaa havaintoa jo merkitty tapahtumaan. 
      * 

@@ -661,10 +661,12 @@ class Parametrit {
             isset($_REQUEST[Havaintokontrolleri::$name_kesto_min_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_kesto_min_havjaks]: 
                 Parametrit::$EI_MAARITELTY;
-        $this->kesto_h_havjaks_havjaks =
+        
+        $this->kesto_h_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_kesto_h_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_kesto_h_havjaks]: 
                 Parametrit::$EI_MAARITELTY;
+        
         $this->kesto_vrk_havjaks =
             isset($_REQUEST[Havaintokontrolleri::$name_kesto_vrk_havjaks]) ? 
                 $_REQUEST[Havaintokontrolleri::$name_kesto_vrk_havjaks]: 

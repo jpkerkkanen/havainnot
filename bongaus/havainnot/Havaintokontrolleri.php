@@ -1023,7 +1023,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $uusi->set_paikka($parametriolio->paikka_hav);
         
         // Ellei kommenttia määritelty, tallennetaan tyhjä merkkijono:
-        if($parametriolio->kommentti_hav+0 === Parametrit::$EI_MAARITELTY){
+        if($parametriolio->kommentti_hav === Parametrit::$EI_MAARITELTY){
             $parametriolio->kommentti_hav = "";
         }
         
@@ -1072,7 +1072,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $kk = $param->alkuaika_kk_havjaks;
             $paiva = $param->alkuaika_paiva_havjaks;
             $h = $param->alkuaika_h_havjaks;
-            if($h == "" || $h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
+            if($h === "" || $h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
             $min = $param->alkuaika_min_havjaks;
             if($min == "" ||$min < 0){ $min = 0;}
             
@@ -1127,6 +1127,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             
             if($palaute === Havaintojakso::$OPERAATIO_ONNISTUI){
                 $param->id_havjaks = $uusi->get_id();
+
             } else{
                 $palautusarvo = Havaintojakso::$VIRHE;
                 $this->lisaa_virheilmoitus($uusi->tulosta_kaikki_ilmoitukset());

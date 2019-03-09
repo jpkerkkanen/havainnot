@@ -1,5 +1,8 @@
 /*
 Nämä ovat www.havainnot.net-sivustolla käytettäviä mysql-tauluja.
+
+Muutokset 3/2019:
+-lisätty taulu havaintojaksolinkit
 */
 
 /*
@@ -184,9 +187,12 @@ viiden minuutin tarkkailu, tornien taisto tai viikon matka. Voi sisältää
 eri henkilöiden havaintoja eri lajiluokista.
 
 Jos henkilön poistaa, ei jaksoja kannata poistaa, koska ne voivat olla 
-yhteisiä. Jaksoon kyllä jää merkintä sen luojasta, joka etupäässä voi
+yhteisiä (vai onko järkeä, eri ihmiset näkee eri lintuja kuitenkin)?? 
+Jaksoon kyllä jää merkintä sen luojasta, joka etupäässä voi
 muokata jakson tietoja. Pitää miettiä, voisiko oikeudet näppärästi anttaa
 esim. kaikille, joiden havaintoja jaksossa on (aika loogista).
+Ehkä kuitenkin monimuokkaus johtaa katastrofiin.. Voi olla helpoin niin, että
+jaksot ovat henkilökohtaisia, mutta niitä voi kopioida itselle.
 
 Kaikki havainnot liittyvät havaintotapahtumaan tästedes. 
 */
@@ -207,10 +213,12 @@ create table havaintojaksot
 
 ) ENGINE=INNODB;    /* Vaaditaan, jotta viite-eheys-rajoitteet toimivat */
 
-/* Havaintojaksolinkit yhdistävät havaintojaksot havaintoihin, jolloin
+/* LISÄTTY 3/2019: 
+Havaintojaksolinkit yhdistävät havaintojaksot havaintoihin, jolloin
 yksi havainto voi kuulua useampaan jaksoon. Jos havaintojakso hävitetään,
 häviää havaintojaksolinkitkin, jotka liittyvät kyseiseen havaintojaksoon.
 Samoin jos hvainto poistetaan, poistetaan myös havaintojaksolinkit.*/
+
 create table havaintojaksolinkit
 (
   id                    int auto_increment not null,

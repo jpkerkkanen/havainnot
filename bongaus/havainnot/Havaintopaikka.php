@@ -44,15 +44,15 @@ class Havaintopaikka extends Malliluokkapohja{
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
             array(new Tietokantasolu(Havaintopaikka::$SARAKENIMI_ID, 
-                                                    Tietokantasolu::$luku_int),  
+                                                    Tietokantasolu::$luku_int, $tietokantaolio),  
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_HENKILO_ID, 
-                                                    Tietokantasolu::$luku_int),  
+                                                    Tietokantasolu::$luku_int, $tietokantaolio),  
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_NIMI, 
-                                                    Tietokantasolu::$mj_tyhja_EI_ok), 
+                                                    Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_SELITYS, 
-                                                    Tietokantasolu::$mj_tyhja_ok),
+                                                    Tietokantasolu::$mj_tyhja_ok, $tietokantaolio),
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_MAA_ID, 
-                                                    Tietokantasolu::$luku_int));
+                                                    Tietokantasolu::$luku_int, $tietokantaolio));
         
         $taulunimi = Havaintopaikka::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

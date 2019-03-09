@@ -975,7 +975,7 @@ class Bongaustunnisteet{
  */
 class Lisaluokitus_asetukset extends Asetuspohja{
     // Mahdolliset arvot:
-    public static $piha = 1; 
+    public static $piha = 1;    // Deprecated: korvattu vakipaikoilla!
     public static $vesilla = 2; 
     public static $tornien_taisto = 3; 
     public static $ekopinna = 4; //
@@ -985,9 +985,6 @@ class Lisaluokitus_asetukset extends Asetuspohja{
     
     function __construct() {
         parent::__construct(array(
-            new Asetus(Bongaustekstit::$aset_lisaluokitus_piha_nimi, 
-                        Lisaluokitus_asetukset::$piha, 
-                        Bongaustekstit::$aset_lisaluokitus_piha_selitys),
             new Asetus(Bongaustekstit::$aset_lisaluokitus_ekopinna_nimi, 
                         Lisaluokitus_asetukset::$ekopinna, 
                         Bongaustekstit::$aset_lisaluokitus_ekopinna_selitys),
