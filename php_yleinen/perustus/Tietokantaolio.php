@@ -343,105 +343,7 @@ class Tietokantaolio extends Pohja
         }
     }
 
-    /************************FUNCTION TEE_WHEREHAKU_1_(ylhäältä_alas) *********/
-    /**
-     * Tämä metodi suorittaa haun, jossa haetaan tietokantataulun koko rivejä
-     * yhden ehtolauseen avulla. Rivit järjestetään halutun sarakkeen mukaan
-     * ylhäältä alaspäin.
-     *
-     * @param <type> $taulu taulun nimi
-     * @param <type> $taulun_sarake sarakkeen nimi
-     * @param <type> $hakuarvo sarakkeesta haettava arvo
-     * @param <type> $jarjestyssarake sarake, jonka mukaan rivit järjestetään.
-     * @return <type> palauttaa haun tuloksen eli function "mysql_query()"-
-     * palautusarvon, joka on tulosrivitaulukko tai false.
-     *
-    public function tee_WHEREhaku_1_jarjestaen($taulu,
-                                                $taulun_sarake,
-                                                $hakuarvo,
-                                                $jarjestyssarake)
-    {
-        if($this->dbtyyppi == 'mysql')
-        {
-            $hakulause = "SELECT * FROM $taulu
-                            WHERE $taulun_sarake='$hakuarvo'
-                            ORDER BY $jarjestyssarake DESC";
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
-        }
-    }
-
-    /************hae_SELECT_WHERE_1ehto($taulu, $taulun_sarake, $hakuarvo) *****/
-    /**
-     * Tämä metodi etsii taulunimen, sarakenimen ja -arvon (parametrit)
-     * mukaisen haun. Kuten tee_WHEREhaku_1($taulu, $taulun_sarake, $hakuarvo),
-     * mutta hakee osumat olioina ja palauttaa oliotaulukon, joka voi olla tyhjä.
-     *
-     * @param <type> $taulu
-     * @param <type> $taulun_sarake
-     * @param <type> $hakuarvo
-     * @return <type> palauttaa aina taulukon, joka on tyhjä, jos
-     * jokin menee pieleen. Muuten taulukko sisältää tietokantaosumat olioina.
-     *
-    function hae_SELECT_WHERE_1ehto($taulu, $taulun_sarake, $hakuarvo)
-    {
-        $palaute = array();
-
-        if($this->dbtyyppi == 'mysql')
-        {
-            //FALSE on failure:
-            $tulos = $this->tee_WHEREhaku_1($taulu, $taulun_sarake, $hakuarvo);
-            
-            if($tulos != false){
-                $palaute = $this->hae_osumarivit_olioina($tulos);
-            }
-        }
-
-        return $palaute;
-    }
-
-    /************************FUNCTION TEE_WHEREHAKU_2 ********************************/
-    /**
-     * Tämä metodi suorittaa haun, jossa haetaan tietokantataulun koko rivejä
-     * kahden ehtolauseen avulla.
-     *
-     * @param <type> $taulu taulun nimi
-     * @param <type> $sarake1 ekan sarakkeen nimi
-     * @param <type> $sarake1 tokan sarakkeen nimi
-     * @param <type> $arvo1 1. sarakkeesta haettava arvo
-     * @param <type> $arvo2 2. sarakkeesta haettava arvo
-     * @return <type> palauttaa haun tuloksen eli function "mysql_query()"-
-     * palautusarvon.
-     *
-    function tee_WHEREhaku_2($taulu, $sarake1, $sarake2, $arvo1, $arvo2)
-    {
-        if($this->dbtyyppi == 'mysql')
-        {
-            $hakulause = "SELECT * FROM $taulu
-                            WHERE $sarake1='$arvo1'
-                            AND $sarake2='$arvo2'";
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
-        }
-    }
-
-    /************************FUNCTION TEE_OMAhaku ********************************/
-    /**
-     * Tämä metodi suorittaa parametrina saatavan hakulauseen mukaisen haun.
-     * kahden ehtolauseen avulla.
-     *
-     * @param <type> $hakulause mysql-lause, jolla haku tehdään.
-     * @return <type> palauttaa haun tuloksen eli function "mysql_query()"-
-     * palautusarvon, tai 'false', jos jokin menee pieleen.
-     *
-    function tee_OMAhaku($hakulause)
-    {
-        if($this->dbtyyppi == 'mysql')
-        {
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
-        }
-    }
+    
 
     /************************FUNCTION TEE_OMAhaku_oliotaulukkopalautteella *****/
     /**
@@ -494,30 +396,6 @@ class Tietokantaolio extends Pohja
         return $palaute;
     }
 
-    /**
-     * Hakee haun tuloksesta eli function "mysql_query()" palautusarvosta sen
-     * sisältämät rivit.
-     * @param <type> $hakutulos function "mysql_query()" palautusarvosta
-     * @return int palauttaa aina luvun, joka on nolla myös, jos $hakutulos
-     * ei ole määritelty tai on arvoltaan false. Muuten palauttaa osumarivien
-     * lukumäärän.
-     *
-    function hae_osumarivien_lkm($hakutulos)
-    {
-        $palaute = 0;
-        if($this->dbtyyppi == 'mysql')
-        {
-            if (isset($hakutulos) || $hakutulos != false)
-            {
-                $palaute = mysql_num_rows($hakutulos);
-                if ($palaute == false)
-                {
-                    $palaute = 0;
-                }
-            }
-        }
-        return $palaute;
-    }
 
     /**
      * Escapes the string used in an SQL-query. Takes into account the

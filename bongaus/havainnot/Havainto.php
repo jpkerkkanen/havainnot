@@ -73,20 +73,20 @@ class Havainto extends Malliluokkapohja {
      */
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
-            array(new Tietokantasolu(Havainto::$SARAKENIMI_ID, Tietokantasolu::$luku_int),  
-                new Tietokantasolu(Havainto::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_LAJILUOKKA_ID, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_VUOSI, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_KK,Tietokantasolu::$luku_int), 
+            array(new Tietokantasolu(Havainto::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio),  
+                new Tietokantasolu(Havainto::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_LAJILUOKKA_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_VUOSI, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_KK,Tietokantasolu::$luku_int, $tietokantaolio), 
                 
-                new Tietokantasolu(Havainto::$SARAKENIMI_PAIVA, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_PAIKKA, Tietokantasolu::$mj_tyhja_EI_ok), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_ok), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_MAA, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_VARMUUS, Tietokantasolu::$luku_int), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_PAIVA, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_PAIKKA, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_ok, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_MAA, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_VARMUUS, Tietokantasolu::$luku_int, $tietokantaolio), 
                 
-                new Tietokantasolu(Havainto::$SARAKENIMI_SUKUPUOLI, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_LKM, Tietokantasolu::$luku_int));
+                new Tietokantasolu(Havainto::$SARAKENIMI_SUKUPUOLI, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_LKM, Tietokantasolu::$luku_int, $tietokantaolio));
         
         $taulunimi = Havainto::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

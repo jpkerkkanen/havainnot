@@ -37,12 +37,14 @@ class Tietokantasolu {
     
     private $on_muokattu;   // Tämän avulla tiedetään, onko solua muutettu.
     
+    private $tietokantaolio;    //  Tarvitaan funktiota escape_real_string varten.
+    
     // Arvotyypit;
     public static $luku_int = 1;
     public static $mj_tyhja_ok = 2;
     public static $mj_tyhja_EI_ok = 3;
             
-    function __construct($sarakenimi, $arvon_tyyppi){
+    function __construct($sarakenimi, $arvon_tyyppi, $tietokantaolio){
         
         $this->arvo = Pohja::$MUUTTUJAA_EI_MAARITELTY;
         $this->sarakenimi = Pohja::$MUUTTUJAA_EI_MAARITELTY;
@@ -65,6 +67,7 @@ class Tietokantasolu {
             
             
         }
+        $this->tietokantaolio = $tietokantaolio;
     }
     
     /**
@@ -157,7 +160,7 @@ class Tietokantasolu {
             // rakentajan parametri on niille turha..
             if($this->arvon_tyyppi === Tietokantasolu::$luku_int){
                 if(is_numeric($uusi)){
-                    $this->arvo = mysql_real_escape_string(trim($uusi));
+                    $this->arvo = $this->tietokantaolio->real_escape_string(trim($uusi));
                     $this->tiedot_ok = true;
                 }
                 else{
@@ -170,7 +173,7 @@ class Tietokantasolu {
                     ($this->arvon_tyyppi === Tietokantasolu::$mj_tyhja_ok)){
                     
                     if(is_string($uusi)){
-                        $this->arvo = mysql_real_escape_string(trim($uusi));
+                        $this->arvo = $this->tietokantaolio->real_escape_string(trim($uusi));
 
                         // Tarkistetaan tyhjyys tarvittaessa:
                         if(($this->arvon_tyyppi === Tietokantasolu::$mj_tyhja_EI_ok) && 
