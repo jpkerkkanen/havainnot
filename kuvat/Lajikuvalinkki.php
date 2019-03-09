@@ -46,10 +46,10 @@ class Lajikuvalinkki extends Malliluokkapohja{
      */
     function __construct($id, $tietokantaolio) {
         $tietokantasolut = 
-            array(new Tietokantasolu(Lajikuvalinkki::$SARAKENIMI_ID, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Lajikuvalinkki::$sarakenimi_kuva_id, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Lajikuvalinkki::$sarakenimi_lajiluokka_id, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Lajikuvalinkki::$sarakenimi_jarjestysluku, Tietokantasolu::$luku_int));
+            array(new Tietokantasolu(Lajikuvalinkki::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Lajikuvalinkki::$sarakenimi_kuva_id, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Lajikuvalinkki::$sarakenimi_lajiluokka_id, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Lajikuvalinkki::$sarakenimi_jarjestysluku, Tietokantasolu::$luku_int,$tietokantaolio));
         
         $taulunimi = Lajikuvalinkki::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

@@ -64,23 +64,38 @@ class Henkilo extends Malliluokkapohja{
     function __construct($id, $tietokantaolio) {
         
         $tietokantasolut = 
-            array(new Tietokantasolu(Henkilo::$SARAKENIMI_ID, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Henkilo::$sarakenimi_etunimi, Tietokantasolu::$mj_tyhja_EI_ok), 
-                new Tietokantasolu(Henkilo::$sarakenimi_sukunimi, Tietokantasolu::$mj_tyhja_EI_ok), 
-                new Tietokantasolu(Henkilo::$sarakenimi_lempinimi, Tietokantasolu::$mj_tyhja_ok), 
-                new Tietokantasolu(Henkilo::$sarakenimi_kommentti, Tietokantasolu::$mj_tyhja_ok), 
+            array(new Tietokantasolu(Henkilo::$SARAKENIMI_ID, Tietokantasolu::$luku_int,
+                    $tietokantaolio), 
+                new Tietokantasolu(Henkilo::$sarakenimi_etunimi, Tietokantasolu::$mj_tyhja_EI_ok,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_sukunimi, Tietokantasolu::$mj_tyhja_EI_ok,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_lempinimi, Tietokantasolu::$mj_tyhja_ok,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_kommentti, Tietokantasolu::$mj_tyhja_ok,
+                    $tietokantaolio),  
                 
-                new Tietokantasolu(Henkilo::$sarakenimi_kayttajatunnus, Tietokantasolu::$mj_tyhja_EI_ok), 
-                new Tietokantasolu(Henkilo::$sarakenimi_salasana, Tietokantasolu::$mj_tyhja_EI_ok),       
-                new Tietokantasolu(Henkilo::$sarakenimi_eosoite, Tietokantasolu::$mj_tyhja_EI_ok), 
-                new Tietokantasolu(Henkilo::$sarakenimi_osoite, Tietokantasolu::$mj_tyhja_ok), 
-                new Tietokantasolu(Henkilo::$sarakenimi_puhelin, Tietokantasolu::$mj_tyhja_ok), 
+                new Tietokantasolu(Henkilo::$sarakenimi_kayttajatunnus, Tietokantasolu::$mj_tyhja_EI_ok,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_salasana, Tietokantasolu::$mj_tyhja_EI_ok,
+                    $tietokantaolio),        
+                new Tietokantasolu(Henkilo::$sarakenimi_eosoite, Tietokantasolu::$mj_tyhja_EI_ok,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_osoite, Tietokantasolu::$mj_tyhja_ok,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_puhelin, Tietokantasolu::$mj_tyhja_ok,
+                    $tietokantaolio),  
                 
-                new Tietokantasolu(Henkilo::$sarakenimi_online, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Henkilo::$sarakenimi_valtuudet, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Henkilo::$sarakenimi_poppoo_id, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Henkilo::$sarakenimi_asuinmaa, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Henkilo::$sarakenimi_kieli, Tietokantasolu::$luku_int));
+                new Tietokantasolu(Henkilo::$sarakenimi_online, Tietokantasolu::$luku_int,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_valtuudet, Tietokantasolu::$luku_int,
+                    $tietokantaolio),  
+                new Tietokantasolu(Henkilo::$sarakenimi_poppoo_id, Tietokantasolu::$luku_int,
+                    $tietokantaolio), 
+                new Tietokantasolu(Henkilo::$sarakenimi_asuinmaa, Tietokantasolu::$luku_int,
+                    $tietokantaolio), 
+                new Tietokantasolu(Henkilo::$sarakenimi_kieli, Tietokantasolu::$luku_int,
+                        $tietokantaolio));
         
         $taulunimi = Henkilo::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
@@ -547,8 +562,9 @@ class Henkilo extends Malliluokkapohja{
      * @param Tietokantaolio $tietokantaolio
      */
     static function tarkista_kirjautuminen($ktunnus, $salis, $tietokantaolio){
-        $ktunnuss = mysql_real_escape_string($ktunnus);
-        $saliss = mysql_real_escape_string($salis);
+ 
+        $ktunnuss = $tietokantaolio->real_escape_string($ktunnus);
+        $saliss = $tietokantaolio->real_escape_string($salis);
         
         $palaute = Henkilo::$EI_LOYTYNYT_TIETOKANNASTA;
         
@@ -557,10 +573,10 @@ class Henkilo extends Malliluokkapohja{
         
         $taulunimi = Henkilo::$taulunimi;
         $ehtosolu1 = new Tietokantasolu(Henkilo::$sarakenimi_kayttajatunnus, 
-                                            Tietokantasolu::$mj_tyhja_EI_ok); 
+                                            Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio); 
         $ehtosolu1->set_arvo_kevyt($ktunnuss);
         $ehtosolu2 = new Tietokantasolu(Henkilo::$sarakenimi_salasana, 
-                                            Tietokantasolu::$mj_tyhja_EI_ok); 
+                                            Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio); 
         $ehtosolu2->set_arvo_kevyt($saliss_koodattu);
         $ehtotietokantasolut = array($ehtosolu1,$ehtosolu2);
                                 

@@ -34,11 +34,11 @@ class Havaintojaksolinkki extends Malliluokkapohja {
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
             array(new Tietokantasolu(Havaintojaksolinkki::$SARAKENIMI_ID, 
-                                                    Tietokantasolu::$luku_int),  
+                                                    Tietokantasolu::$luku_int,$tietokantaolio),  
                 new Tietokantasolu(Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID, 
-                                                    Tietokantasolu::$luku_int), 
+                                                    Tietokantasolu::$luku_int,$tietokantaolio), 
                 new Tietokantasolu(Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID, 
-                                                    Tietokantasolu::$luku_int));
+                                                    Tietokantasolu::$luku_int,$tietokantaolio));
         
         $taulunimi = Havaintojaksolinkki::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

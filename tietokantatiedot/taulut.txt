@@ -17,7 +17,7 @@ create table poppoot
   id                    int auto_increment not null,
   nimi                  varchar(50) not null,
   luomispvm             date not null,
-  kommentti		varchar(1000),
+  kommentti             varchar(1000),
   kayttajatunnus        varchar(50) unique not null,
   maksimikoko           int not null default 10,
   primary key (id),
@@ -45,10 +45,10 @@ Muutos 7.5.2014: lisätty kieli.
 create table henkilot
 (
   id                    int auto_increment not null,
-  etunimi		varchar(50) not null,
-  sukunimi		varchar(50) not null,
-  lempinimi		varchar(50),
-  kommentti		varchar(1000),
+  etunimi               varchar(50) not null,
+  sukunimi              varchar(50) not null,
+  lempinimi             varchar(50),
+  kommentti             varchar(1000),
   kayttajatunnus        varchar(30) unique not null,
   salasana              varchar(50) not null,
   eosoite               varchar(50) not null,
@@ -70,12 +70,12 @@ create table henkilot
 create table pikakommentit
 (
   id                    int auto_increment not null,
-  henkilo_id		int not null,
+  henkilo_id            int not null,
   tallennushetki_sek    int not null,
   muokkaushetki_sek     int default -1,
   kohde_id              int not null,
   kohde_tyyppi          smallint not null,
-  kommentti		varchar(1000) not null,
+  kommentti             varchar(1000) not null,
   primary key (id),
   index(henkilo_id),
   index(tallennushetki_sek),
@@ -243,8 +243,8 @@ create table kuvat
 (
   id                    int auto_increment not null,
   henkilo_id            int not null,
-  kuvaotsikko		varchar(200),
-  kuvaselitys		varchar(5000),
+  kuvaotsikko           varchar(200),
+  kuvaselitys           varchar(5000),
   vuosi                 smallint default 0,
   kk                    tinyint default 0,
   paiva                 tinyint default 0,
@@ -330,22 +330,22 @@ INSERT INTO henkilot VALUES (null,'Jukka-Pekka (admin)','Kerkkanen','JP', 1975,1
 'jpkerkkanen@gmail.com','Osoite','Puhelin', false, 100,0);
 
 // Seuraavissa samat kiinteät id:t kuin kerkkässivustolla, jotta tietosiirrot helpompia.
-INSERT INTO henkilot VALUES (1,'Jukka-Pekka (tavis)','Kerkkanen','JP', 1975,10,19,
+INSERT INTO henkilot VALUES (1,'Jukka-Pekka (tavis)','Kerkkanen','JP',
 'Aika kiva kaveri','jp', 'fb3448f039272f0e40d4455c9349246b',
-'jpkerkkanen@gmail.com','Osoite','Puhelin', false, 10,1);
+'jpkerkkanen@gmail.com','Osoite','Puhelin', false, 10,1,1,1);
 
-INSERT INTO henkilot VALUES (2,'Viivi','Kerkkanen','Viivi', 1978,8,8,
+INSERT INTO henkilot VALUES (2,'Viivi','Kerkkanen','Viivi',
 'Huipputyyppi','viivi', 'fb3448f039272f0e40d4455c9349246b',
-'viivi.kerkkanen@gmail.com','Osoite','Puhelin', false, 10,1);
+'viivi.kerkkanen@gmail.com','Osoite','Puhelin', false, 10,1,1,1);
 
-INSERT INTO henkilot VALUES (4,'Kimmo','Kerkkanen','Piip', 1977,9,20,
+INSERT INTO henkilot VALUES (4,'Kimmo','Kerkkanen','Piip',
 'Piippiip','kimmo', 'fb3448f039272f0e40d4455c9349246b',
-'kimmo.kerkkanen@gmail.com','Osoite','Puhelin', false, 10,1);
+'kimmo.kerkkanen@gmail.com','Osoite','Puhelin', false, 10,1,1,1);
 
-/* Ei enää mahdollinen, koska id on jo käytössä!:*/
-INSERT INTO henkilot VALUES (6,'Ari','Kerkkanen','Piip', 1920,1,1,
+/* Ari:*/
+INSERT INTO henkilot VALUES (6,'Ari','Kerkkanen','Piip',
 'Piippiip','ari', 'fb3448f039272f0e40d4455c9349246b',
-'e-osoite','Osoite','Puhelin', false, 10,1);
+'e-osoite','Osoite','Puhelin', false, 10,1,1,1);
 
 HUOMAUTUS: yllä id:n voi tallentaa myös kiinteänä antamalla nullin sijaan arvon.
 Testasin ja toimi hyvin. Se voi auttaa esimerkiksi kun kopioit tietoja

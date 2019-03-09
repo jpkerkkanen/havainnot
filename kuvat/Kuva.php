@@ -121,22 +121,22 @@ class Kuva extends Malliluokkapohja{
      */
     function __construct($id, $tietokantaolio) {
         $tietokantasolut = 
-            array(new Tietokantasolu(Kuva::$SARAKENIMI_ID, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_KORKEUS, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_LEVEYS, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_KUVAOTSIKKO, Tietokantasolu::$mj_tyhja_ok),
+            array(new Tietokantasolu(Kuva::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_KORKEUS, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_LEVEYS, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_KUVAOTSIKKO, Tietokantasolu::$mj_tyhja_ok,$tietokantaolio),
                 
-                new Tietokantasolu(Kuva::$SARAKENIMI_KUVASELITYS, Tietokantasolu::$mj_tyhja_ok),
-                new Tietokantasolu(Kuva::$SARAKENIMI_PAIVA, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_KK,Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_VUOSI,Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_SRC,Tietokantasolu::$mj_tyhja_EI_ok),
+                new Tietokantasolu(Kuva::$SARAKENIMI_KUVASELITYS, Tietokantasolu::$mj_tyhja_ok,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_PAIVA, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_KK,Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_VUOSI,Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_SRC,Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio),
                 
-                new Tietokantasolu(Kuva::$SARAKENIMI_TALLENNUSHETKI_SEK, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_TIEDOSTOKOKO, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Kuva::$SARAKENIMI_TIEDOSTONIMI, Tietokantasolu::$mj_tyhja_EI_ok),
-                new Tietokantasolu(Kuva::$SARAKENIMI_TIEDOSTOTUNNUS, Tietokantasolu::$mj_tyhja_EI_ok));
+                new Tietokantasolu(Kuva::$SARAKENIMI_TALLENNUSHETKI_SEK, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_TIEDOSTOKOKO, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_TIEDOSTONIMI, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio),
+                new Tietokantasolu(Kuva::$SARAKENIMI_TIEDOSTOTUNNUS, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio));
         
         $taulunimi = Kuva::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

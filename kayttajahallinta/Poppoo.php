@@ -43,12 +43,12 @@ class Poppoo extends Malliluokkapohja{
     function __construct($id, $tietokantaolio) {
         
         $tietokantasolut = 
-            array(new Tietokantasolu(Poppoo::$SARAKENIMI_ID, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Poppoo::$sarakenimi_nimi, Tietokantasolu::$mj_tyhja_EI_ok),
-                new Tietokantasolu(Poppoo::$sarakenimi_luomispvm, Tietokantasolu::$mj_tyhja_EI_ok),
-                new Tietokantasolu(Poppoo::$sarakenimi_kommentti, Tietokantasolu::$mj_tyhja_ok),
-                new Tietokantasolu(Poppoo::$sarakenimi_kayttajatunnus, Tietokantasolu::$mj_tyhja_EI_ok),
-                new Tietokantasolu(Poppoo::$sarakenimi_maksimikoko, Tietokantasolu::$luku_int));
+            array(new Tietokantasolu(Poppoo::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Poppoo::$sarakenimi_nimi, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio),
+                new Tietokantasolu(Poppoo::$sarakenimi_luomispvm, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio),
+                new Tietokantasolu(Poppoo::$sarakenimi_kommentti, Tietokantasolu::$mj_tyhja_ok,$tietokantaolio),
+                new Tietokantasolu(Poppoo::$sarakenimi_kayttajatunnus, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio),
+                new Tietokantasolu(Poppoo::$sarakenimi_maksimikoko, Tietokantasolu::$luku_int,$tietokantaolio));
         
         $taulunimi = Poppoo::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
@@ -81,7 +81,8 @@ class Poppoo extends Malliluokkapohja{
             
             $taulunimi = Henkilo::$taulunimi;
             $ehtosolu1 = new Tietokantasolu(Henkilo::$sarakenimi_poppoo_id,  
-                                            Tietokantasolu::$luku_int);
+                                            Tietokantasolu::$luku_int,
+                                            $this->tietokantaolio);
             $ehtosolu1->set_arvo_kevyt($poppoo_id);
             $ehtotietokantasolut = array($ehtosolu1);
 
