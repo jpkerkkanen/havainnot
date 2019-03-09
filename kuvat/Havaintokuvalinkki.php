@@ -48,10 +48,10 @@ class Havaintokuvalinkki extends Malliluokkapohja{
      */
     function __construct($id, $tietokantaolio) {
         $tietokantasolut = 
-            array(new Tietokantasolu(Havaintokuvalinkki::$SARAKENIMI_ID, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_kuva_id, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_havainto_id, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_jarjestysluku, Tietokantasolu::$luku_int));
+            array(new Tietokantasolu(Havaintokuvalinkki::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio),
+                new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_kuva_id, Tietokantasolu::$luku_int, $tietokantaolio),
+                new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_havainto_id, Tietokantasolu::$luku_int, $tietokantaolio),
+                new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_jarjestysluku, Tietokantasolu::$luku_int, $tietokantaolio));
         
         $taulunimi = Havaintokuvalinkki::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

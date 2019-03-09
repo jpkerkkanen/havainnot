@@ -26,6 +26,7 @@ class Tietokantaolio extends Pohja
     private $dbuser;
     private $dbsalis;
     private $yhteys;
+    private $result; // Result of a query
 
     /**
      * Tämä merkkijono palautetaan aina sellaisten kyselyjen onnistuessa,
@@ -68,6 +69,13 @@ class Tietokantaolio extends Pohja
         $this->dbuser = $dbuser;
         $this->dbsalis = $dbsalis;
     }
+    
+    public function get_yhteys(){
+        return $this->yhteys;
+    }
+    public function get_result(){
+        return $this->result;
+    }
 
     /**
      * Yhdistää tietokantaan.
@@ -75,21 +83,24 @@ class Tietokantaolio extends Pohja
      *
      * Huom. Yksi olio voisi hallita useita eri yhteyksiä, jos yhteys-
      * muuttuja olisi esim vektori.
-     */
+     **/
     function yhdista_tietokantaan($dbnimi)
     {
         if ($this->dbtyyppi === "mysql")
         {
-            // Yhdistetään tietokantapalvelimeen
-            $this->yhteys = mysql_connect($this->dbhost,
-                                            $this->dbuser,
-                                            $this->dbsalis)
-            or die('Yhdist&auml;minen tietokantaan ei onnistunut!
-                Tarkista tietokannan nimi ja salasana!');
-
-            // Valitaan tietokanta:
-            mysql_select_db($dbnimi, $this->yhteys)
-            or die("Tietokannan valinta ep&auml;onnistui!");
+            $this->yhteys = new mysqli($this->dbhost,
+                                        $this->dbuser,
+                                        $this->dbsalis,
+                                        $dbnimi);
+            //$this->yhteys->set_charset("utf8");
+            if($this->yhteys->connect_errno){
+                echo "Tietokannan valinta ep&auml;onnistui: " .
+                    //"dbhost=".$this->dbhost.
+                    //", dbuser=".$this->dbuser.
+                    //", dbsalis=".$this->dbsalis.
+                    //", dbnimi=".$dbnimi.". Virhenro=".
+                    $this->yhteys->connect_errno;
+            }
         }
     }
 
@@ -101,7 +112,7 @@ class Tietokantaolio extends Pohja
     {
         if ($this->dbtyyppi === "mysql")
         {
-            mysql_close($this->yhteys)
+            mysqli_close($this->yhteys)
             or die('Tietokannan sulkeminen ei onnistunut!');
         }
     }
@@ -163,8 +174,7 @@ class Tietokantaolio extends Pohja
                             WHERE $ehtosarake='$ehtoarvo'
                             LIMIT $max_muutosrivilkm";
 
-                $tulos = mysql_query($hakulause) or //FALSE on failure, true muutoin.
-                          "Tietojen muokkaaminen ei onnistunut!";
+                $this->result = $this->yhteys->query($hakulause);
             }         
         }
         return $tulos;
@@ -296,9 +306,10 @@ class Tietokantaolio extends Pohja
                                 WHERE $ehtosarake='$ehtoarvo'
                                 LIMIT $max_muutosrivilkm";
                 }
-                $tulos = mysql_query($hakulause);  //FALSE on failure, true muutoin.
+   
+                $this->result = $this->yhteys->query($hakulause);  //FALSE on failure, true muutoin.
 
-                if($tulos){
+                if($this->result){
                     $tulos = Tietokantaolio::$HAKU_ONNISTUI;
                     //$this->lisaa_kommentti("<br/>".$hakulause."<br/>");
                 } else{
@@ -327,110 +338,12 @@ class Tietokantaolio extends Pohja
         {
             $hakulause = "SELECT * FROM $taulu
                             WHERE $taulun_sarake='$hakuarvo'";
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
+            $this->result = $this->yhteys->query($hakulause); //FALSE on failure
+            return $this->result;
         }
     }
 
-    /************************FUNCTION TEE_WHEREHAKU_1_(ylhäältä_alas) *********/
-    /**
-     * Tämä metodi suorittaa haun, jossa haetaan tietokantataulun koko rivejä
-     * yhden ehtolauseen avulla. Rivit järjestetään halutun sarakkeen mukaan
-     * ylhäältä alaspäin.
-     *
-     * @param <type> $taulu taulun nimi
-     * @param <type> $taulun_sarake sarakkeen nimi
-     * @param <type> $hakuarvo sarakkeesta haettava arvo
-     * @param <type> $jarjestyssarake sarake, jonka mukaan rivit järjestetään.
-     * @return <type> palauttaa haun tuloksen eli function "mysql_query()"-
-     * palautusarvon, joka on tulosrivitaulukko tai false.
-     *
-    public function tee_WHEREhaku_1_jarjestaen($taulu,
-                                                $taulun_sarake,
-                                                $hakuarvo,
-                                                $jarjestyssarake)
-    {
-        if($this->dbtyyppi == 'mysql')
-        {
-            $hakulause = "SELECT * FROM $taulu
-                            WHERE $taulun_sarake='$hakuarvo'
-                            ORDER BY $jarjestyssarake DESC";
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
-        }
-    }
-
-    /************hae_SELECT_WHERE_1ehto($taulu, $taulun_sarake, $hakuarvo) *****/
-    /**
-     * Tämä metodi etsii taulunimen, sarakenimen ja -arvon (parametrit)
-     * mukaisen haun. Kuten tee_WHEREhaku_1($taulu, $taulun_sarake, $hakuarvo),
-     * mutta hakee osumat olioina ja palauttaa oliotaulukon, joka voi olla tyhjä.
-     *
-     * @param <type> $taulu
-     * @param <type> $taulun_sarake
-     * @param <type> $hakuarvo
-     * @return <type> palauttaa aina taulukon, joka on tyhjä, jos
-     * jokin menee pieleen. Muuten taulukko sisältää tietokantaosumat olioina.
-     *
-    function hae_SELECT_WHERE_1ehto($taulu, $taulun_sarake, $hakuarvo)
-    {
-        $palaute = array();
-
-        if($this->dbtyyppi == 'mysql')
-        {
-            //FALSE on failure:
-            $tulos = $this->tee_WHEREhaku_1($taulu, $taulun_sarake, $hakuarvo);
-            
-            if($tulos != false){
-                $palaute = $this->hae_osumarivit_olioina($tulos);
-            }
-        }
-
-        return $palaute;
-    }
-
-    /************************FUNCTION TEE_WHEREHAKU_2 ********************************/
-    /**
-     * Tämä metodi suorittaa haun, jossa haetaan tietokantataulun koko rivejä
-     * kahden ehtolauseen avulla.
-     *
-     * @param <type> $taulu taulun nimi
-     * @param <type> $sarake1 ekan sarakkeen nimi
-     * @param <type> $sarake1 tokan sarakkeen nimi
-     * @param <type> $arvo1 1. sarakkeesta haettava arvo
-     * @param <type> $arvo2 2. sarakkeesta haettava arvo
-     * @return <type> palauttaa haun tuloksen eli function "mysql_query()"-
-     * palautusarvon.
-     *
-    function tee_WHEREhaku_2($taulu, $sarake1, $sarake2, $arvo1, $arvo2)
-    {
-        if($this->dbtyyppi == 'mysql')
-        {
-            $hakulause = "SELECT * FROM $taulu
-                            WHERE $sarake1='$arvo1'
-                            AND $sarake2='$arvo2'";
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
-        }
-    }
-
-    /************************FUNCTION TEE_OMAhaku ********************************/
-    /**
-     * Tämä metodi suorittaa parametrina saatavan hakulauseen mukaisen haun.
-     * kahden ehtolauseen avulla.
-     *
-     * @param <type> $hakulause mysql-lause, jolla haku tehdään.
-     * @return <type> palauttaa haun tuloksen eli function "mysql_query()"-
-     * palautusarvon, tai 'false', jos jokin menee pieleen.
-     *
-    function tee_OMAhaku($hakulause)
-    {
-        if($this->dbtyyppi == 'mysql')
-        {
-            $tulos = mysql_query($hakulause); //FALSE on failure
-            return $tulos;
-        }
-    }
+    
 
     /************************FUNCTION TEE_OMAhaku_oliotaulukkopalautteella *****/
     /**
@@ -446,13 +359,9 @@ class Tietokantaolio extends Pohja
 
         if($this->dbtyyppi === 'mysql')
         {
-            $tulos = mysql_query($hakulause, $this->yhteys); //FALSE on failure
-            
-            if($tulos != false){
-                $palaute = $this->hae_osumarivit_olioina($tulos);   
-            } else{
-                echo "Virheviesti (tee_oma_haku_oliotaulukkopalautteella...): ".
-                        mysql_error();
+            $this->result = $this->yhteys->query($hakulause); //FALSE on failure
+            if($this->result != false){
+                $palaute = $this->hae_osumarivit_olioina($this->result);
             }
         }
 
@@ -478,39 +387,57 @@ class Tietokantaolio extends Pohja
 
         if($this->dbtyyppi === 'mysql')
         {
-            $tulos = mysql_query($hakulause, $this->yhteys); //FALSE on failure
-            
-            if($tulos != false){
-                $palaute = $this->hae_osumarivit_taulukoina($tulos);   
-            } else{
-                echo "Virheviesti (tee_oma_haku_taulukkopalautteella...): ".
-                        mysql_error();
+            $this->result = $this->yhteys->query($hakulause); //FALSE on failure
+            if($this->result != false){
+                $palaute = $this->hae_osumarivit_taulukoina($this->result);
             }
         }
 
         return $palaute;
     }
 
+
     /**
-     * Hakee haun tuloksesta eli function "mysql_query()" palautusarvosta sen
-     * sisältämät rivit.
-     * @param <type> $hakutulos function "mysql_query()" palautusarvosta
+     * Escapes the string used in an SQL-query. Takes into account the
+     * charset uset in the connection.
+     * @param type $string
+     * @return type
+     */
+    function real_escape_string($string){
+        return $this->yhteys->real_escape_string($string);
+    }
+    
+    /**
+     * @param <type> $hakutulos function "mysqli_query()" palautusarvosta
      * @return int palauttaa aina luvun, joka on nolla myös, jos $hakutulos
      * ei ole määritelty tai on arvoltaan false. Muuten palauttaa osumarivien
      * lukumäärän.
-     *
-    function hae_osumarivien_lkm($hakutulos)
+     * Tämä toimii myös muokkausten tai poistojen yhteydessä.
+     */
+    function get_number_of_affected_rows()
     {
         $palaute = 0;
-        if($this->dbtyyppi == 'mysql')
+        if($this->dbtyyppi == "mysql")
         {
-            if (isset($hakutulos) || $hakutulos != false)
+            if (isset($this->result) && ($this->result != false))
             {
-                $palaute = mysql_num_rows($hakutulos);
-                if ($palaute == false)
-                {
-                    $palaute = 0;
-                }
+                $palaute = $this->yhteys->affected_rows;
+            }
+        }
+        return $palaute;
+    }
+    
+    /**
+     * Hakee lisätyn rivin id-arvon.
+     */
+    function get_insert_id()
+    {
+        $palaute = 0;
+        if($this->dbtyyppi == "mysql")
+        {
+            if (isset($this->yhteys))
+            {
+                $palaute = $this->yhteys->insert_id;
             }
         }
         return $palaute;
@@ -528,19 +455,16 @@ class Tietokantaolio extends Pohja
     function hae_osumien_lkm($taulu, $taulun_sarake, $hakuarvo)
     {
         $palaute = 0;
-        if($this->dbtyyppi == 'mysql')
+        if($this->dbtyyppi === 'mysql')
         {
-            $hakulause = "SELECT COUNT(*) AS lkm
+            $hakulause = "SELECT id
                             FROM $taulu
                             WHERE $taulun_sarake='$hakuarvo'";
-            $hakutulos = mysql_query($hakulause); //FALSE on failure
+            $hakutulos = $this->yhteys->query($hakulause); //FALSE on failure
 
-            // Haetaan ainut 'osumarivi':
-            $osumaolio = mysql_fetch_object($hakutulos);
-
-            // Haetaan lkm, jos haku mennyt putkeen:
-            if($osumaolio != false){
-                $palaute = $osumaolio->lkm;
+            if (isset($hakutulos) && ($hakutulos != false))
+            {
+                $palaute = $hakutulos->num_rows;
             }
         }
         return $palaute;
@@ -558,12 +482,12 @@ class Tietokantaolio extends Pohja
     {
         $oliot = array();
         $ind = 0;   //taulukon indeksi.
-        if($this->dbtyyppi == 'mysql')
+        if($this->dbtyyppi === "mysql")
         {
             if(isset($hakutulos) && $hakutulos != false)
             {
                 // fetch palauttaa lopuksi falsen.
-                while (($rivi = mysql_fetch_object($hakutulos)) !== false)
+                while ($rivi = $hakutulos->fetch_object())
                 {
                     $oliot[$ind] = $rivi;
                     $ind++;
@@ -572,6 +496,7 @@ class Tietokantaolio extends Pohja
         }
         return $oliot;
     }
+    
     
     /**
      * Hakee haun tuloksesta eli function "mysql_query()" palautusarvosta sen
@@ -586,12 +511,11 @@ class Tietokantaolio extends Pohja
     {
         $oliot = array();
         $ind = 0;   //taulukon indeksi.
-        if($this->dbtyyppi == 'mysql')
-        {
-            if(isset($hakutulos) && $hakutulos != false)
-            {
+        if($this->dbtyyppi == 'mysql'){
+            if(isset($hakutulos) && $hakutulos != false){
+                
                 // fetch palauttaa lopuksi falsen.
-                while (($rivi = mysql_fetch_array($hakutulos, MYSQL_BOTH)) !== false)
+                while (($rivi = $hakutulos->fetch_array(MYSQLI_BOTH)) != false)
                 {
                     $oliot[$ind] = $rivi;
                     $ind++;
@@ -614,11 +538,13 @@ class Tietokantaolio extends Pohja
      */
     function hae_eka_osuma_taulukkona($taulunimi, $sarakenimi, $hakuarvo){
         
-        // Palautetaan taulukko aina, tai muuten pitää tarkistusta muuttaa
+       // Palautetaan taulukko aina, tai muuten pitää tarkistusta muuttaa
         // moneen paikkaan.
         $palaute = array();
 
         $hakutulos = $this->tee_WHEREhaku_1($taulunimi, $sarakenimi, $hakuarvo);
+
+        $this->result = $hakutulos;
         
         if($this->dbtyyppi == 'mysql')
         {
@@ -626,7 +552,7 @@ class Tietokantaolio extends Pohja
             // Seuraavasta tietoa voi hakea sekä sarakenimillä että 
             // sarakkeen numeroindeksillä. Palauttaa FALSEn, ellei
             // mitään saada irti:
-            $rivi = mysql_fetch_array($hakutulos, MYSQL_BOTH);
+            $rivi = $hakutulos->fetch_array(MYSQLI_BOTH);
             if($rivi){
                 $palaute = $rivi;
             }
@@ -681,12 +607,14 @@ class Tietokantaolio extends Pohja
      */
     function hae_kaikki_rivit_taulukoina($taulunimi){
         
+        
         $palaute = array();
 
         if($this->dbtyyppi == 'mysql')
         {
             $hakulause = "SELECT * FROM ".$taulunimi;
-            $hakutulos = mysql_query($hakulause); //FALSE on failure
+            $hakutulos = $this->yhteys->query($hakulause);  //FALSE on failure
+            $this->result = $hakutulos;
            
             if($hakutulos)
             {
@@ -694,7 +622,7 @@ class Tietokantaolio extends Pohja
                     // Seuraavasta tietoa voi hakea sekä sarakenimillä että 
                     // sarakkeen numeroindeksillä. Palauttaa FALSEn, ellei
                     // mitään saada irti:
-                    $rivi = mysql_fetch_array($hakutulos, MYSQL_BOTH);
+                    $rivi = $hakutulos->fetch_array(MYSQLI_BOTH);
                     if($rivi){
                         array_push($palaute, $rivi);
                     }
@@ -846,9 +774,9 @@ class Tietokantaolio extends Pohja
                 $kyselylause = $insert_koodi.$sarakenimet.
                                 $value_koodi.$arvot;
 
-                $kyselyn_tila = mysql_query($kyselylause);
+                $this->result = $this->yhteys->query($kyselylause);
 
-                if($kyselyn_tila && (mysql_affected_rows() == 1)){
+                if($this->result && ($this->get_number_of_affected_rows() === 1)){
                     $onnistu = Tietokantaolio::$HAKU_ONNISTUI;
                 } else{
                     $onnistu = Tietokantaolio::$HAKUVIRHE."<br/>".
@@ -875,14 +803,14 @@ class Tietokantaolio extends Pohja
                             WHERE $taulun_sarake ='$hakuarvo'
                             LIMIT 1";
 
-            $tulos = mysql_query($poistolause);
+            $this->result = $this->yhteys->query($poistolause);
 
-            if($tulos)
+            if($this->result)
             {
-                if(mysql_affected_rows() == 0){
+                if($this->get_number_of_affected_rows() === 0){
                     $palaute = Tietokantaolio::$HAKU_PALAUTTI_TYHJAN;
                 }
-                else if(mysql_affected_rows() == 1){
+                else if($this->get_number_of_affected_rows() === 1){
                     $palaute = Tietokantaolio::$HAKU_ONNISTUI;
                 }
                 else{
@@ -916,12 +844,14 @@ class Tietokantaolio extends Pohja
                                 WHERE $taulun_sarake ='$hakuarvo'";
 
                 // Palauttaa FALSE, jos tapahtuu virhe.
-                $tulos = mysql_query($poistolause);
+                $tulos = $this->yhteys->query($poistolause);
+                $this->result = $tulos;
 
                 if($tulos)
                 {
-                    if(mysql_affected_rows() > 0){
-                        $poistettujen_lkm = mysql_affected_rows();
+                    if($this->get_number_of_affected_rows() > 0){
+                        $poistettujen_lkm = 
+                            $this->get_number_of_affected_rows();
                     }
                 }
                 else
@@ -1022,15 +952,15 @@ class Tietokantaolio extends Pohja
                 $kyselylause = "INSERT INTO $taulu ($saraketeksti)
 							 VALUE ($arvoteksti)";
 
-                $kyselyn_tila = mysql_query($kyselylause);
+                $this->result = $this->yhteys->query($kyselylause);
                 
-                if($kyselyn_tila == false){
+                if($this->result === false){
                     $onnistu = $virheilmoitus.
                                         " (Tietokantaolio.tallenna_uusi_rivi)".
                                         "<br/> Kysely: <br/>".$kyselylause;
                 }
 
-                else if(mysql_affected_rows() == 1)
+                else if($this->get_number_of_affected_rows() === 1)
                 {
                     $onnistu = Tietokantaolio::$HAKU_ONNISTUI;
                 }

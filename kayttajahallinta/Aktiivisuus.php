@@ -59,10 +59,10 @@ class Aktiivisuus extends Malliluokkapohja{
     function __construct($id, $tietokantaolio) {
         
         $tietokantasolut = 
-            array(new Tietokantasolu(Aktiivisuus::$SARAKENIMI_ID, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Aktiivisuus::$sarakenimi_henkilo_id, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Aktiivisuus::$sarakenimi_aika, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Aktiivisuus::$sarakenimi_aktiivisuuslaji, Tietokantasolu::$luku_int));
+            array(new Tietokantasolu(Aktiivisuus::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Aktiivisuus::$sarakenimi_henkilo_id, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Aktiivisuus::$sarakenimi_aika, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Aktiivisuus::$sarakenimi_aktiivisuuslaji, Tietokantasolu::$luku_int, $tietokantaolio));
         
         $taulunimi = Aktiivisuus::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

@@ -39,13 +39,17 @@ class Tunnukset {
      * Palauttaa true, jos kaikki kunnossa, muuten false.
      * 
      * @param type $syote
+     * @param type $min_pit
+     * @param type $max_pit
+     * @param Tietokantaolio $tietokantaolio
+     * @return boolean
      */
-    static function tunnuksen_merkit_ja_pituus_ok($syote, $min_pit, $max_pit){
+    static function tunnuksen_merkit_ja_pituus_ok($syote, $min_pit, $max_pit, $tietokantaolio){
         
         // Jos merkit ok eikä html- tms tunnuksia sotkemassa.
         if((preg_match('/^['.Tunnukset::$sallitut_merkit.']{'.
                             $min_pit.','.$max_pit.'}$/',$syote) === 1) && 
-            $syote === trim(htmlspecialchars(mysql_escape_string($syote)))){
+            $syote === trim(htmlspecialchars($tietokantaolio->real_escape_string($syote)))){
             return true;
         } else{
             return false;
@@ -63,11 +67,12 @@ class Tunnukset {
     /**
      * Tarkistaa käyttäjätunnuksen merkit ja pituuden. Ei tee tietokantahakuja.
      */
-    static function kayttajatunnus_ok($ktunnus){
+    static function kayttajatunnus_ok($ktunnus, $tietokantaolio){
         if(Tunnukset::tunnuksen_merkit_ja_pituus_ok(
                                 $ktunnus, 
                                 Tunnukset::$pituus_min_kayttajatunnus, 
-                                Tunnukset::$pituus_max_kayttajatunnus)){
+                                Tunnukset::$pituus_max_kayttajatunnus,
+                                $tietokantaolio)){
             return true;
         } else{
             return false;
@@ -76,11 +81,12 @@ class Tunnukset {
     /**
      * Tarkistaa salasana merkit ja pituuden. Ei tee tietokantahakuja.
      */
-    static function salasana_ok($sala){
+    static function salasana_ok($sala, $tietokantaolio){
         if(Tunnukset::tunnuksen_merkit_ja_pituus_ok(
                                 $sala, 
                                 Tunnukset::$pituus_min_salasana, 
-                                Tunnukset::$pituus_max_salasana)){
+                                Tunnukset::$pituus_max_salasana,
+                                $tietokantaolio)){
             return true;
         } else{
             return false;

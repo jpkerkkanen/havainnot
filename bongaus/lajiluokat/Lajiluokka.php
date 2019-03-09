@@ -47,9 +47,9 @@ class Lajiluokka extends Malliluokkapohja {
         
         $this->jnro = 1;
         $tietokantasolut = 
-            array(new Tietokantasolu(Lajiluokka::$SARAKENIMI_ID, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Lajiluokka::$SARAKENIMI_YLALUOKKA_ID, Tietokantasolu::$luku_int), 
-                new Tietokantasolu(Lajiluokka::$SARAKENIMI_NIMI_LATINA, Tietokantasolu::$mj_tyhja_EI_ok)
+            array(new Tietokantasolu(Lajiluokka::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Lajiluokka::$SARAKENIMI_YLALUOKKA_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Lajiluokka::$SARAKENIMI_NIMI_LATINA, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio)
                );
         
         $taulunimi = Lajiluokka::$taulunimi;
@@ -599,7 +599,7 @@ class Lajiluokka extends Malliluokkapohja {
         // Vaan näin!
         $tietokantasoluehto = 
                 new Tietokantasolu(Havainto::$SARAKENIMI_LAJILUOKKA_ID, true, 
-                                    Tietokantasolu::$TYHJA_EI_OK);
+                                    Tietokantasolu::$TYHJA_EI_OK, $this->tietokantaolio);
         $tietokantasoluehto->set_arvo($this->get_id());
         
         // Muutettavat tiedot: HUOM! Tässä oli kavala virhe: muuttaa myös

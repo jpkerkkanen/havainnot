@@ -32,10 +32,10 @@ class Testiolio extends Malliluokkapohja{
         
         // Määritellään tietokantatiedot. True, jos on luku, muuten false.
         $tietokantasolut = 
-            array(new Tietokantasolu(Testiolio::$SARAKENIMI_ID, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Testiolio::$SARAKENIMI_LUOMISHETKI_SEK, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Testiolio::$SARAKENIMI_ED_MUUTOS_SEK, Tietokantasolu::$luku_int),
-                new Tietokantasolu(Testiolio::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_EI_ok));
+            array(new Tietokantasolu(Testiolio::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio),
+                new Tietokantasolu(Testiolio::$SARAKENIMI_LUOMISHETKI_SEK, Tietokantasolu::$luku_int, $tietokantaolio),
+                new Tietokantasolu(Testiolio::$SARAKENIMI_ED_MUUTOS_SEK, Tietokantasolu::$luku_int, $tietokantaolio),
+                new Tietokantasolu(Testiolio::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio));
         
         $taulunimi = "testiolio";
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
