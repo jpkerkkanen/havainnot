@@ -53,6 +53,7 @@ class Havaintopaikka extends Malliluokkapohja{
                                                     Tietokantasolu::$mj_tyhja_ok, $tietokantaolio),
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_MAA_ID, 
                                                     Tietokantasolu::$luku_int, $tietokantaolio));
+
         
         $taulunimi = Havaintopaikka::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

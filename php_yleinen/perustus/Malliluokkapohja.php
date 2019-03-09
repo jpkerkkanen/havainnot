@@ -464,7 +464,8 @@ abstract class Malliluokkapohja extends Pohja{
         // Luodaan uusi, koska id:llä voi periaatteessa olla muutettu arvo!
         $tietokantasoluehto = 
             new Tietokantasolu(Malliluokkapohja::$SARAKENIMI_ID, 
-                        Tietokantasolu::$mj_tyhja_EI_ok, $this->tietokantaolio);
+                     Tietokantasolu::$mj_tyhja_EI_ok, $this->tietokantaolio);
+
         
         // Otetaan varmasti oikea id mukaan:
         $tietokantasoluehto->set_arvo_kevyt($this->id_tietokanta);
@@ -730,7 +731,7 @@ abstract class Malliluokkapohja extends Pohja{
             if($solu instanceof Tietokantasolu){
                 array_push($tietokantasolut_array, 
                             new Tietokantasolu($solu->get_sarakenimi(), 
-                                                $solu->get_arvon_tyyppi(), 
+                                                $solu->get_arvon_tyyppi(),
                                                 $this->tietokantaolio));
             }
         }

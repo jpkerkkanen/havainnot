@@ -47,9 +47,11 @@ class Lajiluokka extends Malliluokkapohja {
         
         $this->jnro = 1;
         $tietokantasolut = 
-            array(new Tietokantasolu(Lajiluokka::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Lajiluokka::$SARAKENIMI_YLALUOKKA_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Lajiluokka::$SARAKENIMI_NIMI_LATINA, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio)
+
+            array(new Tietokantasolu(Lajiluokka::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Lajiluokka::$SARAKENIMI_YLALUOKKA_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Lajiluokka::$SARAKENIMI_NIMI_LATINA, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio)
+
                );
         
         $taulunimi = Lajiluokka::$taulunimi;

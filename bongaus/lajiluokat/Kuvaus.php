@@ -52,11 +52,13 @@ class Kuvaus extends Malliluokkapohja{
     function __construct($tietokantaolio, $id){
         
         $tietokantasolut = 
-            array(new Tietokantasolu(Kuvaus::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Kuvaus::$SARAKENIMI_LAJILUOKKA_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Kuvaus::$SARAKENIMI_NIMI, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
-                new Tietokantasolu(Kuvaus::$SARAKENIMI_KUVAUS, Tietokantasolu::$mj_tyhja_ok, $tietokantaolio), 
-                new Tietokantasolu(Kuvaus::$SARAKENIMI_KIELI, Tietokantasolu::$luku_int, $tietokantaolio)
+
+            array(new Tietokantasolu(Kuvaus::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Kuvaus::$SARAKENIMI_LAJILUOKKA_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Kuvaus::$SARAKENIMI_NIMI, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio), 
+                new Tietokantasolu(Kuvaus::$SARAKENIMI_KUVAUS, Tietokantasolu::$mj_tyhja_ok,$tietokantaolio), 
+                new Tietokantasolu(Kuvaus::$SARAKENIMI_KIELI, Tietokantasolu::$luku_int,$tietokantaolio)
+
                );
         
         $taulunimi = Kuvaus::$taulunimi;
