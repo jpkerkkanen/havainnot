@@ -1,6 +1,16 @@
 // Ajastimet, jotta voidaan pysäyttää:
 var ajastin1, ajastin2, ajastin3, ajastin4, ajastin5;
 
+/**
+ * Short hand notation for document.getElementById(). Returns the same result
+ * as the longer variant.
+ * @param {type} id
+ * @returns {Element}
+ */
+function find(id){
+    return document.getElementById(id);
+}
+
 /** 
  * Kirjoittaa parametrina annetun sisällön elementtiin, jonka id annetaan
  * myös parametrina. Ellei elementtiä löydy, palauttaa arvon false. Muuten

@@ -666,6 +666,58 @@ function bongaus_kopioi_havainto(param){
     return false;
 }
 
+// Piilottaa elementin, muttei poista (display="none").
+function piilota_elementti(id){
+    var elem = find(id);
+    if(elem){
+        elem.style.display = "none";
+    }
+}
+
+/* Näyttää vakipaikkalomakkeen, eli hakee ajaxin avulla html-koodin. */
+function hae_vakipaikkalomake(){
+    try{
+        kysely = "kysymys=nayta_vakipaikkalomake";
+                //"&id_lj="+id_lj;
+        nayta_viiveilmoitus = 0;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_vakipaikkalomake','post', 'text',
+                    nayta_viiveilmoitus);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/hae_vakipaikkalomake): "+virhe.description;
+    }
+}
+/* Näyttää vakipaikkalomakkeen, eli haetun html-koodin yleislaatikon sisällä.*/
+function nayta_vakipaikkalomake(html){
+    try{
+        //alert(html);
+        var yleislaatikon_id = "yleislaatikko";
+   
+        // luodaan uusi elementti vain, ellei sellaista jo olemassa:
+        if(!document.getElementById(yleislaatikon_id)){
+            body = document.getElementsByTagName("body")[0];
+            divi = document.createElement("div");
+            divi.setAttribute("id", yleislaatikon_id);
+            body.appendChild(divi);
+        }
+        else{// Muuten vain pannaan näkymään:
+            divi = document.getElementById(yleislaatikon_id);
+            if(divi.style.display === "none"){
+                divi.style.display = "block";
+            }
+        }
+        divi.innerHTML = html;
+    }
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/nayta_vakipaikkalomake): "+virhe.description;
+    }
+}
+
+
 /*
  * Vaihtaa monivalintalomakkeen havaintojaksoruudun tiedot, 
  * kun havaintojaksoa vaihdetaan (default uusi).

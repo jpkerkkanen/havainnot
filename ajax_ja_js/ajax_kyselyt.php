@@ -160,7 +160,10 @@ else    // Jos tunnistus on kunnossa.
         
         // Kuvakontrolleri:
         $kuvakontrolleri = new Kuvakontrolleri($tietokantaolio, $parametriolio);
-
+        $kuvanakymat = $kuvakontrolleri->get_kuvanakymat();
+        
+        $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
+        
         /*=================================================================*/
         /*=================================================================*/
         /*=================== KAYTTAJATOIMINNOT ALKAA =====================*/
@@ -439,6 +442,14 @@ else    // Jos tunnistus on kunnossa.
             $havaintokontrolleri->toteuta_nayta($palauteolio);
             echo $palauteolio->get_sisalto();
         }
+        
+        /*********************** Vakipaikkalomakkeen näyttö *************/
+        else if($kysymys === "nayta_vakipaikkalomake"){
+            
+            $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
+            echo $havaintonakymat->nayta_vakipaikkalomake("","");
+        }
+
 
         /*=================================================================*/
         /*=================================================================*/

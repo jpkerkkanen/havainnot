@@ -162,6 +162,12 @@ class Bongauspainikkeet{
     public static $vakipaikka_luo_uusi_value = "Luo uusi";
     public static $vakipaikka_luo_uusi_title = 
             "Luo uusi vakipaikka, jos käyt siellä toistuvasti";
+    public static $vakipaikka_tallenna_uusi_value = "Tallenna uusi";
+    public static $vakipaikka_tallenna_uusi_title = 
+            "Tallentaa uuden vakipaikan";
+    public static $vakipaikka_sulje_lomake_value = "Lopeta";
+    public static $vakipaikka_sulje_lomake_title = 
+            "Sulkee lomakenäkymän. Huomaa: ei tallenna mitään!";
     
 
     // YLEISET:
@@ -205,6 +211,9 @@ class Bongaustekstit{
     public static $havtaul_lisaluok_vesilla = "VESILL&Auml;";
     //=========================================================================
     public static $havaintopaikkavalikko_otsikko = "Havaintopaikka";
+    public static $havaintopaikkalomakeohje = "Vakituisen paikan tiedot";
+    public static $havaintopaikkalomake_Maa = "Maa";
+    public static $havaintopaikkalomake_Selitys = "Selitys";
     
     //=========================================================================
     public static $otsikko1_bongaussivu1 = "Bong!";
