@@ -168,7 +168,7 @@ class Maat {
     
     public static $islanti = 16;
     public static $israel = 17;
-    public static $isobritannia = 17;
+    public static $isobritannia = 18;
     
     
     /**

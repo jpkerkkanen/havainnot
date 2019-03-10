@@ -232,7 +232,7 @@ class Html{
             }
 
             for ($i = 0; $i < sizeof($arvot); $i++) {
-                if($oletusvalinta_arvo == $arvot[$i]){
+                if($oletusvalinta_arvo+0 === $arvot[$i]){
                     $valikkohtml .= "<option value = '$arvot[$i]'".
                                     "selected = 'selected'>";
                 }

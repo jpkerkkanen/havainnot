@@ -296,6 +296,25 @@ class Bongaustekstit{
     public static $ilm_havaintojaksolinkkeja_luotu_kpl = 
             "kpl havaintoja liitetty havaintotapahtumaan.";
     
+    // Havaintopaikkatoiminnot:
+    public static $ilm_havaintopaikan_lisays_ok = 
+            "Uusi havaintopaikka lis&auml;ttiin onnistuneesti!";
+    public static $virheilm_havaintopaikan_lisays_eiok = 
+            "Virhe uuden havaintopaikan lis&aumlyksessä!";
+    public static $ilm_havaintopaikan_poisto_ok = 
+            "Havaintopaikka poistettiin onnistuneesti!";
+    public static $virheilm_havaintopaikan_poisto_eiok = 
+            "Virhe havaintopaikan poistossa!";
+    public static $ilm_havaintopaikan_muutos_ok = 
+            "Havaintopaikan muutokset tallennettu onnistuneesti!";
+    public static $virheilm_havaintopaikan_muutos_eiok = 
+            "Virhe havaintopaikan muutosten tallennuksessa!";
+    public static $havaintopaikan_poistovarmistus = 
+            "Haluatko varmasti poistaa havaintopaikan?";
+    
+    public static $ilm_havaintopaikkaa_ei_loytynyt = 
+            "Havaintopaikkaa ei löytynyt tietokannasta!";
+    
     public static $ilm_havaintoa_ei_loytynyt = 
             "Havaintoa ei löytynyt tietokannasta!";
     

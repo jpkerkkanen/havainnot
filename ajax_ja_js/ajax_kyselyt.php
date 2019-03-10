@@ -447,7 +447,7 @@ else    // Jos tunnistus on kunnossa.
         else if($kysymys === "nayta_vakipaikkalomake"){
             
             $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
-            echo $havaintonakymat->nayta_vakipaikkalomake("","");
+            echo $havaintonakymat->nayta_vakipaikkalomake(-2,"","",$parametriolio->asuinmaa);
         }
 
 

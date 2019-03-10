@@ -173,6 +173,7 @@ class Parametrit {
     public $havaintopaikka_henkilo_id;
     public $havaintopaikka_nimi;
     public $havaintopaikka_selitys;
+    public $havaintopaikka_maa;
     
     /** 
      * Huom! Vältä tämän käyttöä entiteettiluokan id-tunnisteen kohdalla.

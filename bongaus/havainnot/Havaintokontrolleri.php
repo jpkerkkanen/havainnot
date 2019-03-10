@@ -12,7 +12,7 @@
  */
 class Havaintokontrolleri extends Kontrolleripohja{
     
-    private $valittujen_idt, $kuvanakymat;
+    private $valittujen_idt, $kuvanakymat, $havaintonakymat;
 
     // Name-arvot liittyen havaintoihin:
     public static $name_id_hav = "id_hav";
@@ -89,6 +89,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
         // Haetaan valinnat:
         $this->valittujen_idt = $this->get_parametriolio()->havaintovalinnat_hav;
         $this->kuvanakymat = new Kuvanakymat();
+        $this->havaintonakymat = 
+            new Havaintonakymat($tietokantaolio, $parametriolio, $this->kuvanakymat);
     }
 
     /**
@@ -1000,6 +1002,103 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $this->toteuta_nayta_moniuusitallennuslomake($palauteolio);
         }
     }
+    
+    /**
+     * Toteuttaa uuden havaintopaikan tallennuksen tietokantaan.
+     * 
+     * @param Palaute $palauteolio
+     */
+    function toteuta_tallenna_uusi_vakipaikka(&$palauteolio){
+        $omaid = $this->get_parametriolio()->get_omaid();
+        
+        $uusi = new Havaintopaikka(Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY,
+                                $this->get_tietokantaolio());
+        
+        $omaid = $this->get_parametriolio()->get_omaid();
+        $paikannimi = $this->get_parametriolio()->havaintopaikka_nimi;
+        $selitys = $this->get_parametriolio()->havaintopaikka_nimi;
+        $maa = $this->get_parametriolio()->havaintopaikka_maa;
+        
+        $uusi->set_arvo($omaid, Havaintopaikka::$SARAKENIMI_HENKILO_ID);
+        $uusi->set_arvo($paikannimi, Havaintopaikka::$SARAKENIMI_NIMI);
+        $uusi->set_arvo($selitys, Havaintopaikka::$SARAKENIMI_SELITYS);
+        $uusi->set_arvo($maa, Havaintopaikka::$SARAKENIMI_MAA_ID);
+        
+        if($uusi->tallenna_uusi() === Havainto::$OPERAATIO_ONNISTUI){
+            
+            $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_lisays_ok);
+            $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+            $palauteolio->set_muokatun_id($uusi->get_id());
+            
+            $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+        }
+        else{
+            $palauteolio->set_onnistumispalaute(
+                            Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_UUSI);
+            
+            $palaute = Bongaustekstit::$virheilm_havaintopaikan_lisays_eiok.
+                    Html::luo_br().
+                    $uusi->tulosta_virheilmoitukset();
+            
+            // Parametriolion kautta saadaan lomakkeeseen palaute myös.
+            $this->get_parametriolio()->set_tallennuspalaute($palaute);
+            $palauteolio->set_ilmoitus($palaute);
+            
+            // Asetetaan valituksi uusi: 
+            $palauteolio->set_sisalto(
+                $this->havaintonakymat->nayta_vakipaikkalomake(
+                    Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY, 
+                    $paikannimi, $selitys, $maa));
+        }
+    }
+    /**
+     * Toteuttaa havaintopaikan muutosten tallennuksen tietokantaan.
+     */
+    function toteuta_tallenna_vakipaikkamuutokset(&$palauteolio){
+        
+        $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
+        $paikannimi = $this->get_parametriolio()->havaintopaikka_nimi;
+        $selitys = $this->get_parametriolio()->havaintopaikka_nimi;
+        $maa = $this->get_parametriolio()->havaintopaikka_maa;
+        
+        $uusi = new Havaintopaikka($vakipaikka_id, $this->get_tietokantaolio());
+        
+        if($uusi->olio_loytyi_tietokannasta){
+           
+            $uusi->set_arvo($paikannimi, Havaintopaikka::$SARAKENIMI_NIMI);
+            $uusi->set_arvo($selitys, Havaintopaikka::$SARAKENIMI_SELITYS);
+            $uusi->set_arvo($maa, Havaintopaikka::$SARAKENIMI_MAA_ID);
+
+            if($uusi->tallenna_muutokset() === Havainto::$OPERAATIO_ONNISTUI){
+
+                $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+                $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_muutos_ok);
+                $palauteolio->set_muokatun_id($uusi->get_id());
+                $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+            }
+            else{
+                $palauteolio->set_onnistumispalaute(
+                                Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_MUOKKAUS);
+
+                $palaute = Bongaustekstit::$virheilm_havaintopaikan_muutos_eiok.
+                        Html::luo_br().
+                        $uusi->tulosta_virheilmoitukset();
+
+                // Parametriolion kautta saadaan lomakkeeseen palaute myös.
+                $this->get_parametriolio()->set_tallennuspalaute($palaute);
+                $palauteolio->set_ilmoitus($palaute);
+
+                // Asetetaan valituksi uusi: 
+                $palauteolio->set_sisalto(
+                    $this->havaintonakymat->nayta_vakipaikkalomake(
+                        $vakipaikka_id,$paikannimi, $selitys, $maa));
+            }
+        } else{
+            $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+            $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikkaa_ei_loytynyt);
+        }
+    }
+    
     /**
      * Luo uuden Havainto-luokan olion ja tallentaa sen tietokantaan.
      * Onnistuesssaan palauttaa arvon OPERAATIO_ONNISTUI. Muussa tapauksessa 

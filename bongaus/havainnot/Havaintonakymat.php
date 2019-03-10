@@ -2423,11 +2423,14 @@ class Havaintonakymat extends Nakymapohja{
      * @param string $selitys
      * @return type
      */
-    function nayta_vakipaikkalomake($paikka, $selitys){
+    function nayta_vakipaikkalomake($vakipaikka_id, $paikka, $selitys, $maa_id){
         
         
         $tietokantaolio = $this->parametriolio->get_tietokantaolio();
-        $maa_id = $this->parametriolio->asuinmaa;
+        
+        $maavalikko_id = "maavalikko";
+        $paikkaruutu_id = "vakipaikkaruutu"; 
+        $selitysruutu_id = "vakipaikkaselitys";
         
         //=============================================================
 
@@ -2439,14 +2442,22 @@ class Havaintonakymat extends Nakymapohja{
                                     array("yleislaatikko"))));
         
 
+        
         $tallennanappi = Html::luo_button(
                             Bongauspainikkeet::$vakipaikka_tallenna_uusi_value,
                             array(
                                 Maarite::classs("rinnakkain"),
                                 Maarite::onclick("tallenna_vakipaikka", 
-                                    array())));
+                                    array($vakipaikka_id,
+                                            $maavalikko_id,
+                                            $paikkaruutu_id,
+                                            $selitysruutu_id,
+                                            Havaintokontrolleri::$name_havaintopaikka_id,
+                                            Havaintokontrolleri::$name_havaintopaikka_maa,
+                                            Havaintokontrolleri::$name_havaintopaikka_paikannimi,
+                                            Havaintokontrolleri::$name_havaintopaikka_selitys
+                                        ))));
         
-
         /*************************************************************************/
         $maavalikkohtml = "";
 
@@ -2454,12 +2465,12 @@ class Havaintonakymat extends Nakymapohja{
             $arvot = Maat::hae_maiden_arvot();
             $nimet = Maat::hae_maiden_nimet();
             $name_arvo = Havaintokontrolleri::$name_maa_hav;
-            $id_arvo = "maavalikko";
+            $id_arvo = $maavalikko_id;
             $class_arvo = "";
             $oletusvalinta_arvo = $maa_id;
             $otsikko = "";
-            $onchange_metodinimi = "alert";
-            $onchange_metodiparametrit_array = array("this.value");
+            $onchange_metodinimi = "";
+            $onchange_metodiparametrit_array = array();
 
             $maavalikkohtml.= Html::luo_pudotusvalikko_onChange(
                                         $arvot,
@@ -2506,7 +2517,7 @@ class Havaintonakymat extends Nakymapohja{
 
                         Html::luo_input(
                             array(Maarite::type("text"),
-                                Maarite::id("vakipaikkaruutu"),
+                                Maarite::id($paikkaruutu_id),
                                 Maarite::value($paikka))),
 
                         array(Maarite::align("left"))), // solu   
@@ -2541,7 +2552,7 @@ class Havaintonakymat extends Nakymapohja{
                         Html::luo_textarea($selitys, 
                             array(Maarite::cols(50),
                                     Maarite::rows(6),
-                                    Maarite::id("vakipaikkaselitysruutu"))),   // textarea
+                                    Maarite::id($selitysruutu_id))),   // textarea
                         array(Maarite::align("left"))), // solu   
 
                     $maar_array);   // taulukkorivi 

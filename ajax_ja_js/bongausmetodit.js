@@ -717,6 +717,127 @@ function nayta_vakipaikkalomake(html){
     }
 }
 
+/* Tallentaa sekä uuden että muokatun homman. */
+function tallenna_vakipaikka(vakipaikka_id, // olion id > 0, jos vanhan muokkaus. 
+                            maavalikko_id,
+                            paikkaruutu_id, 
+                            selitysruutu_id,
+                            vakipaikka_id_name,
+                            maa_id_name,
+                            paikka_name,
+                            selitys_name){
+    try{
+        
+        // Haetaan arvot kentistä:
+        var maa_id =-1;
+        var paikka = "";
+        var selitys = "";
+        
+        var maavalikko = find(maavalikko_id);
+        if(maavalikko){
+            maa_id = maavalikko.options[maavalikko.selectedIndex].value;
+        }
+        
+        var paikkaruutu = find(paikkaruutu_id);
+        if(paikkaruutu){
+            paikka = paikkaruutu.value;
+        }
+        
+        var selitysruutu = find(selitysruutu_id);
+        if(selitysruutu){
+            selitys = selitysruutu.value;
+        }
+        
+        var kysely = "kysymys=tallenna_vakipaikka"+
+                "&"+vakipaikka_id_name+"="+vakipaikka_id+
+                "&"+maa_id_name+"="+maa_id+
+                "&"+paikka_name+"="+paikka+
+                "&"+selitys_name+"="+selitys;
+        alert(kysely);
+        nayta_viiveilmoitus = 0;
+        /*toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_vakipaikkatallennustulos','post', 'xml',
+                    nayta_viiveilmoitus);*/
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/tallenna_nimikuvaus): "+virhe.description;
+    }
+}
+/* Tiedot tulevat:
+echo '<tiedot>';
+echo '<taulukkosolun_id>'.$taulukkosolun_id.'</taulukkosolun_id>';
+echo '<nimi>'.$nimi.'</nimi>';
+echo '<sisalto>'.$sisalto.'</sisalto>';
+echo '<ilmoitus>'.$palauteolio->get_ilmoitus().'</ilmoitus>';
+echo '</tiedot>';*/
+function nayta_vakipaikkatallennustulos(tulosxml){   
+   // alert("Metodissa 'nayta_tallennustulos' tulosxml: "+tulosxml );
+    // Haetaan xml:stä tiedot esille:
+    var taulukkosolun_id =
+        tulosxml.getElementsByTagName("taulukkosolun_id")[0].childNodes[0].nodeValue;
+    
+    var id_lj =
+        tulosxml.getElementsByTagName("id_lj")[0].childNodes[0].nodeValue;
+    
+    var kieli_id =
+        tulosxml.getElementsByTagName("kieli_id")[0].childNodes[0].nodeValue;
+    
+    var olio_id =
+        tulosxml.getElementsByTagName("olio_id")[0].childNodes[0].nodeValue;
+    
+    var ylaluokka_id =
+        tulosxml.getElementsByTagName("ylaluokka_id")[0].childNodes[0].nodeValue;
+    
+    // Ilmeisesti tyhjä nimi aiheuttaa sen, ettei kyseistä elementtiä tai
+    // tarkemmin sen childNodes[0]-elementtiä ole ollenkaan! Pitää
+    // siis ottaa varovasti!
+    var nimi = "";
+    var nimielementti =
+        tulosxml.getElementsByTagName("nimi")[0].childNodes[0];
+    if(nimielementti){
+        nimi = nimielementti.nodeValue;
+    }
+    // HUOM Parseint pitää tehdä, ettei luku ole tekstinä!
+    var onnistuminen = parseInt(
+        tulosxml.getElementsByTagName("onnistuminen")[0].childNodes[0].nodeValue);
+   
+    var ilmoitus = "";
+    var ilmoituselem =
+        tulosxml.getElementsByTagName("ilmoitus")[0].childNodes[0];
+    if(ilmoituselem){
+        ilmoitus = ilmoituselem.nodeValue;
+    }
+
+    nayta_viesti(ilmoitus);
+
+
+    // Viedään uusi nimi taulukkoon, ellei virheitä tullut.
+    // HUom! Alla ehdossa pelkkä onnistuminen ei suluissa riitä!
+    if(onnistuminen===1){
+        // Huom! onclick-metodin toista
+        // parametria pitää muuttaa, kun kysymys on uuden tallennuksesta!
+        // Arvo -1 pitää saada uuden id:n arvoksi, jolloin koko onclick-metodi
+        // pitää kirjoittaa uusiksi.
+        var solu = document.getElementById(taulukkosolun_id);
+        if(solu){
+            solu.innerHTML = nimi;
+            solu.onclick =  
+                function() {
+                    hae_nimikuvauslomake(kieli_id, olio_id, taulukkosolun_id, id_lj);
+                };
+        }
+        
+        // nimikuvauslaatikko pois:
+        sulje_ruutu2("nimikuvauslaatikko");
+        
+    } else{
+        
+    }
+}
+
+
 
 /*
  * Vaihtaa monivalintalomakkeen havaintojaksoruudun tiedot, 
