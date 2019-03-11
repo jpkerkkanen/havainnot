@@ -1026,8 +1026,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
         
         if($uusi->tallenna_uusi() === Havainto::$OPERAATIO_ONNISTUI){
             
-            $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_lisays_ok);
             $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+            $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_lisays_ok);
             $palauteolio->set_muokatun_id($uusi->get_id());
             
             $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);

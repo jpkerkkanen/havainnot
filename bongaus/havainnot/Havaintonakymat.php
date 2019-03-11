@@ -2428,7 +2428,7 @@ class Havaintonakymat extends Nakymapohja{
         
         $tietokantaolio = $this->parametriolio->get_tietokantaolio();
         
-        $maavalikko_id = "maavalikko";
+        $maavalikko_id = "maavalikko_vakipaikka";
         $paikkaruutu_id = "vakipaikkaruutu"; 
         $selitysruutu_id = "vakipaikkaselitys";
         
@@ -2464,7 +2464,7 @@ class Havaintonakymat extends Nakymapohja{
         try{
             $arvot = Maat::hae_maiden_arvot();
             $nimet = Maat::hae_maiden_nimet();
-            $name_arvo = Havaintokontrolleri::$name_maa_hav;
+            $name_arvo = "";
             $id_arvo = $maavalikko_id;
             $class_arvo = "";
             $oletusvalinta_arvo = $maa_id;

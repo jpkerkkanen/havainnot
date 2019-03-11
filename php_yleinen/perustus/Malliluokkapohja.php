@@ -650,8 +650,9 @@ abstract class Malliluokkapohja extends Pohja{
                 
                     $laskuri++;
                 } else{
-                    echo "Virhe tk-arvon asetuksessa oliolle: sarakenimi-arvo=".
-                            $sarakenimi."-".$haettu_arvo;
+                    $this->lisaa_virheilmoitus(
+                            "Virhe tk-arvon asetuksessa oliolle: sarakenimi=".
+                            $sarakenimi." ja arvo=".$haettu_arvo);
                 }
             }
              

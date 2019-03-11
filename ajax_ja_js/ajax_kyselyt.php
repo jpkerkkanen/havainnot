@@ -98,6 +98,7 @@ else    // Jos tunnistus on kunnossa.
         require_once('../bongaus/havainnot/Havaintonakymat.php');
         require_once('../bongaus/havainnot/Havaintojakso.php');
         require_once('../bongaus/havainnot/Havaintojaksolinkki.php');
+         require_once('../bongaus/havainnot/Havaintopaikka.php');
         require_once('../bongaus/havainnot/Lisaluokitus.php');
         require_once('../bongaus/lajiluokat/Lajiluokka.php');
         require_once('../bongaus/lajiluokat/Kuvaus.php');
@@ -448,6 +449,15 @@ else    // Jos tunnistus on kunnossa.
             
             $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
             echo $havaintonakymat->nayta_vakipaikkalomake(-2,"","",$parametriolio->asuinmaa);
+        }
+        /*********************** Vakipaikkalomakkeen näyttö *************/
+        else if($kysymys === "tallenna_vakipaikka"){
+            
+            $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
+            $xml = tallenna_vakipaikka_uusi($koodaus, $havaintokontrolleri, 
+                                            $palauteolio, $havaintonakymat);
+            header('Content-type: text/xml');
+            echo $xml;
         }
 
 
@@ -855,8 +865,49 @@ else    // Jos tunnistus on kunnossa.
         /*=================================================================*/
         /*=================================================================*/
         
+        
         $tietokantaolio->sulje_tietokanta($dbnimi); 
         
 }// Raskaammat kyselyt loppuivat
 
+/**
+* 
+* @param type $koodaus
+* @param Havaintokontrolleri $havKontr
+* @param Palaute $palauteolio
+* @param Havaintonakymat $havaintonakymat
+*/
+function tallenna_vakipaikka_uusi($koodaus, $havKontr, $palauteolio, $havaintonakymat){
+
+   $vakipaikkavalikon_id = "paikkavalikko";
+
+   $havKontr->toteuta_tallenna_uusi_vakipaikka($palauteolio);
+   $success = 0;
+   if($palauteolio->get_onnistumispalaute() === 
+           Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK){
+
+       $success = 1;
+   }
+   $kommentti = htmlspecialchars($palauteolio->tulosta_kaikki_ilmoitukset());
+
+   $uuden_id = $palauteolio->get_muokatun_id();
+   
+   $vakipaikkavalikko = 
+       $havaintonakymat->luo_havaintopaikkavalikko(
+           $uuden_id, 
+           $havKontr->get_parametriolio()->get_omaid());
+
+   $html = htmlspecialchars($vakipaikkavalikko);
+
+
+   // xml-muodossa saadaan muutkin tiedot mukaan:
+   $xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
+       '<tiedot>'.
+       '<success>'.$success.'</success>'.
+       '<kommentti>'.$kommentti.'</kommentti>'.
+       '<dropdown>'.$html.'</dropdown>'.
+       '<dropdown_id>'.$vakipaikkavalikon_id.'</dropdown_id>'.
+       '</tiedot>';
+   return $xml;
+}
 ?>

@@ -44,15 +44,20 @@ class Havaintopaikka extends Malliluokkapohja{
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
             array(new Tietokantasolu(Havaintopaikka::$SARAKENIMI_ID, 
-                                                    Tietokantasolu::$luku_int, $tietokantaolio),  
+                                    Tietokantasolu::$luku_int, 
+                                    $tietokantaolio),  
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_HENKILO_ID, 
-                                                    Tietokantasolu::$luku_int, $tietokantaolio),  
+                                    Tietokantasolu::$luku_int, 
+                                    $tietokantaolio),  
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_NIMI, 
-                                                    Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
+                                    Tietokantasolu::$mj_tyhja_EI_ok, 
+                                    $tietokantaolio), 
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_SELITYS, 
-                                                    Tietokantasolu::$mj_tyhja_ok, $tietokantaolio),
+                                    Tietokantasolu::$mj_tyhja_ok, 
+                                    $tietokantaolio),
                 new Tietokantasolu(Havaintopaikka::$SARAKENIMI_MAA_ID, 
-                                                    Tietokantasolu::$luku_int, $tietokantaolio));
+                                    Tietokantasolu::$luku_int, 
+                                    $tietokantaolio));
 
         
         $taulunimi = Havaintopaikka::$taulunimi;
@@ -77,8 +82,8 @@ class Havaintopaikka extends Malliluokkapohja{
             
             $hakulause = "SELECT ".Havaintopaikka::$SARAKENIMI_ID.
                     " FROM ". Havaintopaikka::$taulunimi.
-                    " WHERE ".Havaintopaikka::$SARAKENIMI_HENKILO_ID = $id_henk.
-                    " ORDER BY ". Havaintopaikka::$SARAKENIMI_NIMI;
+                    " WHERE ".Havaintopaikka::$SARAKENIMI_HENKILO_ID." = '".$id_henk.
+                    "' ORDER BY ". Havaintopaikka::$SARAKENIMI_NIMI;
         
             $tulostaulu = 
                 $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
