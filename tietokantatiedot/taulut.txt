@@ -3,6 +3,8 @@ Nämä ovat www.havainnot.net-sivustolla käytettäviä mysql-tauluja.
 
 Muutokset 3/2019:
 -lisätty taulu havaintojaksolinkit
+-havainnot-tauluun lisätty vakipaikka_id: (riittääkö one-many?)
+ alter table havainnot add column vakipaikka_id int default -1;
 */
 
 /*
