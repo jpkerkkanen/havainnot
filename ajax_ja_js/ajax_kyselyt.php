@@ -408,6 +408,15 @@ else    // Jos tunnistus on kunnossa.
             $palaute = $palauteolio->get_sisalto();
             echo $palaute;
         }
+        
+        /*********************** havaintojen haku vakipaikan mukaan  ********/
+        else if($kysymys === "nayta_vakipaikan_havainnot"){
+            $havaintokontrolleri->
+                    toteuta_hae_vakipaikan_havainnot($palauteolio);
+            $palaute = $palauteolio->get_sisalto();
+            
+            echo $palaute;
+        }
 
         /*********************** havaintojen haku lajin mukaan *************/
         else if($kysymys === "nayta_lajihavainnot"){

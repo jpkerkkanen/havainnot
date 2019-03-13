@@ -8,37 +8,6 @@
 /**
  * Description of Havainto: Pitää sisällään tietokantataulun tiedot.
  * 
-create table havainnot
-(
-  id                    int auto_increment not null,
-  henkilo_id            int default -1 not null,
-  lajiluokka_id         int default -1 not null,
-  vuosi                 smallint default -1,
-  kk                    tinyint default -1,
- 
-  paiva                 tinyint default -1,
-  paikka                varchar(300),
-  kommentti             varchar(3000),
-  maa                   smallint default 1,
-  varmuus               smallint default 100,
- 
-  sukupuoli             tinyint default -1,
-  lkm                   int default -1,
- 
-  primary key (id),
-  index(henkilo_id),
-  index(vuosi),
-  index(kk),
-  index(paiva),
-  index(paikka),
-  index(maa),
-  index(lajiluokka_id),
-  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
-                      ON DELETE CASCADE,
-  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
-                      ON DELETE CASCADE
-
-) ENGINE=INNODB;    
  * @author J-P
  * 
  * Sidoksia: Kontrolleri_pikakommentit
@@ -59,6 +28,7 @@ class Havainto extends Malliluokkapohja {
     public static $SARAKENIMI_PAIVA= "paiva";
     
     public static $SARAKENIMI_PAIKKA= "paikka";
+    public static $SARAKENIMI_VAKIPAIKKA= "vakipaikka_id"; // Vakihavaintopaikka
     public static $SARAKENIMI_KOMMENTTI= "kommentti";
     public static $SARAKENIMI_MAA= "maa";
     public static $SARAKENIMI_VARMUUS= "varmuus";
@@ -87,6 +57,7 @@ class Havainto extends Malliluokkapohja {
                 new Tietokantasolu(Havainto::$SARAKENIMI_VARMUUS, Tietokantasolu::$luku_int,$tietokantaolio), 
                 
                 new Tietokantasolu(Havainto::$SARAKENIMI_SUKUPUOLI, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_VAKIPAIKKA, Tietokantasolu::$luku_int,$tietokantaolio), 
                 new Tietokantasolu(Havainto::$SARAKENIMI_LKM, Tietokantasolu::$luku_int,$tietokantaolio));
 
         
@@ -126,6 +97,16 @@ class Havainto extends Malliluokkapohja {
     }
     public function set_paikka($uusi){
         return $this->set_arvo($uusi, Havainto::$SARAKENIMI_PAIKKA);
+    }
+    /**
+     * Returns the value of common bong place.
+     * @return type
+     */
+    public function get_vakipaikka(){
+        return $this->get_arvo(Havainto::$SARAKENIMI_VAKIPAIKKA);
+    }
+    public function set_vakipaikka($uusi){
+        return $this->set_arvo($uusi, Havainto::$SARAKENIMI_VAKIPAIKKA);
     }
     public function get_vuosi(){
         return $this->get_arvo(Havainto::$SARAKENIMI_VUOSI);
@@ -377,7 +358,7 @@ class Havainto extends Malliluokkapohja {
      * ei kannata pelkissä hauissa käyttää.
      *
      * @param type $uusi Parametrilla ei tässä merkitystä.
-     */
+     *
     public function on_tallennuskelpoinen($uusi) {
         $palaute = false;
 
@@ -402,13 +383,15 @@ class Havainto extends Malliluokkapohja {
             $this->lukumuotoinen_muuttuja_ok($this->maa, $putsaa, 
                                     Bongaustekstit::$havaintolomake_maa) &&
             $this->lukumuotoinen_muuttuja_ok($this->varmuus, $putsaa, 
+                                    Bongaustekstit::$havaintolomake_varmuus) &&
+            $this->lukumuotoinen_muuttuja_ok($this->, $putsaa, 
                                     Bongaustekstit::$havaintolomake_varmuus)
             ){
 
             $palaute = true;
         }
         return $palaute;
-    }
+    }*/
     
     /**
      * Etsii tietokannasta parametri-id:n mukaista havaintoa. HUOM! Palauttaa
@@ -1481,6 +1464,8 @@ class Havainto extends Malliluokkapohja {
 
        return $tulos;
    }
+   
+   
 
    /**
     * Palauttaa yhden poppoon yhdestä lajista tekemät havainnot taulukkoon 

@@ -71,6 +71,9 @@ class Bongauspainikkeet{
     public static $HAVAINNOT_NAYTA_HENKILON_HAVAINNOT_TITLE =
         "Klikkaamalla n&auml;et henkil&ouml;n havainnot";
     
+    public static $HAVAINNOT_NAYTA_PAIKAN_HAVAINNOT_TITLE =
+        "Klikkaamalla n&auml;et kyseisen paikan kaikki havainnot";
+    
     public static $HAVAINNOT_NAYTA_HENKILON_LAJIT_SUOMI_TITLE =
         "Klikkaamalla saat listan henkil&ouml;n Suomessa havaitsemista lajeista";
     

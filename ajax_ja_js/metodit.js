@@ -102,6 +102,22 @@ function piilota_elementti(id){
     }
 }
 
+/**
+ * Asettaa elementin näkyvyyden eli antaa elementin style.display-muuttujalle
+ * parametrina annetun arvon (dispVal). Ei tee mitään, ellei annetulla id:llä 
+ * löydy elementtiä.
+ * @param {type} id
+ * @param {type} dispVal
+ * @returns {undefined}
+ */
+function setElemDisplay(id, dispVal){
+    
+    var elem = document.getElementById(id);
+    if(elem){
+        elem.style.display = dispVal;
+    }
+}
+
 //==============================================================================
 /**
  * Muokkaa elementin ulkonäköä 

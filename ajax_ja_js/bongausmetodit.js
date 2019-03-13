@@ -193,6 +193,21 @@ function hae_henkilon_pinnalajit(henk_id, vuosi, havaintoalue, lisaluok_arvo, li
     }
 }
 
+function hae_vakipaikan_havainnot(vakipaikka_id, vakipaikka_name){
+    try{
+        kysely = "kysymys=nayta_vakipaikan_havainnot&"+
+                vakipaikka_name+"="+vakipaikka_id;
+        nayta_viiveilmoitus = 0;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_havainnot','post', 'text', nayta_viiveilmoitus);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/hae_vakipaikan_havainnot): "+virhe.description;
+    }
+}
+
 function hae_henkilon_havainnot(henk_id){
     try{
         kysely = "kysymys=nayta_henkilon_havainnot&"+
@@ -666,13 +681,6 @@ function bongaus_kopioi_havainto(param){
     return false;
 }
 
-// Piilottaa elementin, muttei poista (display="none").
-function piilota_elementti(id){
-    var elem = find(id);
-    if(elem){
-        elem.style.display = "none";
-    }
-}
 
 /* Näyttää vakipaikkalomakkeen, eli hakee ajaxin avulla html-koodin. */
 function hae_vakipaikkalomake(){
@@ -690,6 +698,12 @@ function hae_vakipaikkalomake(){
             "Virhe (bongausmetodit.js/hae_vakipaikkalomake): "+virhe.description;
     }
 }
+
+function poistu_vakipaikkalomakkeesta(lomakeruutu_id){
+    setElemDisplay(lomakeruutu_id, "none");
+    setElemDisplay("tietolomake_rajaton", "block");
+}
+
 /* Näyttää vakipaikkalomakkeen, eli haetun html-koodin yleislaatikon sisällä.*/
 function nayta_vakipaikkalomake(html){
     try{

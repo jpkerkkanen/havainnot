@@ -401,10 +401,11 @@ yms. */
 }
 
 .havaintomuokkausvaroitus{
-    background-color: #bfb;
-    border: 1px solid green;
+    background-color: #eff;
+    padding: 7px;
     color: red;
-    font-weight: bold;
+    font-weight: 400;
+    line-height: 110%;
 }
 
 /* Havaintotaulun lisäluokitusmerkinnät: */
@@ -437,6 +438,15 @@ yms. */
 td.huomio:hover{
     color: red;
     background-color: white;
+}
+
+td.huomio_vakipaikka:hover{
+    font-weight: bold;
+    background-color: white;
+}
+
+td.huomio_vakipaikka{
+    color: blue;
 }
 
 /* Korostaa tekstin hiiren yllä ollessa */

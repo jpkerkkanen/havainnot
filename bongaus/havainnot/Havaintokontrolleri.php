@@ -112,6 +112,188 @@ class Havaintokontrolleri extends Kontrolleripohja{
         return $this->get_olio();
     }
     
+    //==========================================================================
+    /**
+     * Palauttaa yhdessä paikassa havaitut havainnot taulukkoon muotoiltuna.
+     * 
+     * Näkymäkoodi voisi olla erillään kyllä.. Ja pari vastaavaa on jopa
+     * Havainto-luokan sisällä, mikä nyt ei ihan optimaalista ole. Mutta hyvä,
+     * jotta on jotakin kehitettävää..
+     * 
+     * @return <type> /
+     */
+    function hae_paikan_havainnot(){
+        $parametriolio = $this->get_parametriolio();
+
+        $tietokantaolio = $parametriolio->get_tietokantaolio();
+
+        $vakipaikka_id = $parametriolio->vakihavaintopaikka_hav;
+        $henkilo_id = $parametriolio->henkilo_id;
+
+        // Painikkeita:
+        $muokkausnappi = "";    // Määritellään myöhemmin
+        $poistonappi = "";      // Määritellään myöhemmin
+        $sulkemisnappi = "<button type='button' onclick='sulje_ruutu(\"".
+                        Bongausasetuksia::$havaintotietotaulun_id."\")'>".
+                        Bongauspainikkeet::$HAVAINNOT_SULJE_HENKILON_HAVAINNOT_VALUE.
+                        "</button>";
+
+
+        $tulos = "";
+
+        // Muotoillaan yläluokan lause:
+        $ylaluokka_id = $parametriolio->ylaluokka_id_lj;
+
+        if(isset($ylaluokka_id) && is_numeric($ylaluokka_id) && $ylaluokka_id > 0){
+            $ylaluokkaehto = "AND ".Lajiluokka::$taulunimi.".ylaluokka_id = $ylaluokka_id";
+        }
+        else{
+            $ylaluokkaehto = "AND ".Lajiluokka::$taulunimi.".ylaluokka_id <> -1";
+        }
+
+        // Tässäpä lausetta kerrakseen.
+        $hakulause = "SELECT ".Lajiluokka::$taulunimi.".id AS laji_id,
+                            ".Havainto::$taulunimi.".id AS hav_id,
+                            ".Havainto::$taulunimi.".maa AS maa,
+                            ".Havainto::$taulunimi.".varmuus AS varmuus,
+                            henkilot.etunimi AS nimi,
+                            henkilot.id AS henk_id,
+                            henkilot.valtuudet AS henk_valtuudet,
+                            ".Kuvaus::$taulunimi.".nimi AS laji,
+                            ".Havainto::$taulunimi.".paikka AS paikka,
+                            ".Havainto::$taulunimi.".kommentti AS kommentti,
+                            ".Havainto::$taulunimi.".vuosi AS vuosi,
+                            ".Havainto::$taulunimi.".kk AS kk,
+                            ".Havainto::$taulunimi.".paiva AS paiva,
+                            ".Havaintopaikka::$taulunimi.".".Havaintopaikka::$SARAKENIMI_NIMI." AS vakipaikka
+                    FROM ".Lajiluokka::$taulunimi."
+                    JOIN ".Kuvaus::$taulunimi."
+                    ON ".Kuvaus::$taulunimi.".lajiluokka_id = ".Lajiluokka::$taulunimi.".id
+                    JOIN ".Havainto::$taulunimi."
+                    ON ".Havainto::$taulunimi.".lajiluokka_id = ".Lajiluokka::$taulunimi.".id
+                    JOIN henkilot
+                    ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
+                    JOIN ".Havaintopaikka::$taulunimi.
+                    " ON ".Havainto::$taulunimi.".". Havainto::$SARAKENIMI_VAKIPAIKKA."=".
+                        Havaintopaikka::$taulunimi.".". Havaintopaikka::$SARAKENIMI_ID.
+                    
+                    " WHERE (".Kuvaus::$taulunimi.".kieli= ".$parametriolio->kieli_kuv.
+                    " ".$ylaluokkaehto."
+                    AND ".Havaintopaikka::$taulunimi.".".Havaintopaikka::$SARAKENIMI_ID.
+                        "=".$vakipaikka_id.")
+                    ORDER by vuosi DESC, kk DESC, paiva DESC, laji;
+                   ";
+
+        $havaintotaulu = 
+                $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
+
+        if(empty($havaintotaulu)){
+            $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
+                    $sulkemisnappi."</div>";
+            $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
+                    <tr>
+                    <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>".
+                    $hakulause;
+        }
+        else{ // Muotoillaan tiedot nätisti:
+            // Maa :
+            $maa = " (".Maat::hae_maan_nimi($havainto->maa).")";
+            $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
+                    "Havainnot (".$havaintotaulu[0]->$havainto->vakipaikka.
+                    $maa.")".$sulkemisnappi."</div>";
+
+            $omaid = $parametriolio->get_omaid();
+            $toiminto_otsikko = "";
+            if(($henkilo_id == $omaid) || ($omaid == Valtuudet::$HALLINTA)){
+                $toiminto_otsikko = "<th>Toiminnot</th>";
+            }
+
+            $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
+                <tr>
+                    <th>Nro</th>
+                    <th>Laji</th>
+                    <th>Aika</th>
+                    <th>Henkilö</th>
+                    $toiminto_otsikko
+                </tr>";
+
+
+            $laskuri = 1; // Auttaa joka toisen rivin eri väriseksi.
+
+            foreach ($havaintotaulu as $havainto) {
+
+                // Määritellään omille havainnoille muokkaus- ja poistopainikkeet:
+                // painike, josta saa näkyviin havaintolomakkeen:
+                $muokkausnappi = ""; // Nollataan, ettei kummittele!
+                $poistonappi = "";
+                $toimintopainikkeet = "";   // Omistajalle ja hallitsijalle ei-tyhjä.
+
+                // Omiin havaintoihin ja hallitsijan oikeuksilla saa muokata ja
+                // poistaa
+                if(($henkilo_id == $omaid) || ($omaid == Valtuudet::$HALLINTA)){
+
+                    $class = "rinnakkain";
+                    $id = "";
+                    $action = "index.php?id_hav=".$havainto->hav_id.
+                                "&id_lj=".$havainto->laji_id;
+                    $name = Bongaustoimintonimet::$havaintotoiminto;
+                    $value = Bongauspainikkeet::$MUOKKAA_HAVAINTO_VALUE;
+                    $muokkausnappi =
+                        Html::luo_painikelomake($class, $id, $action, $name, $value);
+
+                    $name = Bongaustoimintonimet::$havaintotoiminto;
+                    $value = Bongauspainikkeet::$POISTA_HAVAINTO_VALUE;
+                    $poistonappi =
+                        Html::luo_painikelomake($class, $id, $action, $name, $value);
+
+
+                    $toimintopainikkeet = "<td>".$muokkausnappi.$poistonappi."</td>";
+                }
+
+                
+
+                // Vain epävarmuus näytetään
+                $varmuus = "";
+                if($havainto->varmuus == Varmuus::$epavarma){
+                    $varmuus = " (?)";
+                }
+
+                // Muokataan aika:
+                $aika = Aika::anna_viikonp_suomeksi($havainto->paiva,
+                                                $havainto->kk,
+                                                $havainto->vuosi,
+                                                true)." ".
+                                                $havainto->paiva.".".
+                                                $havainto->kk.".".
+                                                $havainto->vuosi;
+
+                $henk_tiedot = $havainto->nimi;
+                if($laskuri % 2 == 0)
+                {
+                    $tulos .= "<tr class =".
+                        Bongausasetuksia::$tietotaulu_parillinenrivi_class.">";
+                }
+                else
+                {
+                    $tulos .= "<tr>";
+                }
+
+                $tulos .= "<td>".$laskuri."</td>";
+                $tulos .= "<td>".$havainto->laji.$varmuus."</td>";
+                $tulos .= "<td>".$aika."</td>";
+                $tulos .= "<td>".$henk_tiedot."</td>";
+                $tulos .= $toimintopainikkeet;
+                $tulos .= "</tr>";
+
+                $laskuri++;
+            }
+
+            $tulos .= "</table>";
+        }
+
+        return $tulos;
+    }
+    
     /**
      * Toteuttaa tilaston puolivuotisnäkymän näyttämisen.
      * @param type $palauteolio
@@ -146,7 +328,15 @@ class Havaintokontrolleri extends Kontrolleripohja{
         }
     }
     
-
+    public function toteuta_hae_vakipaikan_havainnot(&$palauteolio){
+        
+        $sisalto = $this->hae_paikan_havainnot();
+        $palauteolio->set_sisalto($sisalto);
+        
+        // Tämä nyt enempi kosmeettinen, ennenkuin keksin jotakin. Nyt aina ok..
+        $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+    }
+    
     public function toteuta_hae_henkilon_havainnot(&$palauteolio){
         
         $sisalto = Havainto::hae_henkilon_havainnot($this->get_parametriolio());
@@ -373,8 +563,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
      * 
      * <p>HUOM! Yhtä muokattaessa on enemmän muutosmahdollisuuksia kuin 
      * montaa. Montaa muokattaessa voi muuttaa ainoastaan aikaa, paikkaa,
-     * maata, varmuutta ja kommenttia. Yhtä muokattaessa myös lajiluokkaa
-     * voi muuttaa. Tulee siis vähän erilaiset lomakkeet.</p>
+     * maata, varmuutta ja kommenttia ja vakipaikkaa. Yhtä muokattaessa myös 
+     * lajiluokkaa voi muuttaa. Tulee siis vähän erilaiset lomakkeet.</p>
      * 
      * Ylläoleva määräytyy sellaisen lukumäärän mukaan, joka saadaan valituista,
      * kun niistä vähennetään sellaiset, joiden muuttamiseen käyttäjälle ei
@@ -467,6 +657,9 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     $muokattava->set_varmuus($this->
                                     get_parametriolio()->varmuus_hav);
                     
+                    $muokattava->set_vakipaikka(
+                            $this->get_parametriolio()->vakihavaintopaikka_hav);
+                    
                     if($this->get_parametriolio()->kommentti_hav !==
                         Parametrit::$EI_MAARITELTY){ 
                         $muokattava->set_kommentti($this->
@@ -546,6 +739,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                     get_parametriolio()->paikka_hav);
                     $muokattava->set_varmuus($this->
                                     get_parametriolio()->varmuus_hav);
+                    $muokattava->set_vakipaikka(
+                            $this->get_parametriolio()->vakihavaintopaikka_hav);
                     /*$muokattava->set_kommentti($this->
                                     get_parametriolio()->kommentti_hav);   */      
                     
@@ -834,6 +1029,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $uusi->set_kommentti($this->get_parametriolio()->kommentti_hav);
         $uusi->set_maa($this->get_parametriolio()->maa_hav);
         $uusi->set_varmuus($this->get_parametriolio()->varmuus_hav);
+        $uusi->set_vakipaikka($this->get_parametriolio()->vakihavaintopaikka_hav);
+        
         
         // Uudet ominaisuudet:
         $uusi->set_arvo($this->get_parametriolio()->sukupuoli_hav, 
@@ -1135,6 +1332,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
                         Havainto::$SARAKENIMI_SUKUPUOLI);
         $uusi->set_arvo($parametriolio->lkm_hav, 
                         Havainto::$SARAKENIMI_LKM);
+        
+        $uusi->set_vakipaikka($this->get_parametriolio()->vakihavaintopaikka_hav);
         
         if($uusi->tallenna_uusi() != Malliluokkapohja::$OPERAATIO_ONNISTUI){
             $this->lisaa_virheilmoitus($uusi->tulosta_virheilmoitukset());

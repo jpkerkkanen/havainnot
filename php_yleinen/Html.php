@@ -232,7 +232,7 @@ class Html{
             }
 
             for ($i = 0; $i < sizeof($arvot); $i++) {
-                if($oletusvalinta_arvo+0 === $arvot[$i]){
+                if($oletusvalinta_arvo+0 === $arvot[$i]+0){
                     $valikkohtml .= "<option value = '$arvot[$i]'".
                                     "selected = 'selected'>";
                 }
@@ -517,7 +517,7 @@ class Html{
                                         $option_maaritteet);
                 
                 // Jos oletusvalinta täsmää:
-                if($oletusvalinta_arvo == $arvot[$i]){
+                if($oletusvalinta_arvo+0 === $arvot[$i]+0){
                     
                     // Lisätään selected-määrite, mutta vähän hankalasti, ettei
                     // jää kaikkiin kummittelemaan!

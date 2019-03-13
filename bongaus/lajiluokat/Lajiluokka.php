@@ -897,9 +897,16 @@ class Lajiluokka extends Malliluokkapohja {
        try{
            $name_arvo = "lajiluokka_id_hav";
            $oletusvalinta_arvo = $lajiluokka_id_hav;
-           $valikkohtml.= Html::luo_pudotusvalikko($arvot,
+           /*$valikkohtml.= Html::luo_pudotusvalikko($arvot,
                                                    $nimet,
                                                    $name_arvo,
+                                                   $oletusvalinta_arvo,
+                                                   $otsikko);*/
+           
+           $valikkohtml.= Html::luo_pudotusvalikko_uusi($arvot,
+                                                   $nimet,
+                                                   array(Maarite::name($name_arvo)),
+                                                   array(),
                                                    $oletusvalinta_arvo,
                                                    $otsikko);
        }
