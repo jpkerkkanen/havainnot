@@ -517,7 +517,7 @@ class Html{
                                         $option_maaritteet);
                 
                 // Jos oletusvalinta täsmää:
-                if($oletusvalinta_arvo+0 === $arvot[$i]+0){
+                if($oletusvalinta_arvo === $arvot[$i]){
                     
                     // Lisätään selected-määrite, mutta vähän hankalasti, ettei
                     // jää kaikkiin kummittelemaan!

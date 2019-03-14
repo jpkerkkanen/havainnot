@@ -11,6 +11,8 @@
  */
 class Havaintonakymat extends Nakymapohja{
     
+    public static $havaintopaikkakentta_id = "hav_paikka_kentta";
+    public static $havaintomaavalikko_id = "hav_maavalikko";
     /**
      *
      * @var \Parametrit $parametriolio 
@@ -393,7 +395,7 @@ class Havaintonakymat extends Nakymapohja{
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
                             Html::luo_label_for("lisaa myohemmin", 
-                                        "*".Bongaustekstit::$havaintopaikkavalikko_otsikko.": ", ""),
+                                        Bongaustekstit::$havaintopaikkavalikko_otsikko.": ", ""),
 
                             array(Maarite::align("left"))). // solu
 
@@ -1663,6 +1665,7 @@ class Havaintonakymat extends Nakymapohja{
         $uusi_paikka_nappi = $this->luo_havaintopaikka_uusipainike();
         
         $paikka_ja_maa = 
+            Bongaustekstit::$havaintopaikkavalikko_otsikko.": ".
             $paikkavalikko.$uusi_paikka_nappi.
             Html::luo_div(
                 " *".Bongaustekstit::$paikka.": ".
@@ -1670,6 +1673,7 @@ class Havaintonakymat extends Nakymapohja{
                     Maarite::type("text"),
                     Maarite::name("paikka_hav"),
                     Maarite::value($paikka_hav),
+                    Maarite::id(Havaintonakymat::$havaintopaikkakentta_id),
                     Maarite::size(43)))." ".
                 $maavalikkohtml,
                 array(Maarite::classs("havaintolomakerivi")));
@@ -1734,6 +1738,10 @@ class Havaintonakymat extends Nakymapohja{
                 Havaintopaikka::hae_omat_paikat($this->tietokantaolio, $henk_id);
             $arvot = Havaintopaikka::hae_paikkojen_idt($paikat);
             $nimet = Havaintopaikka::hae_paikkojen_valikkonimet($paikat);
+            
+            // Lisätään ekaksi "ei-määritelty":
+            array_unshift($arvot, Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY);
+            array_unshift($nimet, Bongaustekstit::$undefined);
             
             $oletusvalinta_arvo = $valittu;
             // $otsikko = Bongaustekstit::$havaintopaikkavalikko_otsikko;

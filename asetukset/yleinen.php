@@ -282,6 +282,36 @@ class Maat {
    public static function nayta_maavalikko(&$maaindeksi, $otsikko, $name_arvo){
 
        $maavalikkohtml = "";
+lisää id
+       try{
+           $arvot = Maat::hae_maiden_arvot();
+           $nimet = Maat::hae_maiden_nimet();
+           $oletusvalinta_arvo = $maaindeksi;
+           $maavalikkohtml.= Html::luo_pudotusvalikko($arvot,
+                                                   $nimet,
+                                                   $name_arvo,
+                                                   $oletusvalinta_arvo,
+                                                   $otsikko);
+       }
+       catch(Exception $poikkeus){
+           $maavalikkohtml = Tekstit::$virhe_maavalikon_luomisessa." (".
+                           $poikkeus->getMessage().")";
+       }
+       return $maavalikkohtml;
+   }
+   
+   /**
+    * Luo ja palauttaa maavalikon html-koodin. Ei sisällä lomake- eli
+    * form-tageja!
+    * @param <type> $maa
+    * @param <type> $otsikko
+    * @return <type>
+     * @param type $name_arvo
+     * @return string
+     */
+   public static function nayta_maavalikko_vakipaikka(&$maaindeksi, $otsikko, $name_arvo){
+
+       $maavalikkohtml = "";
 
        try{
            $arvot = Maat::hae_maiden_arvot();

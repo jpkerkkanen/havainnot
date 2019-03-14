@@ -192,14 +192,16 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     $sulkemisnappi."</div>";
             $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
                     <tr>
-                    <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>".
-                    $hakulause;
+                    <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>";
         }
         else{ // Muotoillaan tiedot nätisti:
+            
+            $havainto = $havaintotaulu[0];
+        
             // Maa :
-            $maa = " (".Maat::hae_maan_nimi($havainto->maa).")";
+            $maa = ", ".Maat::hae_maan_nimi($havainto->maa);
             $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
-                    "Havainnot (".$havaintotaulu[0]->$havainto->vakipaikka.
+                    "Havainnot (".$havainto->vakipaikka.
                     $maa.")".$sulkemisnappi."</div>";
 
             $omaid = $parametriolio->get_omaid();

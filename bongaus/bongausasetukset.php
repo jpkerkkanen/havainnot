@@ -188,6 +188,7 @@ class Bongaustekstit{
      * @var type 
      */
     public static $tuntematon = "Tuntematon";
+    public static $undefined = "-- ei-määritelty --";
     public static $ja = "ja";
     
     public static $havtauluots_nro = "Nro";
@@ -213,7 +214,7 @@ class Bongaustekstit{
     public static $havtaul_lisaluok_tornien_taisto = "TORNIENTAISTO";
     public static $havtaul_lisaluok_vesilla = "VESILL&Auml;";
     //=========================================================================
-    public static $havaintopaikkavalikko_otsikko = "Havaintopaikka";
+    public static $havaintopaikkavalikko_otsikko = "Vakipaikka";
     public static $havaintopaikkalomakeohje = "Vakituisen paikan tiedot";
     public static $havaintopaikkalomake_Maa = "Maa";
     public static $havaintopaikkalomake_Selitys = "Selitys";

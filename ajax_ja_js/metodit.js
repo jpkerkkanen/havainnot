@@ -1,6 +1,28 @@
 // Ajastimet, jotta voidaan pysäyttää:
 var ajastin1, ajastin2, ajastin3, ajastin4, ajastin5;
 
+/** 
+ * Adds an element before index given as parameter. If
+ * parameter >= array.length, adds en element to the end of array. Returns the
+ * result array.
+ * 
+ * Note: remember that a nodeList doesn't work here because it's immutable.
+ * Note this, too: elem.insertBefore(newItem, elem.childNodes[i]);
+ * */
+function addElemBefore(index_raw, elem, targetArray){
+    
+    var index = Number(index_raw);
+    
+    if(index >= targetArray.length || index < 0){
+        targetArray.push(elem);
+    } else{
+        targetArray.splice(index, 0, elem);
+        //alert("Funktio addElemBefore: "+targetArray.length+" elems in array");
+    }
+    return targetArray;
+}
+
+
 /**
  * Short hand notation for document.getElementById(). Returns the same result
  * as the longer variant.
