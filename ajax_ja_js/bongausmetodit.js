@@ -136,8 +136,9 @@ function aseta_paikka_ja_maa(vakipaikka_id,
         
         nayta_viiveilmoitus = 0;
         toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
-                    'nayta_paikka_ja_maa','post', 'text', nayta_viiveilmoitus);
+                    'nayta_paikka_ja_maa','post', 'xml', nayta_viiveilmoitus);
 
+        //alert(kysely);
     }
 
     catch(virhe){
@@ -153,15 +154,20 @@ function aseta_paikka_ja_maa(vakipaikka_id,
         '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
         '</tiedot>';*/
 function nayta_paikka_ja_maa(tulosxml){
-    alert(tulosxml);
+    //alert(tulosxml);
     var maavalikko_id =
         tulosxml.getElementsByTagName("maavalikko_id")[0].childNodes[0].nodeValue;
     
     var paikkakentta_id =
         tulosxml.getElementsByTagName("paikkakentta_id")[0].childNodes[0].nodeValue;
     
-    var paikka =
-        tulosxml.getElementsByTagName("paikka")[0].childNodes[0].nodeValue;
+    // HUOM: paikka voi olla tyhjä, jolloin pitää ottaa varovasti:
+    var paikka = "";
+    var paikkaelem =
+        tulosxml.getElementsByTagName("paikka")[0].childNodes[0];
+    if(paikkaelem){
+        paikka = paikkaelem.nodeValue;
+    }
     
     var maa_id =
         tulosxml.getElementsByTagName("maa_id")[0].childNodes[0].nodeValue;
@@ -169,12 +175,11 @@ function nayta_paikka_ja_maa(tulosxml){
     // Asettaa paikan ja maan oikein päin. Vakipaikka asetettu, jos maavalikko_id
     // positiivinen, muuten ei.
     var vakipaikka_on = false;
-    if(parseInt(maavalikko_id) > 0){
-        vakipaikka_on = true;
-        alert("vakipaikka päälle!");
-    } else{
+    
+    if(parseInt(maa_id) < 0){
         vakipaikka_on = false;
-        alert("vakipaikka pois!");
+    } else{
+        vakipaikka_on = true;
     }
     var paikkakentta = find(paikkakentta_id);
     if(paikkakentta){
@@ -811,10 +816,10 @@ function setSelected(elemID, val){
         
         for(var i=0; i < elem.options.length; i++){
             var cand = elem.options[i];
-            alert("Option value="+cand.value);
+           
             if(cand.value === val){
-                alert("Selected value: "+val);
-                cand.selected;
+                //alert("Selected value: "+val);
+                cand.selected = true;
                 success = true;
                 break;
             } 
@@ -940,6 +945,9 @@ function nayta_vakipaikkatallennustulos(tulosxml){
         }
         
     } 
+    
+    // Paikan ja maan arvojen oikaisu:
+    nayta_paikka_ja_maa(tulosxml);
 }
 
 

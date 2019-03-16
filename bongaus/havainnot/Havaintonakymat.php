@@ -378,21 +378,33 @@ class Havaintonakymat extends Nakymapohja{
            
 
             // rivi5: Vakipaikka, Paikka ja maa:
-        
-            $rivi5A = 
+            // rivi5_1: Vakipaikkavalinta 
+
+            $rivi5A =
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            Html::luo_label_for("lisaa myohemmin", 
-                                        Bongaustekstit::$havaintopaikkavalikko_otsikko.": ", ""),
-
+                            Html::luo_label_for("lisaa_myohemmin", 
+                                Bongaustekstit::$havaintolomake_vakipaikka.": ", ""),
                             array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
+                            Html::luo_span($paikkavalikko, 
+                                array(Maarite::id(Bongausasetuksia::
+                                        $havaintolomake_vakipaikkavalikko_id))).   //span
 
-                            $paikkavalikko.$uusi_paikka_nappi,
-                            array(Maarite::align("left"))), // solu   
+                            Html::luo_span($uusi_paikka_nappi, 
+                                array(Maarite::id(Bongausasetuksia::
+                                        $havaintolomake_vakipaikkavalikkopainike_id))).   //span
 
-                        $maar_array);  // taulukkorivi 
+                            Html::luo_span("", 
+                                array(Maarite::id(Bongausasetuksia::$havaintolomake_lajivalintaohje_id))),   //span
+
+                            array(Maarite::align("left"),
+                                Maarite::id(Bongausasetuksia::
+                                    $havaintolomake_lajivalintarivi_id))), // solu   
+
+                        $maar_array);   // taulukkorivi 
+            
         
             $rivi5 = 
                     Html::luo_tablerivi(
@@ -643,7 +655,8 @@ class Havaintonakymat extends Nakymapohja{
         $erikoisvarustelu = true;
         $sisalto .= $this->luo_havaintotaulukko($poistettavat, 
                                                 $erikoisvarustelu,
-                                                $this->kuvanakymat);
+                                                $this->kuvanakymat,
+                                                $this->parametriolio->kieli_henkilo);
         
         // Ja palat yhteen:
         $html = 
@@ -2045,8 +2058,7 @@ class Havaintonakymat extends Nakymapohja{
         $tallennuskommentti = $this->parametriolio->get_tallennuspalaute();
         
         // Mahdolliset arvot voivat olla epätyhjiä puutteellisen yrityksen
-        // jälkeen (ei tartte uudestaan naputella):
-        $id_hav = $this->parametriolio->id_hav;    
+        // jälkeen (ei tartte uudestaan naputella):   
         $lajiluokka_id_hav = $this->parametriolio->lajiluokka_id_hav;
         $paiva_hav = $this->parametriolio->paiva_hav;
         $kk_hav = $this->parametriolio->kk_hav;

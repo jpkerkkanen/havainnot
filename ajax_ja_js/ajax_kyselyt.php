@@ -902,7 +902,7 @@ function aseta_paikka_ja_maa($koodaus, $havKontr){
         isset($_REQUEST['paikkakentta_id']) ? $_REQUEST['paikkakentta_id']: 
         "tuntematon";
     
-    $vakipaikka_id = $havKontr->get_parametriolio()->vakihavaintopaikka_hav;
+    $vakipaikka_id = $havKontr->get_parametriolio()->havaintopaikka_id;
     
     $vakipaikka = new Havaintopaikka($vakipaikka_id, $havKontr->get_tietokantaolio());
 
@@ -949,6 +949,16 @@ function tallenna_vakipaikka_uusi($koodaus, $havKontr, $palauteolio, $havaintona
 
    $uuden_id = $palauteolio->get_muokatun_id();
    
+   $vakipaikka = new Havaintopaikka($uuden_id, $havKontr->get_tietokantaolio());
+   if($vakipaikka->olio_loytyi_tietokannasta){
+       $maa_id = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+       $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+   } else{
+       $maa_id = -1;
+       $paikka = "";
+   }
+   $safe_paikka = htmlspecialchars($paikka);
+   
    $vakipaikkavalikko = 
        $havaintonakymat->luo_havaintopaikkavalikko(
            $uuden_id, 
@@ -956,15 +966,22 @@ function tallenna_vakipaikka_uusi($koodaus, $havKontr, $palauteolio, $havaintona
 
    $html = htmlspecialchars($vakipaikkavalikko);
 
+   $paikkakentta_id = Havaintonakymat::$havaintopaikkakentta_id;
+   $maavalikko_id = Havaintonakymat::$havaintomaavalikko_id;
+   
 
    // xml-muodossa saadaan muutkin tiedot mukaan:
    $xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
-       '<tiedot>'.
-       '<success>'.$success.'</success>'.
-       '<kommentti>'.$kommentti.'</kommentti>'.
-       '<dropdown>'.$html.'</dropdown>'.
-       '<dropdown_id>'.$vakipaikkavalikon_id.'</dropdown_id>'.
-       '</tiedot>';
+        '<tiedot>'.
+        '<success>'.$success.'</success>'.
+        '<kommentti>'.$kommentti.'</kommentti>'.
+        '<dropdown>'.$html.'</dropdown>'.
+        '<dropdown_id>'.$vakipaikkavalikon_id.'</dropdown_id>'.
+        '<paikka>'.$safe_paikka.'</paikka>'.
+        '<maa_id>'.$maa_id.'</maa_id>'.
+        '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
+        '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
+'</tiedot>';
    return $xml;
 }
 ?>

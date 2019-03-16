@@ -121,8 +121,7 @@ class Parametrit {
             
             $sukupuoli_hav,
             $lkm_hav,
-            $lisaluokitusvalinnat_hav,
-            $vakihavaintopaikka_hav;
+            $lisaluokitusvalinnat_hav;
     
     public
             $nayttomoodi_hav, 
@@ -541,11 +540,6 @@ class Parametrit {
         $this->lkm_hav = 
                     isset($_REQUEST[Havaintokontrolleri::$name_lkm_hav]) ?
                     $_REQUEST[Havaintokontrolleri::$name_lkm_hav]: 
-                    Parametrit::$EI_MAARITELTY;
-        
-        $this->vakihavaintopaikka_hav =  
-                    isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_id]) ?
-                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_id]: 
                     Parametrit::$EI_MAARITELTY;
         
         $this->lisaluokitusvalinnat_hav = // Kaikki lisäluokitukset taulukossa.

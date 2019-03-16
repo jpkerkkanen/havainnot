@@ -609,7 +609,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $paikka = $this->get_parametriolio()->paikka_hav;
 
             // Jos vakipaikka määritelty, haetaan maa ja paikka(?) siltä:
-            $vakipaikka_id = $this->get_parametriolio()->vakihavaintopaikka_hav;
+            $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
             if($vakipaikka_id != Havaintopaikka::$ei_asetettu){
                 $vakipaikka = 
                     new Havaintopaikka($vakipaikka_id, $this->get_tietokantaolio());
@@ -672,7 +672,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                     get_parametriolio()->varmuus_hav);
                     
                     $muokattava->set_vakipaikka(
-                            $this->get_parametriolio()->vakihavaintopaikka_hav);
+                            $this->get_parametriolio()->havaintopaikka_id);
                     
                     if($this->get_parametriolio()->kommentti_hav !==
                         Parametrit::$EI_MAARITELTY){ 
@@ -751,7 +751,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     $muokattava->set_varmuus($this->
                                     get_parametriolio()->varmuus_hav);
                     $muokattava->set_vakipaikka(
-                            $this->get_parametriolio()->vakihavaintopaikka_hav);
+                            $this->get_parametriolio()->havaintopaikka_id);
                     /*$muokattava->set_kommentti($this->
                                     get_parametriolio()->kommentti_hav);   */      
                     
@@ -1305,7 +1305,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $paikka = $this->get_parametriolio()->paikka_hav;
         
         // Jos vakipaikka määritelty, haetaan maa ja paikka(?) siltä:
-        $vakipaikka_id = $this->get_parametriolio()->vakihavaintopaikka_hav;
+        $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
         
         if($vakipaikka_id != Havaintopaikka::$ei_asetettu){
             $vakipaikka = 
