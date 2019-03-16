@@ -271,6 +271,7 @@ abstract class Malliluokkapohja extends Pohja{
                 Perustustekstit::$syotteen_tarkistusvirhe." ".$arvo;
             $this->lisaa_ilmoitus($ilmoitus, Ilmoitus::$TYYPPI_VIRHEILMOITUS);
         }
+       
 
         return $palaute;
     }
@@ -436,7 +437,7 @@ abstract class Malliluokkapohja extends Pohja{
             /* Tämä voi tulla lähinnä testaajalle, joten viesti voi auttaa.*/
             $this->lisaa_virheilmoitus(
                                 Perustustekstit::$virhe_arvo_vaarantyyppinen);
-            
+
         }
         return $palaute;
     }

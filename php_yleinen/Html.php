@@ -516,8 +516,8 @@ class Html{
                 Maarite::lisaa_maarite(Maarite::value($arvot[$i]), 
                                         $option_maaritteet);
                 
-                // Jos oletusvalinta täsmää:
-                if($oletusvalinta_arvo === $arvot[$i]){
+                // Jos oletusvalinta täsmää: HUOM: === aina valitti ei-numeerisista..
+                if($oletusvalinta_arvo == $arvot[$i]){
                     
                     // Lisätään selected-määrite, mutta vähän hankalasti, ettei
                     // jää kaikkiin kummittelemaan!

@@ -134,8 +134,9 @@ class Tietokantasolu {
      * <b>HUOM! Kaikki tietokantaan menevä tieto kulkee tämän metodin kautta!</b>
      * </p>
      * 
-     * Ellei uusi ole määritelty, 
-     * annetaan arvoksi Pohja::$MUUTTUJAA_EI_MAARITELTY.
+     * Ellei uusi ole määritelty, (tai arvo on Pohja::$MUUTTUJAA_EI_MAARITELTY),
+     * annetaan arvoksi Pohja::$MUUTTUJAA_EI_MAARITELTY. HUOMAA: tämä arvo ei mene
+     * läpi, vaan tiedot_ok-arvoksi tulee FALSE!
      * 
      * Jos uusi arvo on tyhjä silloin, kun tyhjä kielletty, 
      * annetaan arvoksi Pohja::$ARVO_TYHJA. HUOMAA: tässä vain merkkijonoja

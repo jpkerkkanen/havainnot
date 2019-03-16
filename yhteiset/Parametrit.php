@@ -178,9 +178,14 @@ class Parametrit {
     
     /** 
      * Huom! Vältä tämän käyttöä entiteettiluokan id-tunnisteen kohdalla.
-     * Käytä niissä Luokannimi::MUUTTUJAA_EI_MAARITELTY-arvoa, ettei tule
-     * sekaannusta kun entiteettiä luodaan (periaatteessa otettu kyllä huomioon,
-     * mutta kuitenkin noin loogisempi).
+     * Käytä niissä Luokannimi::MUUTTUJAA_EI_MAARITELTY-arvoa silloin, kun
+     * tarkoitus on luoda uusi puhdas.
+     * 
+     * HUOM: tämä arvo menee tietokantaan asti, kun taas muuttujaa_ei_maaritelty
+     * tulkitaan ei-määritellyksi, eikä se tallennu tietokantaan. Joten tämä arvo
+     * on ok silloin, kun "ei-määritelty"-arvo halutaan tietokantaan.
+     * 
+     * Älä muuta hetken mielijohteesta..
      * 
      * @var type 
      */

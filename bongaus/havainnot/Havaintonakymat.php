@@ -12,7 +12,7 @@
 class Havaintonakymat extends Nakymapohja{
     
     public static $havaintopaikkakentta_id = "hav_paikka_kentta";
-    public static $havaintomaavalikko_id = "hav_maavalikko";
+    public static $havaintomaavalikko_id = "maavalikko";
     /**
      *
      * @var \Parametrit $parametriolio 
@@ -163,30 +163,18 @@ class Havaintonakymat extends Nakymapohja{
                                             $otsikko);
             }
             
-            /*************************************************************************/
-            $maavalikkohtml = "";
+            /******************************************************************/
 
             try{
-                $arvot = Maat::hae_maiden_arvot();
-                $nimet = Maat::hae_maiden_nimet();
+               
                 $name_arvo = Havaintokontrolleri::$name_maa_hav;
-                $id_arvo = "";
-                $class_arvo = "maavalikko";
-                $oletusvalinta_arvo = $maa_hav;
+                $id = Havaintonakymat::$havaintomaavalikko_id;
+                $maaindeksi = $maa_hav;
                 $otsikko = Maat::$valikko_otsikko;
-                $onchange_metodinimi = "kirjoita_maa";
-                $onchange_metodiparametrit_array = array();
 
-                $maavalikkohtml.= Html::luo_pudotusvalikko_onChange(
-                                            $arvot,
-                                            $nimet,
-                                            $name_arvo,
-                                            $id_arvo,
-                                            $class_arvo,
-                                            $oletusvalinta_arvo,
-                                            $otsikko,
-                                            $onchange_metodinimi,
-                                            $onchange_metodiparametrit_array);
+
+                $maavalikkohtml = 
+                    Maat::nayta_maavalikko($maaindeksi, $otsikko, $name_arvo, $id);
 
             }
             catch(Exception $poikkeus){
@@ -419,6 +407,7 @@ class Havaintonakymat extends Nakymapohja{
                             Html::luo_input(
                                 array(Maarite::type("text"),
                                     Maarite::name("paikka_hav"),
+                                    Maarite::id(Havaintonakymat::$havaintopaikkakentta_id),
                                     Maarite::value($paikka_hav))). // input 
                             $maavalikkohtml,
 
@@ -1377,28 +1366,15 @@ class Havaintonakymat extends Nakymapohja{
         
 
         /*************************************************************************/
-        $maavalikkohtml = "";
-
         try{
-            $arvot = Maat::hae_maiden_arvot();
-            $nimet = Maat::hae_maiden_nimet();
             $name_arvo = Havaintokontrolleri::$name_maa_hav;
-            $id_arvo = "";
-            $class_arvo = "maavalikko";
-            $oletusvalinta_arvo = $parametriolio->maa_hav;
+            $id = Havaintonakymat::$havaintomaavalikko_id;
+            $maaindeksi = $parametriolio->maa_hav;
             $otsikko = Maat::$valikko_otsikko;
-            $onchange_metodinimi = "kirjoita_maa";
-            $onchange_metodiparametrit_array = array();
+            
 
-            $maavalikkohtml.= Html::luo_pudotusvalikko_onChange($arvot,
-                                                            $nimet,
-                                                            $name_arvo,
-                                                            $id_arvo,
-                                                            $class_arvo,
-                                                            $oletusvalinta_arvo,
-                                                            $otsikko,
-                                                            $onchange_metodinimi,
-                                                $onchange_metodiparametrit_array);
+            $maavalikkohtml = 
+                Maat::nayta_maavalikko($maaindeksi, $otsikko, $name_arvo, $id);
 
         }
         catch(Exception $poikkeus){
@@ -1739,8 +1715,10 @@ class Havaintonakymat extends Nakymapohja{
             $arvot = Havaintopaikka::hae_paikkojen_idt($paikat);
             $nimet = Havaintopaikka::hae_paikkojen_valikkonimet($paikat);
             
-            // Lisätään ekaksi "ei-määritelty":
-            array_unshift($arvot, Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY);
+            // Lisätään ekaksi "ei-määritelty". Huomaa, että luokan
+            // muuttujaa_ei_maaritelty-arvoa ei voi käyttää, koska se ei mene
+            // läpi tallennustarkistuksesta (tietokantarivi):
+            array_unshift($arvot, Havaintopaikka::$ei_asetettu);
             array_unshift($nimet, Bongaustekstit::$undefined);
             
             $oletusvalinta_arvo = $valittu;
@@ -1750,7 +1728,12 @@ class Havaintonakymat extends Nakymapohja{
             $select_maaritteet = array(
                 Maarite::classs("havaintopaikkavalikko"),
                 Maarite::id("havaintopaikkavalikkoid"),
-                Maarite::name(Havaintokontrolleri::$name_havaintopaikka_id)
+                Maarite::name(Havaintokontrolleri::$name_havaintopaikka_id),
+                Maarite::onchange("aseta_paikka_ja_maa", 
+                    array("this.value", 
+                        Havaintokontrolleri::$name_havaintopaikka_id,
+                        Havaintonakymat::$havaintopaikkakentta_id,
+                        Havaintonakymat::$havaintomaavalikko_id))
             );
             $option_maaritteet = array();
             
@@ -2117,29 +2100,17 @@ class Havaintonakymat extends Nakymapohja{
         
 
         /*************************************************************************/
-        $maavalikkohtml = "";
 
         try{
-            $arvot = Maat::hae_maiden_arvot();
-            $nimet = Maat::hae_maiden_nimet();
             $name_arvo = Havaintokontrolleri::$name_maa_hav;
-            $id_arvo = "maavalikko";
-            $class_arvo = "";
+            $id_arvo = Havaintonakymat::$havaintomaavalikko_id;
             $oletusvalinta_arvo = $maa_hav;
             $otsikko = Maat::$valikko_otsikko;
-            $onchange_metodinimi = "kirjoita_maa";
-            $onchange_metodiparametrit_array = array();
 
-            $maavalikkohtml.= Html::luo_pudotusvalikko_onChange(
-                                        $arvot,
-                                        $nimet,
-                                        $name_arvo,
-                                        $id_arvo,
-                                        $class_arvo,
-                                        $oletusvalinta_arvo,
-                                        $otsikko,
-                                        $onchange_metodinimi,
-                                        $onchange_metodiparametrit_array);
+            $maavalikkohtml = Maat::nayta_maavalikko($oletusvalinta_arvo, 
+                                                    $otsikko, 
+                                                    $name_arvo, 
+                                                    $id_arvo);
 
         }
         catch(Exception $poikkeus){
@@ -2366,7 +2337,7 @@ class Havaintonakymat extends Nakymapohja{
         $rivi6 = 
                 Html::luo_tablerivi(
                     Html::luo_tablesolu(
-                        Html::luo_label_for("lisaa myohemmin", 
+                        Html::luo_label_for(Havaintonakymat::$havaintopaikkakentta_id, 
                                     "*".Bongaustekstit::$paikka.": ", ""),
 
                         array(Maarite::align("left"))). // solu
@@ -2376,6 +2347,7 @@ class Havaintonakymat extends Nakymapohja{
                         Html::luo_input(
                             array(Maarite::type("text"),
                                 Maarite::name("paikka_hav"),
+                                Maarite::id(Havaintonakymat::$havaintopaikkakentta_id),
                                 Maarite::value($paikka_hav))). // input 
                         $maavalikkohtml,
 

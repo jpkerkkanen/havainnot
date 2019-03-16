@@ -739,7 +739,8 @@ class kayttajanakymat extends Nakymapohja{
                     Html::luo_tablesolu(
                         Maat::nayta_maavalikko($asuinmaa, 
                                             "", 
-                                            Kayttajakontrolleri::$name_asuinmaa),
+                                            Kayttajakontrolleri::$name_asuinmaa,
+                                            Id::$maavalikko_id),
                         array()), // Tablesolu 2
                     array()). // Tablerivi
                 

@@ -604,6 +604,20 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $this->toteuta_nayta($palauteolio);
         }
         else{
+            // Siepataan maa ja paikka vakipaikalta, jos sellainen määritelty:
+            $maa = $this->get_parametriolio()->maa_hav;
+            $paikka = $this->get_parametriolio()->paikka_hav;
+
+            // Jos vakipaikka määritelty, haetaan maa ja paikka(?) siltä:
+            $vakipaikka_id = $this->get_parametriolio()->vakihavaintopaikka_hav;
+            if($vakipaikka_id != Havaintopaikka::$ei_asetettu){
+                $vakipaikka = 
+                    new Havaintopaikka($vakipaikka_id, $this->get_tietokantaolio());
+                if($vakipaikka->olio_loytyi_tietokannasta){
+                    $maa = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+                    $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+                }
+            }
             
             // Tapaus, jossa vain yhtä havaintoa muokataan, jolloin mahdolli-
             // suuksia on enemmän.
@@ -652,10 +666,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                     get_parametriolio()->paiva_hav);
                     $muokattava->set_vuosi($this->
                                     get_parametriolio()->vuosi_hav);
-                    $muokattava->set_maa($this->
-                                    get_parametriolio()->maa_hav);
-                    $muokattava->set_paikka($this->
-                                    get_parametriolio()->paikka_hav);
+                    $muokattava->set_maa($maa);
+                    $muokattava->set_paikka($paikka);
                     $muokattava->set_varmuus($this->
                                     get_parametriolio()->varmuus_hav);
                     
@@ -667,8 +679,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
                         $muokattava->set_kommentti($this->
                                     get_parametriolio()->kommentti_hav);  
                     }
-                    
-                    // Uudet ominaisuudet:
+                   
                     if($this->get_parametriolio()->sukupuoli_hav !==
                         Parametrit::$EI_MAARITELTY){ 
                         $muokattava->set_arvo($this->get_parametriolio()->sukupuoli_hav, 
@@ -735,10 +746,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                     get_parametriolio()->paiva_hav);
                     $muokattava->set_vuosi($this->
                                     get_parametriolio()->vuosi_hav);
-                    $muokattava->set_maa($this->
-                                    get_parametriolio()->maa_hav);
-                    $muokattava->set_paikka($this->
-                                    get_parametriolio()->paikka_hav);
+                    $muokattava->set_maa($maa);
+                    $muokattava->set_paikka($paikka);
                     $muokattava->set_varmuus($this->
                                     get_parametriolio()->varmuus_hav);
                     $muokattava->set_vakipaikka(
@@ -1008,40 +1017,11 @@ class Havaintokontrolleri extends Kontrolleripohja{
      */
     public function toteuta_tallenna_uusi(&$palauteolio) {
         
-        $omaid = $this->get_parametriolio()->get_omaid();
+        $id_lj = $this->get_parametriolio()->lajiluokka_id_hav;
+        $uusi = $this->luo_aseta_tallenna_havainto($this->get_parametriolio(), $id_lj);
         
-        $uusi = new Havainto(Havainto::$MUUTTUJAA_EI_MAARITELTY,
-                                $this->get_tietokantaolio());
-        
-        $tallentaja = new Henkilo($this->get_parametriolio()->get_omaid(), 
-                                    $this->get_tietokantaolio());
-        
-        // Jos lkm on tyhjä, annetaan arvo ei-määritelty.
-        if(empty($this->get_parametriolio()->lkm_hav)){
-            $this->get_parametriolio()->lkm_hav =
-                        Parametrit::$EI_MAARITELTY;
-        }
-        
-        $uusi->set_henkilo_id($this->get_parametriolio()->get_omaid());
-        $uusi->set_lajiluokka_id($this->get_parametriolio()->lajiluokka_id_hav);
-        $uusi->set_paiva($this->get_parametriolio()->paiva_hav);
-        $uusi->set_kk($this->get_parametriolio()->kk_hav);
-        $uusi->set_vuosi($this->get_parametriolio()->vuosi_hav);
-        $uusi->set_paikka($this->get_parametriolio()->paikka_hav);
-        $uusi->set_kommentti($this->get_parametriolio()->kommentti_hav);
-        $uusi->set_maa($this->get_parametriolio()->maa_hav);
-        $uusi->set_varmuus($this->get_parametriolio()->varmuus_hav);
-        $uusi->set_vakipaikka($this->get_parametriolio()->vakihavaintopaikka_hav);
-        
-        
-        // Uudet ominaisuudet:
-        $uusi->set_arvo($this->get_parametriolio()->sukupuoli_hav, 
-                        Havainto::$SARAKENIMI_SUKUPUOLI);
-        $uusi->set_arvo($this->get_parametriolio()->lkm_hav, 
-                        Havainto::$SARAKENIMI_LKM);
-        
-        if($uusi->tallenna_uusi() === Havainto::$OPERAATIO_ONNISTUI){
-            
+        if($uusi instanceof Havainto){
+
             // Tallennetaan havainnon lisäluokitukset:==========================
             $valitut = $this->get_parametriolio()->lisaluokitusvalinnat_hav;
             foreach ($valitut as $lisaluokitusarvo) {
@@ -1059,6 +1039,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $palauteolio->set_muokatun_id($uusi->get_id());
             
             // Aktiivisuusmerkintä:
+            $tallentaja = new Henkilo($this->get_parametriolio()->get_omaid(), 
+                                    $this->get_tietokantaolio());
             $tallentaja->paivita_aktiivisuus(Aktiivisuus::$HAVAINTOTALLENNUS_UUSI);
             
             $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
@@ -1072,14 +1054,14 @@ class Havaintokontrolleri extends Kontrolleripohja{
             
             $palaute = Bongaustekstit::$ilm_havainnon_lisays_eiok.
                     Html::luo_br().
-                    $uusi->tulosta_virheilmoitukset();
+                    $this->tulosta_virheilmoitukset();
             
             // Parametriolion kautta saadaan lomakkeeseen palaute myös.
             $this->get_parametriolio()->set_tallennuspalaute($palaute);
             $palauteolio->set_ilmoitus($palaute);
             
-            // Asetetaan valituksi uusi: 
-            $this->valittujen_idt = array($uusi->get_id());
+            // Asetetaan valituksi uusi: ???
+            //$this->valittujen_idt = array($uusi->get_id());
             $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
         }
     }
@@ -1115,8 +1097,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         if($havjaks->olio_loytyi_tietokannasta){
             foreach ($valinnat as $id_lj) {
 
-                $this->luo_havainto_olio($param, $id_lj);
-                $havainto = new Havainto($param->id_hav, $tietokantaolio);
+                $havainto = $this->luo_aseta_tallenna_havainto($param, $id_lj);
                 
                 if($havainto->olio_loytyi_tietokannasta){
                     
@@ -1299,49 +1280,71 @@ class Havaintokontrolleri extends Kontrolleripohja{
     }
     
     /**
-     * Luo uuden Havainto-luokan olion ja tallentaa sen tietokantaan.
-     * Onnistuesssaan palauttaa arvon OPERAATIO_ONNISTUI. Muussa tapauksessa 
-     * palauttaa arvon VIRHE ja jättää tarvittaessa ilmoituksen 
+     * Luo uuden Havainto-luokan olion, hakee tiedot parametrioliosta ja 
+     * tallentaa tietokantaan. 
+     * Onnistuesssaan palauttaa Havainto-luokan olion. Muussa tapauksessa 
+     * palauttaa arvon Havainto::$VIRHE ja jättää tarvittaessa ilmoituksen 
      * Havaintokontrollerioliolle.
      * @param Parametrit $parametriolio
      * @param int $id_lj Valitun lajin id.
+     * @return type
      */
-    private function luo_havainto_olio(&$parametriolio, $id_lj){
+    private function luo_aseta_tallenna_havainto(&$parametriolio, $id_lj){
         
-        $palautusarvo = Havainto::$OPERAATIO_ONNISTUI;
+        $palautusarvo = Havainto::$VIRHE;
         $tietokantaolio = $parametriolio->get_tietokantaolio();
-        
-        $uusi = new Havainto(Havainto::$MUUTTUJAA_EI_MAARITELTY,$tietokantaolio);
-        
-        $uusi->set_henkilo_id($parametriolio->get_omaid());
-        $uusi->set_lajiluokka_id($id_lj);
-        $uusi->set_paiva($parametriolio->paiva_hav);
-        $uusi->set_kk($parametriolio->kk_hav);
-        $uusi->set_vuosi($parametriolio->vuosi_hav);
-        $uusi->set_paikka($parametriolio->paikka_hav);
+       
+        $hav = new Havainto(Havainto::$MUUTTUJAA_EI_MAARITELTY, $tietokantaolio);
         
         // Ellei kommenttia määritelty, tallennetaan tyhjä merkkijono:
         if($parametriolio->kommentti_hav === Parametrit::$EI_MAARITELTY){
             $parametriolio->kommentti_hav = "";
         }
+         
+        $maa = $this->get_parametriolio()->maa_hav;
+        $paikka = $this->get_parametriolio()->paikka_hav;
         
-        $uusi->set_kommentti($parametriolio->kommentti_hav);
-        $uusi->set_maa($parametriolio->maa_hav);
-        $uusi->set_varmuus($parametriolio->varmuus_hav);
-
-         // Uudet ominaisuudet:
-        $uusi->set_arvo($parametriolio->sukupuoli_hav, 
+        // Jos vakipaikka määritelty, haetaan maa ja paikka(?) siltä:
+        $vakipaikka_id = $this->get_parametriolio()->vakihavaintopaikka_hav;
+        
+        if($vakipaikka_id != Havaintopaikka::$ei_asetettu){
+            $vakipaikka = 
+                new Havaintopaikka($vakipaikka_id, $this->get_tietokantaolio());
+            if($vakipaikka->olio_loytyi_tietokannasta){
+                $maa = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+                $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+            }
+        }
+        
+        // Jos lkm on tyhjä, annetaan arvo ei-määritelty.
+        if(empty($this->get_parametriolio()->lkm_hav)){
+            $this->get_parametriolio()->lkm_hav =
+                        Parametrit::$EI_MAARITELTY;
+        }
+        
+        $hav->set_henkilo_id($this->get_parametriolio()->get_omaid());
+        $hav->set_lajiluokka_id($id_lj);
+        $hav->set_paiva($this->get_parametriolio()->paiva_hav);
+        $hav->set_kk($this->get_parametriolio()->kk_hav);
+        $hav->set_vuosi($this->get_parametriolio()->vuosi_hav);
+        $hav->set_paikka($paikka);
+        $hav->set_kommentti($this->get_parametriolio()->kommentti_hav);
+        $hav->set_maa($maa);
+        $hav->set_varmuus($this->get_parametriolio()->varmuus_hav);
+        $hav->set_vakipaikka($vakipaikka_id);
+        $hav->set_arvo($this->get_parametriolio()->sukupuoli_hav, 
                         Havainto::$SARAKENIMI_SUKUPUOLI);
-        $uusi->set_arvo($parametriolio->lkm_hav, 
+        $hav->set_arvo($this->get_parametriolio()->lkm_hav, 
                         Havainto::$SARAKENIMI_LKM);
         
-        $uusi->set_vakipaikka($this->get_parametriolio()->vakihavaintopaikka_hav);
-        
-        if($uusi->tallenna_uusi() != Malliluokkapohja::$OPERAATIO_ONNISTUI){
-            $this->lisaa_virheilmoitus($uusi->tulosta_virheilmoitukset());
-            $palautusarvo = Havainto::$VIRHE;
+        $palaute = $hav->tallenna_uusi();
+        if($palaute === Malliluokkapohja::$OPERAATIO_ONNISTUI){
+            $parametriolio->id_hav = $hav->get_id();
+            $palautusarvo = $hav;
+            echo "vakipaikka_id=".$hav->get_vakipaikka();
         } else{
-            $parametriolio->id_hav = $uusi->get_id();
+            $this->lisaa_virheilmoitus($hav->tulosta_virheilmoitukset());
+            echo "virhe - vakipaikka_id=".$hav->get_arvo(Havainto::$SARAKENIMI_VAKIPAIKKA)." ja onnistuminen=".$palaute;
         }
         return $palautusarvo;
     }

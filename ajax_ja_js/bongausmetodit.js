@@ -124,6 +124,72 @@ function muokkaa_havaintolomake(havaintolomake_id,
                 +virhe.description;
     }*/
 }
+function aseta_paikka_ja_maa(vakipaikka_id, 
+                                vakipaikka_id_name, 
+                                paikkakentta_id, 
+                                maavalikko_id){
+    try{
+        kysely = "kysymys=aseta_paikka_ja_maa&"+
+                vakipaikka_id_name+"="+vakipaikka_id+
+                "&paikkakentta_id="+paikkakentta_id+
+                "&maavalikko_id="+maavalikko_id;
+        
+        nayta_viiveilmoitus = 0;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_paikka_ja_maa','post', 'text', nayta_viiveilmoitus);
+
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/etsi_laji): "+virhe.description;
+    }
+}
+/*$xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
+        '<tiedot>'.
+        '<paikka>'.$safe_paikka.'</paikka>'.
+        '<maa_id>'.$maa_id.'</maa_id>'.
+        '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
+        '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
+        '</tiedot>';*/
+function nayta_paikka_ja_maa(tulosxml){
+    alert(tulosxml);
+    var maavalikko_id =
+        tulosxml.getElementsByTagName("maavalikko_id")[0].childNodes[0].nodeValue;
+    
+    var paikkakentta_id =
+        tulosxml.getElementsByTagName("paikkakentta_id")[0].childNodes[0].nodeValue;
+    
+    var paikka =
+        tulosxml.getElementsByTagName("paikka")[0].childNodes[0].nodeValue;
+    
+    var maa_id =
+        tulosxml.getElementsByTagName("maa_id")[0].childNodes[0].nodeValue;
+    
+    // Asettaa paikan ja maan oikein päin. Vakipaikka asetettu, jos maavalikko_id
+    // positiivinen, muuten ei.
+    var vakipaikka_on = false;
+    if(parseInt(maavalikko_id) > 0){
+        vakipaikka_on = true;
+        alert("vakipaikka päälle!");
+    } else{
+        vakipaikka_on = false;
+        alert("vakipaikka pois!");
+    }
+    var paikkakentta = find(paikkakentta_id);
+    if(paikkakentta){
+        paikkakentta.value = paikka;
+        paikkakentta.disabled = vakipaikka_on;
+    }
+    
+    var maavalikko = find(maavalikko_id);
+    if(maavalikko){
+        setSelected(maavalikko_id, maa_id);
+        maavalikko.disabled = vakipaikka_on;
+    }
+    
+}
+
 
 // Lähettää kyselyn koskien lajiluokkaa, joka täsmää kirjoitetun alukkeen kanssa.
 function etsi_laji(alkumj, ylaluokka_id){
@@ -733,6 +799,30 @@ function nayta_vakipaikkalomake(html){
             "Virhe (bongausmetodit.js/nayta_vakipaikkalomake): "+virhe.description;
     }
 }
+
+// Asettaa parametrina annetun arvon valituksi (vain). Palauttaa true, jos onnistuu,
+// muuten false.
+function setSelected(elemID, val){
+    var elem = document.getElementById(elemID);
+    var success = false;
+    if (elem){
+
+        elem.selectedIndex = -1;        // Deselects all options
+        
+        for(var i=0; i < elem.options.length; i++){
+            var cand = elem.options[i];
+            alert("Option value="+cand.value);
+            if(cand.value === val){
+                alert("Selected value: "+val);
+                cand.selected;
+                success = true;
+                break;
+            } 
+        }
+    }
+    return success;
+}
+
 // Etsii pudotusvalikon valitun arvon. Ellei löydy, palauttaa arvon -1.
 // Siis sama arvo kuin maavalikko.options[maavalikko.selectedIndex].value;
 function getSelVal(elemID){

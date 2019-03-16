@@ -1070,6 +1070,7 @@ class Havainto extends Malliluokkapohja {
            $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
                    <tr>
                    <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>";
+                   //$hakulause;
        }
        else{ // Muotoillaan tiedot nätisti:
            $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".

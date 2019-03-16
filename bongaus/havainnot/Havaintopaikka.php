@@ -36,7 +36,10 @@ class Havaintopaikka extends Malliluokkapohja{
     
     public static $taulunimi = "havaintopaikat";
     
-    
+    // Tallennetaan tietokantaan vakipaikka_id:n kohdalle silloin, kun 
+    // vakipaikkaa ei ole määritelty. Huomaa, että Pohja::muuttujaa_ei_maaritelty
+    //-arvoa ei voi tallentaa tietokantaan (ei mene läpi tarkistuksista).
+    public static $ei_asetettu = -1;
     /**
      * @param Tietokantaolio $tietokantaolio
      * @param int $id olion id tietokannassa

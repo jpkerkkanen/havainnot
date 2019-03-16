@@ -427,7 +427,7 @@ else    // Jos tunnistus on kunnossa.
         }
 
         /********************* Lajilistan näyttö: puolivuodet *************/
-        else if($kysymys == "nayta_henkilon_bongauslajit"){
+        else if($kysymys === "nayta_henkilon_bongauslajit"){
 
             $havaintokontrolleri->toteuta_hae_henkilon_lajilista($palauteolio);
             $palaute = $palauteolio->get_sisalto();
@@ -436,7 +436,7 @@ else    // Jos tunnistus on kunnossa.
         }
         
          /********************* Lajilistan näyttö: vuositaso ******************/
-        else if($kysymys == "nayta_henkilon_pinnalajit"){
+        else if($kysymys === "nayta_henkilon_pinnalajit"){
 
             $havaintokontrolleri->toteuta_hae_henkilon_vuosilajilista($palauteolio);
             $palaute = $palauteolio->get_sisalto();
@@ -468,6 +468,14 @@ else    // Jos tunnistus on kunnossa.
             header('Content-type: text/xml');
             echo $xml;
         }
+        /********************** Vakipaikan muutoksen aiheuttama toiminta ******/
+        else if($kysymys === "aseta_paikka_ja_maa"){
+            
+            $xml = aseta_paikka_ja_maa($koodaus, $havaintokontrolleri);
+            header('Content-type: text/xml');
+            echo $xml;
+        }
+        
 
 
         /*=================================================================*/
@@ -878,6 +886,46 @@ else    // Jos tunnistus on kunnossa.
         $tietokantaolio->sulje_tietokanta($dbnimi); 
         
 }// Raskaammat kyselyt loppuivat
+
+/**
+ * 
+ * @param type $koodaus
+ * @param Havaintokontrolleri $havKontr
+ * @return string
+ */
+function aseta_paikka_ja_maa($koodaus, $havKontr){
+    
+    $maavalikko_id = 
+        isset($_REQUEST['maavalikko_id']) ? $_REQUEST['maavalikko_id']: 
+        Havaintopaikka::$ei_asetettu;
+    $paikkakentta_id = 
+        isset($_REQUEST['paikkakentta_id']) ? $_REQUEST['paikkakentta_id']: 
+        "tuntematon";
+    
+    $vakipaikka_id = $havKontr->get_parametriolio()->vakihavaintopaikka_hav;
+    
+    $vakipaikka = new Havaintopaikka($vakipaikka_id, $havKontr->get_tietokantaolio());
+
+    $paikka = "";
+    $maa_id = -1;
+    if($vakipaikka->olio_loytyi_tietokannasta){
+        $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+        $maa_id = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+    }
+    
+    $safe_paikka = htmlspecialchars($paikka);
+
+
+    // xml-muodossa saadaan muutkin tiedot mukaan:
+    $xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
+        '<tiedot>'.
+        '<paikka>'.$safe_paikka.'</paikka>'.
+        '<maa_id>'.$maa_id.'</maa_id>'.
+        '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
+        '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
+        '</tiedot>';
+    return $xml;
+}
 
 /**
 * 
