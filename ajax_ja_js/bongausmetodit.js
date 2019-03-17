@@ -127,12 +127,14 @@ function muokkaa_havaintolomake(havaintolomake_id,
 function aseta_paikka_ja_maa(vakipaikka_id, 
                                 vakipaikka_id_name, 
                                 paikkakentta_id, 
-                                maavalikko_id){
+                                maavalikko_id,
+                                muokkausnappispan_id){
     try{
         kysely = "kysymys=aseta_paikka_ja_maa&"+
                 vakipaikka_id_name+"="+vakipaikka_id+
                 "&paikkakentta_id="+paikkakentta_id+
-                "&maavalikko_id="+maavalikko_id;
+                "&maavalikko_id="+maavalikko_id+
+                "&muokkausnappispan_id="+muokkausnappispan_id;
         
         nayta_viiveilmoitus = 0;
         toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
@@ -146,13 +148,7 @@ function aseta_paikka_ja_maa(vakipaikka_id,
             "Virhe (bongausmetodit.js/etsi_laji): "+virhe.description;
     }
 }
-/*$xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
-        '<tiedot>'.
-        '<paikka>'.$safe_paikka.'</paikka>'.
-        '<maa_id>'.$maa_id.'</maa_id>'.
-        '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
-        '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
-        '</tiedot>';*/
+
 function nayta_paikka_ja_maa(tulosxml){
     //alert(tulosxml);
     var maavalikko_id =
@@ -160,7 +156,16 @@ function nayta_paikka_ja_maa(tulosxml){
     
     var paikkakentta_id =
         tulosxml.getElementsByTagName("paikkakentta_id")[0].childNodes[0].nodeValue;
-    
+
+    // Jos tämä tyhjä, ei ole tarkoitus muuttaa muokkauspainiketta (kuten
+    // tallennuksen yhteydessä).
+    var muokkausnappispan_id = "";
+    var spanElem =
+        tulosxml.getElementsByTagName("muokkausnappispan_id")[0].childNodes[0];
+    if(spanElem){
+        muokkausnappispan_id = spanElem.nodeValue;
+    }
+ 
     // HUOM: paikka voi olla tyhjä, jolloin pitää ottaa varovasti:
     var paikka = "";
     var paikkaelem =
@@ -169,6 +174,14 @@ function nayta_paikka_ja_maa(tulosxml){
         paikka = paikkaelem.nodeValue;
     }
     
+    // Samma här:
+    var muokkausnappi = "";
+    var elem = tulosxml.getElementsByTagName("muokkausnappi")[0].childNodes[0];
+    if(elem){
+        muokkausnappi = elem.nodeValue;
+    }
+    
+ 
     var maa_id =
         tulosxml.getElementsByTagName("maa_id")[0].childNodes[0].nodeValue;
     
@@ -181,6 +194,7 @@ function nayta_paikka_ja_maa(tulosxml){
     } else{
         vakipaikka_on = true;
     }
+
     var paikkakentta = find(paikkakentta_id);
     if(paikkakentta){
         paikkakentta.value = paikka;
@@ -193,6 +207,9 @@ function nayta_paikka_ja_maa(tulosxml){
         maavalikko.disabled = vakipaikka_on;
     }
     
+    if(muokkausnappispan_id !== ""){
+        find(muokkausnappispan_id).innerHTML = muokkausnappi;
+    }
 }
 
 
@@ -754,10 +771,11 @@ function bongaus_kopioi_havainto(param){
 
 
 /* Näyttää vakipaikkalomakkeen, eli hakee ajaxin avulla html-koodin. */
-function hae_vakipaikkalomake(){
+function hae_vakipaikkalomake(vakipaikka_id_name, vakipaikka_id){
     try{
-        kysely = "kysymys=nayta_vakipaikkalomake";
-                //"&id_lj="+id_lj;
+        kysely = "kysymys=nayta_vakipaikkalomake"+
+                "&"+vakipaikka_id_name+"="+vakipaikka_id;
+        
         nayta_viiveilmoitus = 0;
         toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
                     'nayta_vakipaikkalomake','post', 'text',

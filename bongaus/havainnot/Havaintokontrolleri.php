@@ -400,9 +400,39 @@ class Havaintokontrolleri extends Kontrolleripohja{
         }else{
             $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_VIRHE_YLEINEN);
         }
+    }
+
+    /**
+     * Muodostaa vakipaikkalomakkeen ja asettaa sen sekä sisältö- että 
+     * ajax-response-muuttujan arvoksi.
+     * @param Palaute $palauteolio
+     */
+    public function toteuta_nayta_vakipaikkalomake(&$palauteolio){
         
+        $omaid = $this->get_parametriolio()->get_omaid();
+        $mie = new Henkilo($oma_id, $this->get_tietokantaolio());
+        if($mie->olio_loytyi_tietokannasta){
+            $asuinmaa_id = $mie->get_arvo(Henkilo::$sarakenimi_asuinmaa);
+        }
         
+        $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
+        $vakipaikka = new Havaintopaikka($vakipaikka_id, $this->get_tietokantaolio());
         
+        if($vakipaikka->olio_loytyi_tietokannasta){
+            $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+            $selitys = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_SELITYS);
+            $maa_id = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+        } else{
+            $paikka = "";
+            $selitys = "";
+            $maa_id = $asuinmaa_id;  
+        }
+        
+        $lomake = $this->havaintonakymat->nayta_vakipaikkalomake(
+                                $vakipaikka_id, $paikka, $selitys, $maa_id);
+        
+        $palauteolio->set_ajax_response($lomake);
+        $palauteolio->set_sisalto($lomake);
     }
     
     
@@ -1184,57 +1214,151 @@ class Havaintokontrolleri extends Kontrolleripohja{
         }
     }
     
+    
     /**
-     * Toteuttaa uuden havaintopaikan tallennuksen tietokantaan.
+     * Toteuttaa uuden havaintopaikan tai vanhan muutosten tallennuksen 
+     * tietokantaan. Asettaa ajax-kutsua varten xml-koodin ja muuten normaalisti
+     * sisällöt ja ilmoitukset.
      * 
      * @param Palaute $palauteolio
      */
-    function toteuta_tallenna_uusi_vakipaikka(&$palauteolio){
+    function toteuta_tallenna_vakipaikka_uusivanha(&$palauteolio){
         $omaid = $this->get_parametriolio()->get_omaid();
         
-        $uusi = new Havaintopaikka(Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY,
-                                $this->get_tietokantaolio());
+        $uuden_tallennus = true;
+        $tallennus_ok = false;
         
-        $omaid = $this->get_parametriolio()->get_omaid();
+        $id = $this->get_parametriolio()->havaintopaikka_id;
         $paikannimi = $this->get_parametriolio()->havaintopaikka_nimi;
-        $selitys = $this->get_parametriolio()->havaintopaikka_nimi;
+        $selitys = $this->get_parametriolio()->havaintopaikka_selitys;
         $maa = $this->get_parametriolio()->havaintopaikka_maa;
         
-        $uusi->set_arvo($omaid, Havaintopaikka::$SARAKENIMI_HENKILO_ID);
-        $uusi->set_arvo($paikannimi, Havaintopaikka::$SARAKENIMI_NIMI);
-        $uusi->set_arvo($selitys, Havaintopaikka::$SARAKENIMI_SELITYS);
-        $uusi->set_arvo($maa, Havaintopaikka::$SARAKENIMI_MAA_ID);
+        $vpaikka = new Havaintopaikka($id, $this->get_tietokantaolio());
+
+        if($vpaikka->olio_loytyi_tietokannasta){
+            $uuden_tallennus = false;
+        }
         
-        if($uusi->tallenna_uusi() === Havainto::$OPERAATIO_ONNISTUI){
+        $vpaikka->set_arvo($omaid, Havaintopaikka::$SARAKENIMI_HENKILO_ID);
+        $vpaikka->set_arvo($paikannimi, Havaintopaikka::$SARAKENIMI_NIMI);
+        $vpaikka->set_arvo($selitys, Havaintopaikka::$SARAKENIMI_SELITYS);
+        $vpaikka->set_arvo($maa, Havaintopaikka::$SARAKENIMI_MAA_ID);
+        
+        // Painike on jo näkyvissä muokkauksess, mutta uuden luomisen yhteydessä
+        // lisätään muokkausnappi.
+        $muokkausnappispan_id = "";
+        $muokkausnappi = "";
+        
+        if($uuden_tallennus){
+            if($vpaikka->tallenna_uusi() === Havainto::$OPERAATIO_ONNISTUI){
+
+                $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+                $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_lisays_ok);
+                $palauteolio->set_muokatun_id($vpaikka->get_id());
+
+                $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+                $tallennus_ok = true;
+                
+                $muokkausnappispan_id = Havaintonakymat::$muokkausnappispan_id;
+                $muokkausnappi = htmlspecialchars($this->havaintonakymat->
+                    luo_havaintopaikka_muokkauspainike($vpaikka->get_id()));
+                
+            }
+            else{
+                $palauteolio->set_onnistumispalaute(
+                                Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_UUSI);
+
+                $palaute = Bongaustekstit::$virheilm_havaintopaikan_lisays_eiok.
+                        Html::luo_br().
+                        $vpaikka->tulosta_virheilmoitukset();
+
+                // Parametriolion kautta saadaan lomakkeeseen palaute myös.
+                $this->get_parametriolio()->set_tallennuspalaute($palaute);
+                $palauteolio->set_ilmoitus($palaute);
+
+                // Asetetaan valituksi uusi: 
+                $palauteolio->set_sisalto(
+                    $this->havaintonakymat->nayta_vakipaikkalomake(
+                        Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY, 
+                        $paikannimi, $selitys, $maa));
+            }
+
+        } else{ // vanhan muokkaus
             
-            $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
-            $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_lisays_ok);
-            $palauteolio->set_muokatun_id($uusi->get_id());
             
-            $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+            if($vpaikka->tallenna_muutokset() === Havainto::$OPERAATIO_ONNISTUI){
+
+                $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+                $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikan_muutos_ok);
+                $palauteolio->set_muokatun_id($vpaikka->get_id());
+                $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+                $tallennus_ok = true;
+            }
+            else{
+                $palauteolio->set_onnistumispalaute(
+                                Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_MUOKKAUS);
+
+                $palaute = Bongaustekstit::$virheilm_havaintopaikan_muutos_eiok.
+                        Html::luo_br().
+                        $vpaikka->tulosta_virheilmoitukset();
+
+                // Parametriolion kautta saadaan lomakkeeseen palaute myös.
+                $this->get_parametriolio()->set_tallennuspalaute($palaute);
+                $palauteolio->set_ilmoitus($palaute);
+
+                // Asetetaan valituksi uusi: 
+                $palauteolio->set_sisalto(
+                    $this->havaintonakymat->nayta_vakipaikkalomake(
+                                            $id,$paikannimi, $selitys, $maa));
+            }
         }
-        else{
-            $palauteolio->set_onnistumispalaute(
-                            Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_UUSI);
-            
-            $palaute = Bongaustekstit::$virheilm_havaintopaikan_lisays_eiok.
-                    Html::luo_br().
-                    $uusi->tulosta_virheilmoitukset();
-            
-            // Parametriolion kautta saadaan lomakkeeseen palaute myös.
-            $this->get_parametriolio()->set_tallennuspalaute($palaute);
-            $palauteolio->set_ilmoitus($palaute);
-            
-            // Asetetaan valituksi uusi: 
-            $palauteolio->set_sisalto(
-                $this->havaintonakymat->nayta_vakipaikkalomake(
-                    Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY, 
-                    $paikannimi, $selitys, $maa));
+        
+        
+        //============================= ajax-koodin muodostaminen
+        $koodaus = Yleisasetuksia::$koodaus;
+        $havaintonakymat = $this->havaintonakymat;
+        $vakipaikkavalikon_id = Havaintonakymat::$vakipaikkavalikon_id;
+
+        $success = 0;
+        if($tallennus_ok){
+            $success = 1;
+            $safe_paikka = htmlspecialchars($paikannimi);
+        } else{
+            $maa = -1;
+            $safe_paikka = "";
         }
+        $kommentti = htmlspecialchars($palauteolio->tulosta_kaikki_ilmoitukset());
+
+        $vakipaikkavalikko = 
+            $havaintonakymat->luo_havaintopaikkavalikko(
+                $vpaikka->get_id(), 
+                $this->get_parametriolio()->get_omaid());
+
+        $html = htmlspecialchars($vakipaikkavalikko);
+
+        $paikkakentta_id = Havaintonakymat::$havaintopaikkakentta_id;
+        $maavalikko_id = Havaintonakymat::$havaintomaavalikko_id;
+
+        // xml-muodossa saadaan muutkin tiedot mukaan:
+        $xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
+            '<tiedot>'.
+            '<success>'.$success.'</success>'.
+            '<kommentti>'.$kommentti.'</kommentti>'.
+            '<dropdown>'.$html.'</dropdown>'.
+            '<dropdown_id>'.$vakipaikkavalikon_id.'</dropdown_id>'.
+            '<paikka>'.$safe_paikka.'</paikka>'.
+            '<maa_id>'.$maa.'</maa_id>'.
+            '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
+            '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
+            '<muokkausnappispan_id>'.$muokkausnappispan_id.'</muokkausnappispan_id>'.
+            '<muokkausnappi>'.$muokkausnappi.'</muokkausnappi>'.
+        '</tiedot>';
+        
+        $palauteolio->set_ajax_response($xml);
     }
     /**
      * Toteuttaa havaintopaikan muutosten tallennuksen tietokantaan.
-     */
+     *
     function toteuta_tallenna_vakipaikkamuutokset(&$palauteolio){
         
         $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
@@ -1278,7 +1402,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
             $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havaintopaikkaa_ei_loytynyt);
         }
-    }
+    }*/
     
     /**
      * Luo uuden Havainto-luokan olion, hakee tiedot parametrioliosta ja 

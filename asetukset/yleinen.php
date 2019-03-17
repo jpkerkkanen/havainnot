@@ -79,6 +79,7 @@ class Tekstit{
  */
 class Yleisasetuksia{
     public static $etusivutiedostonimi = "index.php";  
+    public static $koodaus = "UTF-8";
 
     //======================= kayttäjä-tekstit==================================
 }

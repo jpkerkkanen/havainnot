@@ -165,6 +165,11 @@ class Bongauspainikkeet{
     public static $vakipaikka_luo_uusi_value = "Luo uusi";
     public static $vakipaikka_luo_uusi_title = 
             "Luo uusi vakipaikka, jos käyt siellä toistuvasti";
+    
+    public static $vakipaikka_muokkaa_value = "Muokkaa";
+    public static $vakipaikka_muokkaa_title = 
+            "Muokkaa aktiivisen havaintopaikan tietoja";
+    
     public static $vakipaikka_tallenna_uusi_value = "Tallenna uusi";
     public static $vakipaikka_tallenna_uusi_title = 
             "Tallentaa uuden vakipaikan";

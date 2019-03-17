@@ -13,6 +13,8 @@ class Havaintonakymat extends Nakymapohja{
     
     public static $havaintopaikkakentta_id = "hav_paikka_kentta";
     public static $havaintomaavalikko_id = "maavalikko";
+    public static $vakipaikkavalikon_id = "paikkavalikko";
+    public static $muokkausnappispan_id = "vpaikkamuokkauspainike";
     /**
      *
      * @var \Parametrit $parametriolio 
@@ -395,6 +397,10 @@ class Havaintonakymat extends Nakymapohja{
                             Html::luo_span($uusi_paikka_nappi, 
                                 array(Maarite::id(Bongausasetuksia::
                                         $havaintolomake_vakipaikkavalikkopainike_id))).   //span
+                            Html::luo_span("", 
+                                array(Maarite::id(
+                                    Havaintonakymat::$muokkausnappispan_id))).   //span
+
 
                             Html::luo_span("", 
                                 array(Maarite::id(Bongausasetuksia::$havaintolomake_lajivalintaohje_id))),   //span
@@ -1653,9 +1659,15 @@ class Havaintonakymat extends Nakymapohja{
                                             $this->parametriolio->get_omaid());
         $uusi_paikka_nappi = $this->luo_havaintopaikka_uusipainike();
         
+        // Tyhjä, koska täytetään tarvittaessa ajaxin avulla.
+        $muokkausnappispan = Html::luo_span("", 
+                            array(Maarite::id(
+                                Havaintonakymat::$muokkausnappispan_id)));   //span
+
+        
         $paikka_ja_maa = 
             Bongaustekstit::$havaintopaikkavalikko_otsikko.": ".
-            $paikkavalikko.$uusi_paikka_nappi.
+            $paikkavalikko.$uusi_paikka_nappi.$muokkausnappispan.
             Html::luo_div(
                 " *".Bongaustekstit::$paikka.": ".
                 Html::luo_input(array(
@@ -1746,7 +1758,8 @@ class Havaintonakymat extends Nakymapohja{
                     array("this.value", 
                         Havaintokontrolleri::$name_havaintopaikka_id,
                         Havaintonakymat::$havaintopaikkakentta_id,
-                        Havaintonakymat::$havaintomaavalikko_id))
+                        Havaintonakymat::$havaintomaavalikko_id,
+                        Havaintonakymat::$muokkausnappispan_id))
             );
             $option_maaritteet = array();
             
@@ -2089,7 +2102,8 @@ class Havaintonakymat extends Nakymapohja{
                                 Maarite::value(Bongauspainikkeet::
                                             $UUSI_LAJILUOKKA_VALUE)));
         
-
+        
+        
         $havaintolomakeohje = Bongaustekstit::$havaintolomake_uusi_ohje;
 
         
@@ -2332,8 +2346,11 @@ class Havaintonakymat extends Nakymapohja{
                                     $havaintolomake_vakipaikkavalikko_id))).   //span
 
                         Html::luo_span($uusi_paikka_nappi, 
-                            array(Maarite::id(Bongausasetuksia::
-                                    $havaintolomake_vakipaikkavalikkopainike_id))).   //span
+                            array()).   //span
+                            
+                        Html::luo_span("", 
+                            array(Maarite::id(
+                                Havaintonakymat::$muokkausnappispan_id))).   //span
 
                         Html::luo_span("", 
                             array(Maarite::id(Bongausasetuksia::$havaintolomake_lajivalintaohje_id))),   //span
@@ -2467,8 +2484,6 @@ class Havaintonakymat extends Nakymapohja{
     function nayta_vakipaikkalomake($vakipaikka_id, $paikka, $selitys, $maa_id){
         
         
-        $tietokantaolio = $this->parametriolio->get_tietokantaolio();
-        
         $maavalikko_id = "maavalikko_vakipaikka";
         $paikkaruutu_id = "vakipaikkaruutu"; 
         $selitysruutu_id = "vakipaikkaselitys";
@@ -2483,9 +2498,13 @@ class Havaintonakymat extends Nakymapohja{
                                     array("yleislaatikko"))));
         
 
+        $nappiteksti = Bongauspainikkeet::$vakipaikka_tallenna_uusi_value;
+        if($vakipaikka_id > 0){
+            $nappiteksti = Bongauspainikkeet::$vakipaikka_muokkaa_value;
+        }
         
         $tallennanappi = Html::luo_button(
-                            Bongauspainikkeet::$vakipaikka_tallenna_uusi_value,
+                            $nappiteksti,
                             array(
                                 Maarite::classs("rinnakkain"),
                                 Maarite::onclick("tallenna_vakipaikka", 
@@ -2604,7 +2623,8 @@ class Havaintonakymat extends Nakymapohja{
                     Html::luo_tablesolu("",
                         array(Maarite::align("left"))). // solu
 
-                    Html::luo_tablesolu($tallennanappi.$poistunappi,
+                    Html::luo_tablesolu(
+                        $tallennanappi.$poistunappi,
                         array(Maarite::align("left"))), // solu   
 
                     $maar_array);   // taulukkorivi 
@@ -2762,9 +2782,28 @@ class Havaintonakymat extends Nakymapohja{
                                 $vakipaikka_luo_uusi_value,
                 array(
                     Maarite::classs("rinnakkain"),
-                    Maarite::value(Bongauspainikkeet::
+                    Maarite::title(Bongauspainikkeet::
                                 $vakipaikka_luo_uusi_title),
-                    Maarite::onclick("hae_vakipaikkalomake", array())));
+                    Maarite::onclick("hae_vakipaikkalomake", 
+                        array(
+                            Havaintokontrolleri::$name_havaintopaikka_id,
+                            Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY
+                    ))));
+        return $painike;
+    }
+    
+    public function luo_havaintopaikka_muokkauspainike($vakipaikka_id) {
+        $painike = 
+            Html::luo_button(Bongauspainikkeet::
+                                $vakipaikka_muokkaa_value,
+                array(
+                    Maarite::classs("rinnakkain"),
+                    Maarite::title(Bongauspainikkeet::$vakipaikka_muokkaa_title),
+                    Maarite::onclick("hae_vakipaikkalomake", 
+                        array(
+                            Havaintokontrolleri::$name_havaintopaikka_id,
+                            $vakipaikka_id
+                    ))));
         return $painike;
     }
 

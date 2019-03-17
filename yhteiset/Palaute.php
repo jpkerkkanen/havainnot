@@ -31,7 +31,7 @@ class Palaute extends Pohja{
     private $nayttomoodi;   // Muokkaa muun muassa palstojen määrää.
     private $naytettava_oliotyyppi; // Kertoo näytettävien tyypin.
     private $js_url;    // Tämä viittaa urliin, jonne js-metodi vie.
-
+    private $ajax_response; // Could be xml or html
 
     public static $EI_LINKKEJA = "";    // Tarkoittaa, että linkkihtml tyhjä.
 
@@ -65,6 +65,7 @@ class Palaute extends Pohja{
         $this->kirjautuminen_ok = false;
         $this->painikkeet = "";
         $this->nayttomoodi = Html_tulostus::$nayttomoodi_kaksipalkki_vasen_levea;
+        $this->ajax_response = "";
     }
     /**
      * Palauttaa muuttujille arvot, jotka niillä oli heti olion luomisen
@@ -86,6 +87,7 @@ class Palaute extends Pohja{
         $this->kirjautuminen_ok = false;
         $this->painikkeet = "";
         $this->nayttomoodi = Html_tulostus::$nayttomoodi_kaksipalkki_vasen_levea;
+        $this->ajax_response = "";
     }
 
     /* Setterit ja getterit */
@@ -96,6 +98,17 @@ class Palaute extends Pohja{
     public function set_kirjautumistiedot($uusi){
         if(isset($uusi)){
             $this->kirjautumistiedot = $uusi;
+            
+        }
+    }
+    
+    public function get_ajax_response(){
+        return $this->ajax_response;
+    }
+    // Tiedot täytyy olla määritelty!
+    public function set_ajax_response($uusi){
+        if(isset($uusi)){
+            $this->ajax_response = $uusi;
             
         }
     }

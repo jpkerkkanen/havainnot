@@ -40,7 +40,8 @@ else    // Jos tunnistus on kunnossa.
     // Asetetaan aikavyöhyke:
     date_default_timezone_set  ('Europe/Helsinki'); // Vaaditaan alkaen MySQL5.1
     
-    $koodaus = "UTF-8";
+    require_once('../asetukset/yleinen.php');
+    $koodaus = Yleisasetuksia::$koodaus;
 
     /************************ KYSELYT *****************************************/
     $kysymys = isset($_REQUEST['kysymys']) ? $_REQUEST['kysymys']: "";
@@ -58,7 +59,6 @@ else    // Jos tunnistus on kunnossa.
         // Haetaan asetukset ja avataan yhteys tietokantaan:
         require_once('../asetukset/tietokantayhteys.php');
         require_once('../asetukset/Valtuudet.php');
-        require_once('../asetukset/yleinen.php');
         require_once('../asetukset/Kielet.php');
 
         require_once('../html_tulostus.php');
@@ -456,15 +456,16 @@ else    // Jos tunnistus on kunnossa.
         /*********************** Vakipaikkalomakkeen näyttö *************/
         else if($kysymys === "nayta_vakipaikkalomake"){
             
-            $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
-            echo $havaintonakymat->nayta_vakipaikkalomake(-2,"","",$parametriolio->asuinmaa);
+            $havaintokontrolleri->toteuta_nayta_vakipaikkalomake($palauteolio);
+            $response = $palauteolio->get_ajax_response();
+            echo $response;     // Ei xml tällä kertaa.
         }
         /*********************** Vakipaikkalomakkeen näyttö *************/
         else if($kysymys === "tallenna_vakipaikka"){
             
-            $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
-            $xml = tallenna_vakipaikka_uusi($koodaus, $havaintokontrolleri, 
-                                            $palauteolio, $havaintonakymat);
+            $havaintokontrolleri->toteuta_tallenna_vakipaikka_uusivanha($palauteolio);
+            $xml = $palauteolio->get_ajax_response();
+            
             header('Content-type: text/xml');
             echo $xml;
         }
@@ -895,22 +896,37 @@ else    // Jos tunnistus on kunnossa.
  */
 function aseta_paikka_ja_maa($koodaus, $havKontr){
     
+    $tietokantaolio = $havKontr->get_tietokantaolio();
+    $parametriolio = $havKontr->get_parametriolio();
+    $kuvanakymat = new Kuvanakymat();
+    
+    $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
+    
     $maavalikko_id = 
         isset($_REQUEST['maavalikko_id']) ? $_REQUEST['maavalikko_id']: 
         Havaintopaikka::$ei_asetettu;
     $paikkakentta_id = 
         isset($_REQUEST['paikkakentta_id']) ? $_REQUEST['paikkakentta_id']: 
         "tuntematon";
+    $muokkausnappispan_id = 
+        isset($_REQUEST['muokkausnappispan_id']) ? $_REQUEST['muokkausnappispan_id']: 
+        "tuntematon";
+    
     
     $vakipaikka_id = $havKontr->get_parametriolio()->havaintopaikka_id;
     
     $vakipaikka = new Havaintopaikka($vakipaikka_id, $havKontr->get_tietokantaolio());
 
+    $muokkausnappi = "";
+    
     $paikka = "";
     $maa_id = -1;
     if($vakipaikka->olio_loytyi_tietokannasta){
         $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
         $maa_id = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+        $muokkausnappi = 
+            htmlspecialchars(
+                $havaintonakymat->luo_havaintopaikka_muokkauspainike($vakipaikka_id));
     }
     
     $safe_paikka = htmlspecialchars($paikka);
@@ -923,65 +939,10 @@ function aseta_paikka_ja_maa($koodaus, $havKontr){
         '<maa_id>'.$maa_id.'</maa_id>'.
         '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
         '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
+        '<muokkausnappispan_id>'.$muokkausnappispan_id.'</muokkausnappispan_id>'.
+        '<muokkausnappi>'.$muokkausnappi.'</muokkausnappi>'.
         '</tiedot>';
     return $xml;
 }
 
-/**
-* 
-* @param type $koodaus
-* @param Havaintokontrolleri $havKontr
-* @param Palaute $palauteolio
-* @param Havaintonakymat $havaintonakymat
-*/
-function tallenna_vakipaikka_uusi($koodaus, $havKontr, $palauteolio, $havaintonakymat){
-
-   $vakipaikkavalikon_id = "paikkavalikko";
-
-   $havKontr->toteuta_tallenna_uusi_vakipaikka($palauteolio);
-   $success = 0;
-   if($palauteolio->get_onnistumispalaute() === 
-           Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK){
-
-       $success = 1;
-   }
-   $kommentti = htmlspecialchars($palauteolio->tulosta_kaikki_ilmoitukset());
-
-   $uuden_id = $palauteolio->get_muokatun_id();
-   
-   $vakipaikka = new Havaintopaikka($uuden_id, $havKontr->get_tietokantaolio());
-   if($vakipaikka->olio_loytyi_tietokannasta){
-       $maa_id = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
-       $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
-   } else{
-       $maa_id = -1;
-       $paikka = "";
-   }
-   $safe_paikka = htmlspecialchars($paikka);
-   
-   $vakipaikkavalikko = 
-       $havaintonakymat->luo_havaintopaikkavalikko(
-           $uuden_id, 
-           $havKontr->get_parametriolio()->get_omaid());
-
-   $html = htmlspecialchars($vakipaikkavalikko);
-
-   $paikkakentta_id = Havaintonakymat::$havaintopaikkakentta_id;
-   $maavalikko_id = Havaintonakymat::$havaintomaavalikko_id;
-   
-
-   // xml-muodossa saadaan muutkin tiedot mukaan:
-   $xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
-        '<tiedot>'.
-        '<success>'.$success.'</success>'.
-        '<kommentti>'.$kommentti.'</kommentti>'.
-        '<dropdown>'.$html.'</dropdown>'.
-        '<dropdown_id>'.$vakipaikkavalikon_id.'</dropdown_id>'.
-        '<paikka>'.$safe_paikka.'</paikka>'.
-        '<maa_id>'.$maa_id.'</maa_id>'.
-        '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
-        '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
-'</tiedot>';
-   return $xml;
-}
 ?>
