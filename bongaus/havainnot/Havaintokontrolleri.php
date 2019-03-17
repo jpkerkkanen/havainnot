@@ -127,7 +127,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
 
         $tietokantaolio = $parametriolio->get_tietokantaolio();
 
-        $vakipaikka_id = $parametriolio->vakihavaintopaikka_hav;
+        $vakipaikka_id = $parametriolio->havaintopaikka_id;
         $henkilo_id = $parametriolio->henkilo_id;
 
         // Painikkeita:
@@ -193,6 +193,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
                     <tr>
                     <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>";
+                    //$hakulause;
         }
         else{ // Muotoillaan tiedot nätisti:
             
