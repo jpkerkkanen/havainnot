@@ -121,7 +121,10 @@ class Parametrit {
             
             $sukupuoli_hav,
             $lkm_hav,
-            $lisaluokitusvalinnat_hav;
+            $lisaluokitusvalinnat_hav,
+    
+            // Monen havainnon muokkaus: muokkausvalinnat:
+            $muokattavat_ominaisuudet_hav;
     
     public
             $nayttomoodi_hav, 
@@ -562,6 +565,12 @@ class Parametrit {
         $this->havaintovalinnat_hav =  
                 isset($_REQUEST[Havaintokontrolleri::$name_havaintovalinnat_hav]) ?
                     $_REQUEST[Havaintokontrolleri::$name_havaintovalinnat_hav]:
+                    array();
+        
+        // Monimuokkauslomakkeen muokattavat ominaisuudet ovat taulukossa:
+        $this->muokattavat_ominaisuudet_hav =  
+                isset($_REQUEST[Havaintokontrolleri::$name_muokattavat_ominaisuudet_hav]) ?
+                    $_REQUEST[Havaintokontrolleri::$name_muokattavat_ominaisuudet_hav]:
                     array();
         
         $this->puolivuotiskauden_nro_hav =

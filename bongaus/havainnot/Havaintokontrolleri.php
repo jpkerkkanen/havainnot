@@ -38,6 +38,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
     public static $name_havaintovalinnat_hav = "havaintovalinnat_hav"; // vanhat
     public static $name_puolivuotiskauden_nro_hav ="puolivuotkaudnum_hav";
     
+
+    
     public static $name_lisaluokitusehto_hav = "lisaluokitusehto";
     
     public static $name_max_lkm_hav = "max_lkm_hav";    // Näin monta havaintoa näytetään kerralla.
@@ -46,6 +48,14 @@ class Havaintokontrolleri extends Kontrolleripohja{
     public static $name_on_kopio_hav = "on_kopio_hav";  // boolean, onko kysymys havainnon kopioinnista.
     public static $name_uusi_hav = "uusi_hav";  // boolean: uusi havainto vai vanhan muokkaus
     public static $name_naytettavan_id_hav = "naytettavan_id_hav";   
+
+    // Nämä liittyvät monen havainnon muokkaukseen.
+    public static $name_muokattavat_ominaisuudet_hav = "muokattavat_ominaisuudet_hav";
+    public static $chkboxval_muokkaa_pvm_hav = "muok_pvm_hav";
+    public static $chkboxval_muokkaa_paikka_hav = "muok_paikka_hav";
+    public static $chkboxval_muokkaa_varmuus_hav = "muok_varmuus_hav";
+    public static $chkboxval_muokkaa_lisaluokitukset_hav = "muok_lisaluokitukset_hav";
+    public static $chkboxval_muokkaa_tapahtuma_hav = "muok_tapahtuma_hav";
     
     // Name-arvot liittyen havaintojaksoihin:
     public static $name_id_havjaks= "id_havjaks";

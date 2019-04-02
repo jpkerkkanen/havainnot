@@ -294,9 +294,11 @@ class Havaintonakymat extends Nakymapohja{
 
                         // Päivän syöttö (vähän solurajat hassusti):
                         Html::luo_tablesolu(
-                            Html::luo_label_for("paiva", "*".
-                                            Bongaustekstit::$paiva.":", ""), 
-                            array(Maarite::align("left"))). // solu1
+                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$paiva.":", 
+                                Bongaustekstit::$paiva.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_pvm_hav),
+                            array(Maarite::align("left"))).
 
                         Html::luo_tablesolu(
                             Html::luo_input(
@@ -415,9 +417,10 @@ class Havaintonakymat extends Nakymapohja{
             $rivi5 = 
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            Html::luo_label_for("lisaa myohemmin", 
-                                        "*".Bongaustekstit::$paikka.": ", ""),
-
+                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$paikka.":", 
+                                Bongaustekstit::$paikka.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_paikka_hav),
                             array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
@@ -437,9 +440,11 @@ class Havaintonakymat extends Nakymapohja{
             $rivi6 = 
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            Html::luo_label_for("lisaa myohemmin",
-                                            Varmuus::$valikko_otsikko.":", ""),
-                                array(Maarite::align("left"))). // solu
+                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Varmuus::$valikko_otsikko.":", 
+                                Varmuus::$valikko_otsikko.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_varmuus_hav),
+                            array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
                             $varmuusvalikko." ".$sukupuolivalikko.
@@ -473,10 +478,12 @@ class Havaintonakymat extends Nakymapohja{
             $rivi7_2 = 
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            Html::luo_label_for("ll1_valikko",
-                                    Bongaustekstit::$havaintolomake_lisaluokitukset.
-                                    ":", ""),
-                                array(Maarite::align("left"))). // solu
+ 
+                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$havaintolomake_lisaluokitukset.":", 
+                                Bongaustekstit::$havaintolomake_lisaluokitukset.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_lisaluokitukset_hav),
+                            array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
                             $lisaluokitusradionapit,
@@ -2667,6 +2674,30 @@ class Havaintonakymat extends Nakymapohja{
            
        }
        return $palaute;
+   }
+   
+   /**
+    * Muodostaa html-koodin monimuokkauslomakkeen muokattavan ominaisuuden
+    * nimeä & valintaruutua varten. Käyttäjä voi sitten ruudun valitsemalla
+    * osoittaa, että haluaa muuttaa valittujen havaintojen kyseistä ominaisuutta.
+    * @param type $otsikko
+    * @param string $desc Ohje, html-elementin title-arvoksi
+    * @param type $chkbox_value
+    */
+    public function luo_monimuok_ominaisuusots_ja_chkbox(
+                        $otsikko, $desc, $chkbox_value){
+        
+        $solusis = Html::luo_labeled_checkbox($otsikko,     
+                    array(Maarite::name(Havaintokontrolleri::
+                                       $name_muokattavat_ominaisuudet_hav."[]"),
+                                   
+                            Maarite::title($desc),
+                            Maarite::value($chkbox_value),
+                            Maarite::classs("ominaisuus"),
+                            Maarite::onclick("muuta_muokkausrivi", 
+                                            array($chkbox_value)))); 
+       
+       return $solusis;
    }
    /**
     * Luo radionappien koodin. Jos kyse on muokkauksesta, hakee valituista
