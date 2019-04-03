@@ -439,6 +439,9 @@ class Bongaustekstit{
     
     public static $havaintolomake_noedit_ilm = "Ei valittu - vanha arvo säilyy";
     
+    public static $havaintolomake_muok_jaksolisaysohje = 
+            "Havainto liitetään valittuun tapahtumaan (joita voi olla useita).";
+    
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)
     public static $paiva = "P&auml;iv&auml;";

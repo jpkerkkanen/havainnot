@@ -545,14 +545,17 @@ class Havaintonakymat extends Nakymapohja{
                             
                         $maar_array);   // taulukkorivi 
 
-echo "tapahtuma_id=".$default_tapahtuma;
+
             
             // rivi7_3: Havaintotapahtuman valinta:
             $rivi7_3 = 
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
                             $ots_tapahtuma,
-                            array(Maarite::align("left"))). // solu
+                            array(Maarite::align("left"),
+                                Maarite::title(
+                                    Bongaustekstit::
+                                        $havaintolomake_muok_jaksolisaysohje))). // solu
 
                         Html::luo_tablesolu(
                             Html::luo_span(

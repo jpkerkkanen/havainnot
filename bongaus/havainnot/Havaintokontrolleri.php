@@ -627,7 +627,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $muokkaaja = new Henkilo($omaid, $this->get_tietokantaolio());
         
         // Havaintotapahtuma (tarkastetaan käytössä, onko valittu);
-        $havjaks = new Havaintojakso($param->id_havjaks, $this->get_tietokantaolio());
+        $havjaks = new Havaintojakso($this->get_parametriolio()->id_havjaks, 
+                                    $this->get_tietokantaolio());
         
         $kuvalinkkimuutos = "";
         //======================== SECURITY ====================================
