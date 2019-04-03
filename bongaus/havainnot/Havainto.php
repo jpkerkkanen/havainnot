@@ -1821,6 +1821,32 @@ class Havainto extends Malliluokkapohja {
     }
     
     /**
+     * Hakee tietokannasta tähän havaintoon liittyvät havaintojaksolinkit ja 
+     * palauttaa ne (Havaintojaksolinkki-luokan oliot) taulukossa (array), joka
+     * on tyhjä, ellei mitään löydy.
+     */
+    public function get_havaintojaksolinkit(){
+        
+        $linkit = array();
+        
+        $hakulause = "SELECT ". Havaintojaksolinkki::$SARAKENIMI_ID.
+                    " FROM ". Havaintojaksolinkki::$taulunimi.
+                    " WHERE ".Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID."=".
+                            $this->get_id();
+        
+        $osumat = 
+            $this->tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
+        
+        foreach ($osumat as $osumaolio) {
+            $linkki_id = $osumaolio->id;
+            array_push($linkit, 
+                    new Havaintojaksolinkki($linkki_id, $this->tietokantaolio));
+        }
+        
+        return $linkit;
+    }
+    
+    /**
      * Luo Havintojaksolinkki-luokan olion yhdistämään tämän havainnon
      * havaintojaksoon, jonka id annetaan parametrina.
      * 

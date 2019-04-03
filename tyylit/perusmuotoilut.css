@@ -303,7 +303,7 @@ yms. */
     -moz-border-radius: 10px; /*Pyäreitä kulmia mozillaan*/
     background-color: #eef;
     color:black;
-    max-width: 600px;
+    max-width: 800px;
 }
 
 .tietolomake td, .tietolomake th, #tietolomake td, #tietolomake th {

@@ -980,56 +980,54 @@ function tyhjenna_pvm()
  */
 function nayta_ed(id_erotin)
 {
-    muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
-                  
-    // Päivitys tapahtuman aikaan:
+    // Päivitys tapahtuman aikaan (jokin stupid idea, mutta olkoon):
     if(id_erotin === "" || id_erotin === 0){
       id_erotin = 2;
-      muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
     }
+    muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
 
 function nayta_seur(id_erotin)
 {
-    muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
                   
     // Päivitys tapahtuman aikaan:
     if(id_erotin === "" || id_erotin === 0){
       id_erotin = 2;
-      muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
     }
+    
+    muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
 
 function nayta_seur_vko(id_erotin)
-{
-    muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
-                  
+{                 
     // Päivitys tapahtuman aikaan:
     if(id_erotin === "" || id_erotin === 0){
       id_erotin = 2;
-      muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
+      
     }
+    muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
 
 function nayta_ed_vko(id_erotin)
 {
-    muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
-                  
     // Päivitys tapahtuman aikaan:
     if(id_erotin === "" || id_erotin === 0){
       id_erotin = 2;
-      muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
-                  "pvm_naytto"+id_erotin);
+      
     }
+    muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+                  "pvm_naytto"+id_erotin);
 }
+
 function nayta_nyk_pvm(id_erotin){
+    // Päivitys tapahtuman aikaan:
+    if(id_erotin === "" || id_erotin === 0){
+      id_erotin = 2;
+      
+    }
    
     muuta_pvm("nyt", "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);

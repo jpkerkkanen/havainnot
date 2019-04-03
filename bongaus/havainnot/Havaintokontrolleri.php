@@ -114,6 +114,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
          return $this->get_tietokantaolio();
     }
     
+    
+    
     /**
      * Ylikirjoitetaan metodi, jotta luokka saadaan tietoon:
      * @return \Havainto
@@ -605,8 +607,9 @@ class Havaintokontrolleri extends Kontrolleripohja{
      * kaikkia. 
      * 
      * <p>HUOM! Yhtä muokattaessa on enemmän muutosmahdollisuuksia kuin 
-     * montaa. Montaa muokattaessa voi muuttaa ainoastaan aikaa, paikkaa,
-     * maata, varmuutta ja kommenttia ja vakipaikkaa. Yhtä muokattaessa myös 
+     * montaa. Montaa muokattaessa käyttäjä valitsee ominaisuuksista ne,
+     * joita haluaa muuttaa, eli joiden arvot tulevat yhteisiksi kaikille 
+     * valituille havainnoille. Muut eivät muutu. Yhtä muokattaessa myös 
      * lajiluokkaa voi muuttaa. Tulee siis vähän erilaiset lomakkeet.</p>
      * 
      * Ylläoleva määräytyy sellaisen lukumäärän mukaan, joka saadaan valituista,
@@ -622,6 +625,9 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $virheilmot = array();
         
         $muokkaaja = new Henkilo($omaid, $this->get_tietokantaolio());
+        
+        // Havaintotapahtuma (tarkastetaan käytössä, onko valittu);
+        $havjaks = new Havaintojakso($param->id_havjaks, $this->get_tietokantaolio());
         
         $kuvalinkkimuutos = "";
         //======================== SECURITY ====================================
@@ -751,7 +757,13 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                                             $this, 
                                                             $palauteolio);
                         //======================================================
-
+                        
+                        // Lisätään tapahtumalinkki, jos tapahtuma valittu.
+                        // Uutta ei vielä pysty lisäämään muokatessa.
+                        if($havjaks->olio_loytyi_tietokannasta){
+                            $havjaks->lisaa_havainto($muokattava->get_id(), true);
+                        }
+                        
                     }
                     else{   // tallennetaan virheilmoitukset, jos aihetta
                         if($muokattava->tulosta_viimeisin_virheilmoitus() ==
@@ -764,6 +776,12 @@ class Havaintokontrolleri extends Kontrolleripohja{
                                                                 $this, 
                                                                 $palauteolio);
                             //======================================================
+                            // Lisätään tapahtumalinkki, jos tapahtuma valittu.
+                            // Uutta ei vielä pysty lisäämään muokatessa.
+                            if($havjaks->olio_loytyi_tietokannasta){
+                                $havjaks->lisaa_havainto($muokattava->get_id(), true);
+                            }
+                            
                             $lkm_ei_muutoksia_havaittu++;
                             
                         } else{
@@ -778,33 +796,85 @@ class Havaintokontrolleri extends Kontrolleripohja{
                 // ihan ok, eikä tällöin pidä lähettää virheilmoitusta.
                 $lkm_ei_muutoksia_havaittu = 0;
                 
+                // Hakee käyttäjän valitsemat ominaisuudet. Vain näitä 
+                // naisuuksia muutetaan.
+                $muokattavat_ominaisuudet = 
+                        $this->get_parametriolio()->muokattavat_ominaisuudet_hav;
+                
+                
+                
                 foreach ($muokattavat as $muokattava) {  
                     
-                    $muokattava->set_henkilo_id($omaid);
-                    $muokattava->set_kk($this->
-                                    get_parametriolio()->kk_hav);
-                    $muokattava->set_paiva($this->
-                                    get_parametriolio()->paiva_hav);
-                    $muokattava->set_vuosi($this->
-                                    get_parametriolio()->vuosi_hav);
-                    $muokattava->set_maa($maa);
-                    $muokattava->set_paikka($paikka);
-                    $muokattava->set_varmuus($this->
-                                    get_parametriolio()->varmuus_hav);
-                    $muokattava->set_vakipaikka(
+                    // Tarkistetaan aina alla, halutaanko ominaisuutta muuttaa.
+                    // $muokattava->set_henkilo_id($omaid);
+                    
+                    // Havainnon päivämäärä:
+                    if(in_array(
+                                Havaintokontrolleri::$chkboxval_muokkaa_pvm_hav, 
+                                $muokattavat_ominaisuudet, 
+                                TRUE)){      // True -> case-sensitive
+                        
+                        $muokattava->set_kk($this->get_parametriolio()->kk_hav);
+                        
+                        $muokattava->set_paiva($this->
+                                        get_parametriolio()->paiva_hav);
+                        $muokattava->set_vuosi($this->
+                                        get_parametriolio()->vuosi_hav);
+                    
+                    }
+                    
+                    // Havainnon paikka / vakipaikka (vakipaikka ajaa yli):
+                    if(in_array(
+                                Havaintokontrolleri::$chkboxval_muokkaa_paikka_hav, 
+                                $muokattavat_ominaisuudet, 
+                                TRUE)){      // True -> case-sensitive
+                        
+                        $muokattava->set_maa($maa);
+                        $muokattava->set_paikka($paikka);
+                        $muokattava->set_vakipaikka(
                             $this->get_parametriolio()->havaintopaikka_id);
-                    /*$muokattava->set_kommentti($this->
-                                    get_parametriolio()->kommentti_hav);   */      
+                    }
+                    
+                    // Havainnon varmuus:
+                    if(in_array(
+                                Havaintokontrolleri::$chkboxval_muokkaa_varmuus_hav, 
+                                $muokattavat_ominaisuudet, 
+                                TRUE)){      // True -> case-sensitive
+                        
+                        $muokattava->set_varmuus($this->
+                                    get_parametriolio()->varmuus_hav);
+                    }
+                    
                     
                     if($muokattava->tallenna_muutokset() === Havainto::$OPERAATIO_ONNISTUI){
                         array_push($tallennetut, $muokattava);
                         //======================================================
-                        // Päivitetään lisäluokitukset:
-                        $this->paivita_muokatun_lisaluokitukset($muokattava, 
+                        // Päivitetään lisäluokitukset, jos valittu.
+                        // HUOMAA tarkistaa vastaava else-haarassa!!
+                        
+                        if(in_array(
+                                Havaintokontrolleri::$chkboxval_muokkaa_lisaluokitukset_hav, 
+                                $muokattavat_ominaisuudet, 
+                                TRUE)){      // True -> case-sensitive
+                        
+                            $this->paivita_muokatun_lisaluokitukset($muokattava, 
                                                             $this, 
                                                             $palauteolio);
+                        }
+                        
                         //======================================================
-
+                        
+                        // Lisätään tapahtumalinkki, jos tapahtuma valittu.
+                        // Uutta ei vielä pysty lisäämään muokatessa.
+                        if(in_array(
+                                Havaintokontrolleri::$chkboxval_muokkaa_tapahtuma_hav, 
+                                $muokattavat_ominaisuudet, 
+                                TRUE)){      // True -> case-sensitive
+                        
+                            if($havjaks->olio_loytyi_tietokannasta){
+                                $havjaks->lisaa_havainto($muokattava->get_id(), true);
+                            }
+                        }
                     }
                     else{   // tallennetaan virheilmoitukset, jos aihetta.
                         if($muokattava->tulosta_viimeisin_virheilmoitus() ==
@@ -812,11 +882,30 @@ class Havaintokontrolleri extends Kontrolleripohja{
                             
                             //======================================================
                             // Päivitetään lisäluokitukset, vaikka muita 
-                            // muutoksia ei ole havaittu:
-                            $this->paivita_muokatun_lisaluokitukset($muokattava, 
+                            // muutoksia ei ole havaittu, jos näin valittu:
+                            if(in_array(
+                                    Havaintokontrolleri::
+                                        $chkboxval_muokkaa_lisaluokitukset_hav, 
+                                    $muokattavat_ominaisuudet, 
+                                    TRUE)){      // True -> case-sensitive
+
+                                $this->paivita_muokatun_lisaluokitukset($muokattava, 
                                                                 $this, 
                                                                 $palauteolio);
+                            }
                             //======================================================
+                            // Lisätään tapahtumalinkki, jos tapahtuma valittu.
+                            // Uutta ei vielä pysty lisäämään muokatessa.
+                            if(in_array(
+                                    Havaintokontrolleri::$chkboxval_muokkaa_tapahtuma_hav, 
+                                    $muokattavat_ominaisuudet, 
+                                    TRUE)){      // True -> case-sensitive
+
+                                if($havjaks->olio_loytyi_tietokannasta){
+                                    $havjaks->lisaa_havainto($muokattava->get_id(), true);
+                                }
+                            }
+                            
                             $lkm_ei_muutoksia_havaittu++;
                             
                         } else{
@@ -1893,6 +1982,20 @@ class Havaintokontrolleri extends Kontrolleripohja{
                            $poikkeus->getMessage().")";
        }
        return $valikkohtml;
+   }
+   
+    /**
+     * Returns an array with all the possible values used to indicate which
+     * features user wants to modify while modifying several havaintoja. These
+     * are the possible values in the check boxes of the editing form.
+     */
+    public static function monimuok_ominaisuusarvot(){
+        return array(
+            Havaintokontrolleri::$chkboxval_muokkaa_lisaluokitukset_hav,
+            Havaintokontrolleri::$chkboxval_muokkaa_paikka_hav,
+            Havaintokontrolleri::$chkboxval_muokkaa_pvm_hav,
+            Havaintokontrolleri::$chkboxval_muokkaa_tapahtuma_hav,
+            Havaintokontrolleri::$chkboxval_muokkaa_varmuus_hav);
    }
 }
 ?>

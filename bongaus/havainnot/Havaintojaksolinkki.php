@@ -5,7 +5,7 @@
  * Havaintojaksolinkit yhdistävät havaintojaksot havaintoihin, jolloin
    yksi havainto voi kuulua useampaan jaksoon ja luonnollisesti toisin päin. 
  * Jos havaintojakso hävitetään, häviää havaintojaksolinkitkin, jotka liittyvät 
- * kyseiseen havaintojaksoon.
+ * kyseiseen havaintojaksoon. Samoin havainnon häcitys hävittää linkit siihen.
  *
 create table havaintojaksolinkit
 (
@@ -16,7 +16,9 @@ create table havaintojaksolinkit
   index(havaintojakso_id),
   index(havainto_id),
   FOREIGN KEY (havaintojakso_id) REFERENCES havaintojaksot (id)
-                      ON DELETE CASCADE
+                      ON DELETE CASCADE,
+  FOREIGN KEY (havainto_id) REFERENCES havainnot (id)
+                      ON DELETE CASCADE  
 ) ENGINE=INNODB;
  * 
  * @author J-P

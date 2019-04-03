@@ -92,10 +92,13 @@ class Bongauspainikkeet{
     public static $seur_paiva = ">";
     public static $ed_vko = "<<";
     public static $seur_vko = ">>";
+    public static $today = "=";
+    
     public static $ed_paiva_title = "Edellinen p&auml;iv&auml;";
     public static $seur_paiva_title = "Seuraava p&auml;iv&auml;";
     public static $ed_vko_title = "Edellinen viikko";
     public static $seur_vko_title = "Seuraava viikko";
+    public static $today_title = "Tänään";
 
     // Lajiluokat:
     public static $TALLENNA_UUSI_LAJILUOKKA_VALUE = "Tallenna uusi lajiluokka";
@@ -433,6 +436,8 @@ class Bongaustekstit{
     public static $havaintolomake_jaksonimiohje = "Esim: Päivälintuilu";
     public static $havaintolomake_jaksokommenttiohje = 
         "Esim: Kiva päiväretki Mustasaareen";
+    
+    public static $havaintolomake_noedit_ilm = "Ei valittu - vanha arvo säilyy";
     
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)

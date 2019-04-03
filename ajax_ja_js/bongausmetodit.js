@@ -65,6 +65,29 @@ function vaihda_kommenttinakyvyys(elementin_name){
     }
 }
 
+/**
+ * Muokkaa havaintojen monimuokkauslomaketta sen mukaan, kuinka käyttäjä
+ * valitsee muokattavia ominaisuuksia.
+ * @param {type} id
+ * @returns {undefined}
+ */
+function muuta_muokkausrivi(checked, edit_id, noedit_id){
+    
+    var edit_elem = find(edit_id);
+    var noedit_elem = find(noedit_id);
+    
+    if(edit_elem && noedit_elem){
+        
+        if(checked){
+            edit_elem.style.display="inline";
+            noedit_elem.style.display="none";
+        } else{
+            edit_elem.style.display="none";
+            noedit_elem.style.display="inline";
+        }
+    }
+}
+
 // Toimiiko?
 function korosta_elementti(id){
     elementti = document.getElementById(id);

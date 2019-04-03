@@ -211,7 +211,20 @@ class Havaintonakymat extends Nakymapohja{
                         $this->luo_lisaluokitusradionapit($this->parametriolio, 
                                         $haetaan_luokitukset_tietokannasta); 
             /**********************************************************************/
-        
+            // Havaintojakso eli -tapahtuma:
+            $default_tapahtuma = "none";
+            $havaintojaksolinkit = $muokattava->get_havaintojaksolinkit();
+            if(sizeof($havaintojaksolinkit) > 0){
+                
+                $linkki = $havaintojaksolinkit[0];  // Voi olla useita, otetaan eka.
+                if($linkki instanceof Havaintojaksolinkki){
+                    $default_tapahtuma = 
+                        $linkki->get_arvo(
+                            Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID);
+                }
+            }
+             
+            
             /******************************************************************/
 
             $naytettava_valinta = $varmuus_hav;
@@ -242,9 +255,52 @@ class Havaintonakymat extends Nakymapohja{
             } else{
                 $lkm_koodi = "";
             }
-
+            // Muutettavan ominaisuuden otsikko (yksilöllisessä ei valintaruutua)
+            // niissä, jossa monimuokkausmahdollisuus:
+            if(sizeof($muokattavat)==1){
+                $ots_paiva = Bongaustekstit::$paiva.":";
+                $ots_paikka = Bongaustekstit::$paikka.":";
+                $ots_varmuus = Varmuus::$valikko_otsikko.":";
+                $ots_lisaluok = Bongaustekstit::$havaintolomake_lisaluokitukset.":";
+                $ots_tapahtuma = Bongaustekstit::$havaintolomake_jaksovalikko_otsikko.":";
+                
+                $visib_default_edit = "inline";
+                $visib_default_noedit = "none"; // Ilmoitus turha, liittyy monimuokkaukseen.
+                
+            } else{
+                $ots_paiva = $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$paiva.":", 
+                                Bongaustekstit::$paiva.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_pvm_hav);
+                
+                $ots_paikka = $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$paikka.":", 
+                                Bongaustekstit::$paikka.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_paikka_hav);
+                
+                $ots_varmuus = $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Varmuus::$valikko_otsikko.":", 
+                                Varmuus::$valikko_otsikko.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_varmuus_hav);
+                
+                $ots_lisaluok = $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$havaintolomake_lisaluokitukset.":", 
+                                Bongaustekstit::$havaintolomake_lisaluokitukset.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_lisaluokitukset_hav);
+                
+                $ots_tapahtuma = $this->luo_monimuok_ominaisuusots_ja_chkbox(
+                                Bongaustekstit::$havaintolomake_jaksovalikko_otsikko.":", 
+                                Bongaustekstit::$havaintolomake_jaksovalikko_otsikko.":", 
+                                Havaintokontrolleri::$chkboxval_muokkaa_tapahtuma_hav);
+                
+                $visib_default_edit = "none";
+                $visib_default_noedit = "inline";
+            }
+            
             $maar_array = array();
 
+            
+            
             // Rivi1: ohjeita
             $rivi1 = 
                     Html::luo_tablerivi(
@@ -259,90 +315,73 @@ class Havaintonakymat extends Nakymapohja{
                             array(Maarite::colspan(2))), // solu
                         $maar_array);   // taulukkorivi 
 
-            // Toinen rivi: pvm-painikkeet
-            $rivi2 =
-                    Html::luo_tablerivi(
-                        Html::luo_tablesolu(
+            $rivi2 = "";    // Muutettu.
 
-                            Html::luo_button(
-                                Bongauspainikkeet::$ed_vko,
-                                array(Maarite::id("b1"),
-                                    Maarite::onclick("nayta_ed_vko", ""))). // button1-elementti
-
-                            Html::luo_button(
-                                Bongauspainikkeet::$ed_paiva,
-                                array(Maarite::id("b2"),
-                                    Maarite::onclick("nayta_ed", ""))). // button2-elementti
-
-                            Html::luo_button(
-                                Bongauspainikkeet::$seur_paiva,
-                                array(Maarite::id("b3"),
-                                    Maarite::onclick("nayta_seur()", ""))). // button3-elementti
-
-                            Html::luo_button(
-                                Bongauspainikkeet::$seur_vko,
-                                array(Maarite::id("b4"),
-                                    Maarite::onclick("nayta_seur_vko()", ""))), // button4-elementti
-
-                            array(Maarite::colspan(2),
-                                Maarite::align("left"))), // solu
-                        $maar_array);   // taulukkorivi 
-
-            // Rivi3: pvm-kentät
+            // Rivi3: pvm-painikkeet ja -kentät
             $rivi3 =
                     Html::luo_tablerivi(
 
                         // Päivän syöttö (vähän solurajat hassusti):
                         Html::luo_tablesolu(
-                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
-                                Bongaustekstit::$paiva.":", 
-                                Bongaustekstit::$paiva.":", 
-                                Havaintokontrolleri::$chkboxval_muokkaa_pvm_hav),
+                            $ots_paiva,
                             array(Maarite::align("left"))).
 
                         Html::luo_tablesolu(
-                            Html::luo_input(
-                                array(Maarite::type("text"),
-                                    Maarite::id("paiva"),
-                                    Maarite::name("paiva_hav"),
-                                    Maarite::value($paiva_hav),
-                                    Maarite::size("4"),
-                                    Maarite::max_length("2"),
-                                    Maarite::onchange("nayta_pvm", ""),
-                                    Maarite::onkeyup("nayta_pvm", ""))). // input 
+                            Html::luo_span(
+                                $this->luo_pvm_painikkeet("_hav")."<br>".
+                                Html::luo_input(
+                                    array(Maarite::type("text"),
+                                        Maarite::id("paiva_hav"),
+                                        Maarite::name("paiva_hav"),
+                                        Maarite::value($paiva_hav),
+                                        Maarite::size("4"),
+                                        Maarite::max_length("2"),
+                                        Maarite::onchange("nayta_pvm", ""),
+                                        Maarite::onkeyup("nayta_pvm", ""))). // input 
 
 
 
-                            // Kuukauden syöttö:
-                            Html::luo_label_for("kk", "*".
-                                            Bongaustekstit::$kk.":", "").
-                            Html::luo_input(
-                                array(Maarite::type("text"),
-                                    Maarite::id("kk"),
-                                    Maarite::name("kk_hav"),
-                                    Maarite::value($kk_hav),
-                                    Maarite::size("4"),
-                                    Maarite::max_length("2"),
-                                    Maarite::onchange("nayta_pvm", ""),
-                                    Maarite::onkeyup("nayta_pvm", ""))). // input 
+                                // Kuukauden syöttö:
+                                Html::luo_label_for("kk", "*".
+                                                Bongaustekstit::$kk.":", "").
+                                Html::luo_input(
+                                    array(Maarite::type("text"),
+                                        Maarite::id("kk_hav"),
+                                        Maarite::name("kk_hav"),
+                                        Maarite::value($kk_hav),
+                                        Maarite::size("4"),
+                                        Maarite::max_length("2"),
+                                        Maarite::onchange("nayta_pvm", ""),
+                                        Maarite::onkeyup("nayta_pvm", ""))). // input 
 
 
-                            // Vuoden syöttö:
-                            Html::luo_label_for("vuosi", "*".
-                                            Bongaustekstit::$vuosi.":", "").
-                            Html::luo_input(
-                                array(Maarite::type("text"),
-                                    Maarite::id("vuosi"),
-                                    Maarite::name("vuosi_hav"),
-                                    Maarite::value($vuosi_hav),
-                                    Maarite::size("4"),
-                                    Maarite::max_length("4"),
-                                    Maarite::onchange("nayta_pvm", ""),
-                                    Maarite::onkeyup("nayta_pvm", ""))). // input 
+                                // Vuoden syöttö:
+                                Html::luo_label_for("vuosi_hav", "*".
+                                                Bongaustekstit::$vuosi.":", "").
+                                Html::luo_input(
+                                    array(Maarite::type("text"),
+                                        Maarite::id("vuosi_hav"),
+                                        Maarite::name("vuosi_hav"),
+                                        Maarite::value($vuosi_hav),
+                                        Maarite::size("4"),
+                                        Maarite::max_length("4"),
+                                        Maarite::onchange("nayta_pvm", ""),
+                                        Maarite::onkeyup("nayta_pvm", ""))). // input 
 
-                            Html::luo_span("", 
-                                array(Maarite::id("pvm_naytto"))),  //span
+                                Html::luo_span("", 
+                                    array(Maarite::id("pvm_naytto"))),  //span
 
+                                    
+                                array(Maarite::style("display:".$visib_default_edit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_pvm_hav))).
+                            Html::luo_span(
+                                Bongaustekstit::$havaintolomake_noedit_ilm, 
+                                array(Maarite::style("display:".$visib_default_noedit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_pvm_hav."noedit"))),
+                                
+                            
                             array(Maarite::align("left"))), // solu2
                         $maar_array);   // taulukkorivi 
 
@@ -381,74 +420,82 @@ class Havaintonakymat extends Nakymapohja{
             }
            
 
-            // rivi5: Vakipaikka, Paikka ja maa:
-            // rivi5_1: Vakipaikkavalinta 
+            // rivi5: Vakipaikka, Paikka ja maa: 
 
-            $rivi5A =
+            $rivi5 =
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            Html::luo_label_for("lisaa_myohemmin", 
-                                Bongaustekstit::$havaintolomake_vakipaikka.": ", ""),
+                            $ots_paikka,
                             array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
-                            Html::luo_span($paikkavalikko, 
-                                array(Maarite::id(Bongausasetuksia::
-                                        $havaintolomake_vakipaikkavalikko_id))).   //span
+                            Html::luo_span(
+                                Html::luo_label_for("lisaa_myohemmin", 
+                                    Bongaustekstit::$havaintolomake_vakipaikka.": ", "").
+                                Html::luo_span($paikkavalikko, 
+                                    array(Maarite::id(Bongausasetuksia::
+                                            $havaintolomake_vakipaikkavalikko_id))).   //span
 
-                            Html::luo_span($uusi_paikka_nappi, 
-                                array(Maarite::id(Bongausasetuksia::
+                                Html::luo_span($uusi_paikka_nappi, 
+                                    array(Maarite::id(Bongausasetuksia::
                                         $havaintolomake_vakipaikkavalikkopainike_id))).   //span
-                            Html::luo_span("", 
-                                array(Maarite::id(
-                                    Havaintonakymat::$muokkausnappispan_id))).   //span
+                                Html::luo_span("", 
+                                    array(Maarite::id(
+                                        Havaintonakymat::$muokkausnappispan_id))).   //span
 
 
-                            Html::luo_span("", 
-                                array(Maarite::id(Bongausasetuksia::$havaintolomake_lajivalintaohje_id))),   //span
+                                /*Html::luo_span("", 
+                                    array(Maarite::id(Bongausasetuksia::
+                                            $havaintolomake_lajivalintaohje_id))).   //span*/
 
+                                Html::luo_br().
+
+                                Html::luo_input(
+                                    array(Maarite::type("text"),
+                                        Maarite::name("paikka_hav"),
+                                        Maarite::id(Havaintonakymat::
+                                            $havaintopaikkakentta_id),
+                                        Maarite::value($paikka_hav))). // input 
+                                " ".$maavalikkohtml,
+
+                                    
+                                array(Maarite::style("display:".$visib_default_edit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_paikka_hav))).
+                            Html::luo_span(
+                                Bongaustekstit::$havaintolomake_noedit_ilm, 
+                                array(Maarite::style("display:".$visib_default_noedit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_paikka_hav."noedit"))),
+                                
+                                
+                                    
                             array(Maarite::align("left"),
                                 Maarite::id(Bongausasetuksia::
                                     $havaintolomake_lajivalintarivi_id))), // solu   
 
                         $maar_array);   // taulukkorivi 
-            
-        
-            $rivi5 = 
-                    Html::luo_tablerivi(
-                        Html::luo_tablesolu(
-                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
-                                Bongaustekstit::$paikka.":", 
-                                Bongaustekstit::$paikka.":", 
-                                Havaintokontrolleri::$chkboxval_muokkaa_paikka_hav),
-                            array(Maarite::align("left"))). // solu
-
-                        Html::luo_tablesolu(
-
-                            Html::luo_input(
-                                array(Maarite::type("text"),
-                                    Maarite::name("paikka_hav"),
-                                    Maarite::id(Havaintonakymat::$havaintopaikkakentta_id),
-                                    Maarite::value($paikka_hav))). // input 
-                            $maavalikkohtml,
-
-                            array(Maarite::align("left"))), // solu   
-
-                        $maar_array);  // taulukkorivi 
-
+       
             // rivi6: Havainnon varmuus ja lkm:
             $rivi6 = 
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
-                                Varmuus::$valikko_otsikko.":", 
-                                Varmuus::$valikko_otsikko.":", 
-                                Havaintokontrolleri::$chkboxval_muokkaa_varmuus_hav),
+                            $ots_varmuus,
                             array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
-                            $varmuusvalikko." ".$sukupuolivalikko.
-                            $lkm_koodi,
+                            Html::luo_span(
+                                $varmuusvalikko." ".$sukupuolivalikko.$lkm_koodi,
+                                    
+                                array(Maarite::style("display:".$visib_default_edit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_varmuus_hav))).
+                            Html::luo_span(
+                                Bongaustekstit::$havaintolomake_noedit_ilm, 
+                                array(Maarite::style("display:".$visib_default_noedit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_varmuus_hav."noedit"))),
+                            
                             array(Maarite::align("left"))), // solu   
                             
                         $maar_array);   // taulukkorivi 
@@ -479,17 +526,51 @@ class Havaintonakymat extends Nakymapohja{
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
  
-                            $this->luo_monimuok_ominaisuusots_ja_chkbox(
-                                Bongaustekstit::$havaintolomake_lisaluokitukset.":", 
-                                Bongaustekstit::$havaintolomake_lisaluokitukset.":", 
-                                Havaintokontrolleri::$chkboxval_muokkaa_lisaluokitukset_hav),
+                            $ots_lisaluok,
                             array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
-                            $lisaluokitusradionapit,
+                            Html::luo_span(
+                                $lisaluokitusradionapit, 
+                                array(Maarite::style("display:".$visib_default_edit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_lisaluokitukset_hav))).
+                            Html::luo_span(
+                                Bongaustekstit::$havaintolomake_noedit_ilm, 
+                                array(Maarite::style("display:".$visib_default_noedit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_lisaluokitukset_hav."noedit"))),
+                            
                             array(Maarite::align("left"))), // solu   
                             
                         $maar_array);   // taulukkorivi 
+
+echo "tapahtuma_id=".$default_tapahtuma;
+            
+            // rivi7_3: Havaintotapahtuman valinta:
+            $rivi7_3 = 
+                    Html::luo_tablerivi(
+                        Html::luo_tablesolu(
+                            $ots_tapahtuma,
+                            array(Maarite::align("left"))). // solu
+
+                        Html::luo_tablesolu(
+                            Html::luo_span(
+                                $this->luo_havaintojaksovalikko($default_tapahtuma), 
+
+                                array(Maarite::style("display:".$visib_default_edit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_tapahtuma_hav))).
+                            Html::luo_span(
+                                Bongaustekstit::$havaintolomake_noedit_ilm, 
+                                array(Maarite::style("display:".$visib_default_noedit),
+                                        Maarite::id(Havaintokontrolleri::
+                                            $chkboxval_muokkaa_tapahtuma_hav."noedit"))),
+                            
+                            array(Maarite::align("left"))), // solu   
+                            
+                        $maar_array);   // taulukkorivi 
+            
             
             // rivi8: Painikkeet:
             $rivi8 = 
@@ -508,7 +589,8 @@ class Havaintonakymat extends Nakymapohja{
             // Rivit taulukon sisään:
             $html = 
                 Html::luo_table(
-                    $rivi1.$rivi2.$rivi3.$rivi4.$rivi5A.$rivi5.$rivi6.$rivi7.$rivi7_2.$rivi8, 
+                    $rivi1.$rivi2.$rivi3.$rivi4.$rivi5.$rivi6.
+                    $rivi7.$rivi7_2.$rivi7_3.$rivi8, 
                     array(Maarite::summary("uudet_tiedot")));
 
             // Luodaan valittujen taulukko (näin saadaan myös valinnat eteenpäin):
@@ -544,6 +626,49 @@ class Havaintonakymat extends Nakymapohja{
         
         return $html;
     }
+    
+    /**
+     * Palauttaa päivämääräpainikkeiden html-koodin.
+     * @depends metodit.js
+     * @param type $erotin
+     */
+    public function luo_pvm_painikkeet($erotin){
+        
+        $napit = 
+            Html::luo_button(
+                Bongauspainikkeet::$ed_vko,
+                array(Maarite::id("b1"),
+                    Maarite::title(Bongauspainikkeet::$ed_vko_title),
+                    Maarite::onclick("nayta_ed_vko", array($erotin)))). // button1-elementti
+
+            Html::luo_button(
+                Bongauspainikkeet::$ed_paiva,
+                array(Maarite::id("b2"),
+                    Maarite::title(Bongauspainikkeet::$ed_paiva_title),
+                    Maarite::onclick("nayta_ed", array($erotin)))). // button2-elementti
+
+            Html::luo_button(
+                Bongauspainikkeet::$today,
+                array(Maarite::id("b2"),
+                    Maarite::title(Bongauspainikkeet::$today_title),
+                    Maarite::onclick("nayta_nyk_pvm", array($erotin)))). // button2-elementti
+
+            Html::luo_button(
+                Bongauspainikkeet::$seur_paiva,
+                array(Maarite::id("b3"),
+                    Maarite::title(Bongauspainikkeet::$seur_paiva_title),
+                    Maarite::onclick("nayta_seur", array($erotin)))). // button3-elementti
+
+            Html::luo_button(
+                Bongauspainikkeet::$seur_vko,
+                array(Maarite::id("b4"),
+                    Maarite::title(Bongauspainikkeet::$seur_vko_title),
+                    Maarite::onclick("nayta_seur_vko", array($erotin)))); // button4-elementti
+        
+        return $napit;
+
+    }
+    
     
     /**
      * Luo ja palauttaa html-taulukon, jossa on parametrina annettujen
@@ -2695,7 +2820,9 @@ class Havaintonakymat extends Nakymapohja{
                             Maarite::value($chkbox_value),
                             Maarite::classs("ominaisuus"),
                             Maarite::onclick("muuta_muokkausrivi", 
-                                            array($chkbox_value)))); 
+                                            array("this.checked",
+                                                $chkbox_value,
+                                                $chkbox_value."noedit")))); 
        
        return $solusis;
    }
