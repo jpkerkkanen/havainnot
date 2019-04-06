@@ -770,7 +770,8 @@ class Havainto extends Malliluokkapohja {
        }
 
        // Muotoillaan varmuusehto:
-       $varmuusehto = "AND ".Havainto::$taulunimi.".varmuus >= ".Varmuus::$melkoisen_varma;
+       $varmuusehto = "AND ".Havainto::$taulunimi.".varmuus >= ".
+                        Varmuus::$melkoisen_varma;
 
        $hakulause = 
                    "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id
@@ -778,7 +779,8 @@ class Havainto extends Malliluokkapohja {
                    JOIN henkilot
                    ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
                    JOIN ".Lajiluokka::$taulunimi."
-                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".Lajiluokka::$taulunimi.".id
+                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".
+                        Lajiluokka::$taulunimi.".id
                    WHERE henkilot.id = $henkilo_id
                    AND $ylaluokkaehto
                    $aikaehto
@@ -801,7 +803,8 @@ class Havainto extends Malliluokkapohja {
                    JOIN henkilot
                    ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
                    JOIN ".Lajiluokka::$taulunimi."
-                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".Lajiluokka::$taulunimi.".id
+                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".
+                        Lajiluokka::$taulunimi.".id
                    WHERE henkilot.id = $henkilo_id
                    AND $ylaluokkaehto
                    $aikaehto
@@ -845,6 +848,8 @@ class Havainto extends Malliluokkapohja {
 
        // Palauttaa luvun 0 myös jos parametri paha.
        $lkm[2] = sizeof($hakutulos);
+       
+       $lkm[3] = $hakulause;
        
        
        
@@ -1041,7 +1046,7 @@ class Havainto extends Malliluokkapohja {
        }
 
        $hakulause =
-                   "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                   "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                            ".Kuvaus::$taulunimi.".nimi AS nimi
                    FROM ".Havainto::$taulunimi."
                    JOIN henkilot
@@ -1056,7 +1061,6 @@ class Havainto extends Malliluokkapohja {
                    $jaksoaikaehto
                    $varmuusehto
                    $alue_ehto
-                   GROUP BY laji_id
                    ORDER BY nimi
                   ";
 
@@ -1109,6 +1113,7 @@ class Havainto extends Malliluokkapohja {
    }
    
    /**
+    * DEPRECATED: käytä havaintokontrollerin metodeita instead.
     * Palauttaa taulukon, joka sisältää nimet niistä sessiomuuttujassa 
     * säilytettävän (siksi ei tarvitse täällä välittää) yläluokan lajeista,
     * jotka annettu henkilö on havainnut kyseisenä vuotena (tai ikinä) ja jotka 
@@ -1198,7 +1203,7 @@ class Havainto extends Malliluokkapohja {
        
        if($lisaluokitus){
            $hakulause =
-                   "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                   "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                            ".Kuvaus::$taulunimi.".nimi AS nimi
                    FROM ".Havainto::$taulunimi."
                    JOIN henkilot
@@ -1220,13 +1225,12 @@ class Havainto extends Malliluokkapohja {
                    $varmuusehto
                    $alue_ehto
                    $lisaluokitusehto
-                   GROUP BY laji_id
                    ORDER BY nimi
                   ";
            
        } else{  // Ei lisäluokitusehtoa: yksi liitos vähemmän.
            $hakulause =
-                   "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                   "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                            ".Kuvaus::$taulunimi.".nimi AS nimi
                    FROM ".Havainto::$taulunimi."
                    JOIN henkilot
@@ -1241,10 +1245,10 @@ class Havainto extends Malliluokkapohja {
                    $jaksoaikaehto
                    $varmuusehto
                    $alue_ehto
-                   GROUP BY laji_id
                    ORDER BY nimi
                   ";
        }
+       //GROUP BY laji_id
        
        $havaintotaulu = 
                    $tietokantaolio->tee_OMAhaku_oliotaulukkopalautteella($hakulause);

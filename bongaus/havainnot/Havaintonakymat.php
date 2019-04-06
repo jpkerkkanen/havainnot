@@ -1858,6 +1858,65 @@ class Havaintonakymat extends Nakymapohja{
         return $mj.Html::luo_script_js("nayta_nyk_pvm('');nayta_nyk_pvm(2);");
 
     }
+    
+    /**
+     * Palauttaa html-taulukon, jossa luetellaan pinnalajit (eri havaitut lajit)
+     * annettujen tietojen (henkilö, vuosi, sijainti) mukaisesti.
+     * @param type $havaintotaulu Tietokantahaun tulostaulukko (oliotyyppi).
+     * @param type $sulkemisnappi
+     * @param type $henkilo
+     * @param type $vuosi
+     * @param type $sijainti
+     * @return string
+     */
+    function nayta_pinnalajitaulukko($havaintotaulu,
+                                    $sulkemisnappi,
+                                    $henkilo,
+                                    $vuosi,
+                                    $sijainti
+                                        ){
+        if(empty($havaintotaulu)){
+            $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
+                    $sulkemisnappi."</div>";
+            $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
+                    <tr>
+                    <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>";
+        }
+        else{ // Muotoillaan tiedot nätisti:
+            $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
+                    $sulkemisnappi."<br />".
+                    "(".$henkilo.", ".$vuosi.", ".$sijainti.")</div>";
+
+            $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
+                <tr>
+                    <th>Nro</th>
+                    <th>Laji</th>
+                </tr>";
+
+
+            $laskuri = 1; // Auttaa joka toisen rivin eri väriseksi.
+
+            foreach ($havaintotaulu as $havainto) {
+                if($laskuri % 2 == 0){
+                    
+                    $tulos .= "<tr class =".
+                        Bongausasetuksia::$tietotaulu_parillinenrivi_class.">";
+                }
+                else {
+                    $tulos .= "<tr>";
+                }
+
+                $tulos .= "<td>".$laskuri."</td>";
+                $tulos .= "<td>".$havainto->nimi."</td>";
+                $tulos .= "</tr>";
+
+                $laskuri++;
+            }
+            $tulos .= "</table>";
+        }
+        return $tulos;
+    }
+    
     /**
      * Luo havaintopaikkavalikon html-koodin. Parametrina annetaan valittu
      * vaihtoehto.

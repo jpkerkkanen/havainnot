@@ -310,6 +310,184 @@ class Havaintokontrolleri extends Kontrolleripohja{
     }
     
     /**
+    * Palauttaa taulukon, joka sisältää nimet (merkkijonoina) niistä 
+    * sessiomuuttujassa säilytettävän yläluokan lajeista, jotka täyttävät 
+    * seuraavat ehdot:
+
+     * -havaitsija täsmää $henkilo_id-parametriin 
+     * -havaintovuosi täsmää $vuosi-parametriin
+     * -lisäluokitusehto täsmää lisaluokitusehto-parametriin
+     * -vakihavaintopaikka täsmää $vakipaikka_id-parametriin 
+    * 
+    * Jos yllä mainitun parametrin arvo on < 0 tai ei-numeerinen, ei kyseistä
+    * ehtoa lisätä tietokantahakuun (haetaan kaikki). 
+    * 
+    * Huomaa, että täällä haetaan eri lajit, eli yksi laji otetaan vain kerran 
+    * (Distinct-haku). 
+    *  
+    * Taulukko ei sisällä muuta tietoa havainnoista, eli kyseessä on pelkkä 
+    * lajinimien luettelo.
+     * 
+    * @param mixed $henkilo_id Tämän henkilön havaintoja haetaan
+    * @param mixed $vuosi Haetaan havainnot tältä vuodelta.
+    * @param mixed $lisaluokitus vain ehdon täyttävät lajit otetaan mukaan.
+    * @param mixed $vakipaikka_id haetaan havaitut lajit tästä paikasta. 
+    * 
+    * Palauttaa taulukon, joka voi olla tyhjä.
+    *
+    */
+    function hae_pinnalajit($henkilo_id, $vuosi, $lisaluokitus, $vakipaikka_id){
+
+        $parametriolio = $this->get_parametriolio();
+        $tietokantaolio = $parametriolio->get_tietokantaolio();
+        $ylaluokka_id = $parametriolio->ylaluokka_id_lj;
+        $aluerajoitus = $parametriolio->havaintoalue_hav; // "suomi" tai jotakin muuta.
+        
+        // Muotoillaan yläluokan lause:
+        if(isset($ylaluokka_id) && is_numeric($ylaluokka_id) && $ylaluokka_id > 0){
+            $ylaluokkaehto = Lajiluokka::$taulunimi.".ylaluokka_id = $ylaluokka_id";
+        }
+        else{
+            $ylaluokkaehto = Lajiluokka::$taulunimi.".ylaluokka_id <> -1";
+        }
+
+        // Muotoillaan vuoden valinta.
+        if(!is_numeric($vuosi) || $vuosi > 0){
+
+            $jaksoaikaehto = " AND ".Havainto::$taulunimi.".vuosi = ".$vuosi;
+        }
+        else{
+            $jaksoaikaehto = "";    /* Haetaan kaikki! */
+        }
+
+        // Muotoillaan varmuusehto:
+        $varmuusehto = " AND ".Havainto::$taulunimi.".varmuus >= ".
+                        Varmuus::$melkoisen_varma;
+
+        // Tutkitaan, haetaan vain Suomesta vai kaikkialta:
+        if($aluerajoitus == Bongausasetuksia::$nayta_vain_suomessa_havaitut){
+            $alue_ehto = " AND ".Havainto::$taulunimi.".maa = ".Maat::$suomi;
+        }
+        else{
+            $alue_ehto = "";
+        }
+
+        // Vakipaikkaehto:
+        if(is_numeric($vakipaikka_id) && $vakipaikka_id > 0){
+
+            $vakipaikkaehto = " AND ".Havainto::$taulunimi.".".
+                                Havainto::$SARAKENIMI_VAKIPAIKKA."=".
+                                $vakipaikka_id;
+        }
+        else{
+            $vakipaikkaehto = "";
+        }
+        
+        // Lisäluokitusehto vaatii ylimääräisen liitoksen tekemisen:
+        if(is_numeric($lisaluokitus) && $lisaluokitus > 0){
+
+            $lisaluokitusehto = " AND ".Lisaluokitus::$taulunimi.".".
+                            Lisaluokitus::$SARAKENIMI_LISALUOKITUS."=".
+                            $lisaluokitus;
+        
+            $JOIN_lisaluokitus = " JOIN ".Lisaluokitus::$taulunimi.
+                            " ON ".Lisaluokitus::$taulunimi.".".
+                             Lisaluokitus::$SARAKENIMI_HAVAINTO_ID."=".
+                             Havainto::$taulunimi.".id";
+        }
+        else{
+            $lisaluokitusehto = "";
+            $JOIN_lisaluokitus = "";
+        }
+        
+        $hakulause =
+            "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                    ".Kuvaus::$taulunimi.".nimi AS nimi
+            FROM ".Havainto::$taulunimi."
+            JOIN henkilot
+            ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
+            JOIN ".Lajiluokka::$taulunimi."
+            ON ".Havainto::$taulunimi.".lajiluokka_id = ".
+                Lajiluokka::$taulunimi.".id
+            JOIN ".Kuvaus::$taulunimi."
+            ON (".Havainto::$taulunimi.".lajiluokka_id = ".
+                Kuvaus::$taulunimi.".lajiluokka_id
+            AND ".Kuvaus::$taulunimi.".kieli=".Kielet::$SUOMI.")".
+            $JOIN_lisaluokitus.
+
+            " WHERE henkilot.id =".$henkilo_id.
+            " AND ".$ylaluokkaehto.
+            $jaksoaikaehto.
+            $varmuusehto.
+            $alue_ehto.
+            $lisaluokitusehto.
+            $vakipaikkaehto.
+            " ORDER BY nimi";
+
+        $havaintotaulu = 
+            $tietokantaolio->tee_OMAhaku_oliotaulukkopalautteella($hakulause);
+        
+        return $havaintotaulu;
+    }
+    
+    /**
+     * Toteuttaa pinnalajien hakemisen ja näyttämisen. Asettaa palauteolion
+     * sisältöarvoksi html-taulukon, joka sisältää luettelon lajeista.
+     * @param Palaute $palauteolio
+     */
+    public function toteuta_nayta_pinnalajit(&$palauteolio){
+        
+        $parametriolio = $this->get_parametriolio();
+        
+
+        
+        
+        $bongaaja = new Henkilo($henkilo_id, $tietokantaolio);
+        $henkilonimi = $bongaaja->get_arvo(Henkilo::$sarakenimi_etunimi);
+
+        // muotoillaan kausi:
+        if(!is_numeric($vuosi) || $vuosi < 1900){
+            $kausi = Bongaustekstit::$havainnot_elikset;
+        }
+        else {
+            $kausi = Bongaustekstit::$havainnot_vuonna." ";
+            $kausi .= $vuosi;
+        }
+
+        // Ilmoitetaan, onko havainnot Suomesta vai kaikkialta:
+        $havainnot = Bongaustekstit::$havainnot_kaikkialla;
+        if($parametriolio->havaintoalue_hav == 
+                Bongausasetuksia::$nayta_vain_suomessa_havaitut){
+            $havainnot = Bongaustekstit::$havainnot_suomessa;
+        }
+
+        if($lisaluokitus){
+            $lisaluokitusasetukset = new Lisaluokitus_asetukset();
+            $havainnot .= " (".$lisaluokitusasetukset->hae_nimi($lisaluokitus).")";
+        }
+
+        // Painikkeita:
+        $sulkemisnappi = 
+            "<button type='button' onclick='sulje_ruutu(\"".
+                Bongausasetuksia::$havaintotietotaulu_leftin_id."\")'>".
+                Bongauspainikkeet::$HAVAINNOT_SULJE_HENKILON_HAVAINNOT_VALUE.
+            "</button>";
+
+        $db_tulostaulu = 
+            $this->hae_pinnalajit(
+                $henkilo_id, $vuosi, $lisaluokitus, $vakipaikka_id);
+        
+        $lajit = $this->havaintonakymat->nayta_pinnalajitaulukko($db_tulostaulu, 
+                                                                $sulkemisnappi, 
+                                                                $henkilonimi, 
+                                                                $kausi, 
+                                                                $sijainti);
+
+        $palauteolio->set_sisalto($lajit);
+        
+    }
+    
+    /**
      * Toteuttaa tilaston puolivuotisnäkymän näyttämisen.
      * @param type $palauteolio
      */
