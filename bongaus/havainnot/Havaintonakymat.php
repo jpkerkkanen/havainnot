@@ -323,7 +323,7 @@ class Havaintonakymat extends Nakymapohja{
 
                         // Päivän syöttö (vähän solurajat hassusti):
                         Html::luo_tablesolu(
-                            $ots_paiva,
+                            "*".$ots_paiva,
                             array(Maarite::align("left"))).
 
                         Html::luo_tablesolu(
@@ -425,7 +425,7 @@ class Havaintonakymat extends Nakymapohja{
             $rivi5 =
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
-                            $ots_paikka,
+                            "*".$ots_paikka,
                             array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
@@ -552,10 +552,7 @@ class Havaintonakymat extends Nakymapohja{
                     Html::luo_tablerivi(
                         Html::luo_tablesolu(
                             $ots_tapahtuma,
-                            array(Maarite::align("left"),
-                                Maarite::title(
-                                    Bongaustekstit::
-                                        $havaintolomake_muok_jaksolisaysohje))). // solu
+                            array(Maarite::align("left"))). // solu
 
                         Html::luo_tablesolu(
                             Html::luo_span(
@@ -572,7 +569,9 @@ class Havaintonakymat extends Nakymapohja{
                             
                             array(Maarite::align("left"))), // solu   
                             
-                        $maar_array);   // taulukkorivi 
+                        array(Maarite::title(
+                                    Bongaustekstit::
+                                        $havaintolomake_muok_jaksolisaysohje)));   // taulukkorivi 
             
             
             // rivi8: Painikkeet:
@@ -2638,6 +2637,27 @@ class Havaintonakymat extends Nakymapohja{
 
                     $maar_array);   // taulukkorivi 
         
+        // rivi8_3: Havaintotapahtuman valinta:
+        $rivi8_3 = 
+                Html::luo_tablerivi(
+                    Html::luo_tablesolu(
+                        Bongaustekstit::$havaintolomake_jaksovalikko_otsikko.":",
+                        array(Maarite::align("left"))). // solu
+
+                    Html::luo_tablesolu(
+                        Html::luo_span(
+                            $this->luo_havaintojaksovalikko("uusi"), 
+
+                            array(Maarite::id(Havaintokontrolleri::
+                                        $chkboxval_muokkaa_tapahtuma_hav)
+                                    )),
+
+                        array(Maarite::align("left"))), // solu   
+
+                    array(Maarite::title(
+                            Bongaustekstit::
+                                $havaintolomake_uusiyksihav_jaksolisaysohje)));   // taulukkorivi 
+        
         // rivi9: Painikkeet:
         $rivi9 = 
                 Html::luo_tablerivi(
@@ -2655,7 +2675,8 @@ class Havaintonakymat extends Nakymapohja{
         // Rivit taulukon sisään:
         $taulukko = 
             Html::luo_table(
-                $rivi1.$rivi2.$rivi3.$rivi4.$rivi5.$rivi5_1.$rivi6.$rivi7.$rivi8.$rivi8_2.$rivi9, 
+                $rivi1.$rivi2.$rivi3.$rivi4.$rivi5.$rivi5_1.$rivi6.$rivi7.
+                $rivi8.$rivi8_2.$rivi8_3.$rivi9, 
                 array(Maarite::summary("uudet_tiedot")));
 
 

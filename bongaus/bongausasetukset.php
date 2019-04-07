@@ -308,6 +308,9 @@ class Bongaustekstit{
     public static $ilm_havaintojaksolinkkeja_luotu_kpl = 
             "kpl havaintoja liitetty havaintotapahtumaan.";
     
+    public static $virheilm_havaintojakson_lisays_eiok = 
+            "Virhe uuden havaintojakson lis&aumlyksessä!";
+    
     // Havaintopaikkatoiminnot:
     public static $ilm_havaintopaikan_lisays_ok = 
             "Uusi havaintopaikka lis&auml;ttiin onnistuneesti!";
@@ -440,7 +443,12 @@ class Bongaustekstit{
     public static $havaintolomake_noedit_ilm = "Ei valittu - vanha arvo säilyy";
     
     public static $havaintolomake_muok_jaksolisaysohje = 
-            "Havainto liitetään valittuun tapahtumaan (joita voi olla useita).";
+            "Jos muutat oletusta, havainto liitetään valittuun "
+            . "tapahtumaan (mahdollisten entisten lisäksi).";
+    
+    public static $havaintolomake_uusiyksihav_jaksolisaysohje = 
+            "Havainto liitetään valittuun tapahtumaan. Jos ".
+            "valittu uusi, luodaan automaattisesti uusi tapahtuma.";
     
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)

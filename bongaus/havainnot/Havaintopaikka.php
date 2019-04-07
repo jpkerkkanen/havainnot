@@ -73,7 +73,7 @@ class Havaintopaikka extends Malliluokkapohja{
      * Havaintopaikka-luokan olioina taulukossa (array).
      * 
      * @param Tietokantaolio $tietokantaolio
-     * @param int $id_henk Käyttäjän id
+     * @param int $id_henk_para Käyttäjän id
      */
     public static function hae_omat_paikat($tietokantaolio, $id_henk_para){
 

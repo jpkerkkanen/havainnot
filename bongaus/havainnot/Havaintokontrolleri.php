@@ -706,11 +706,14 @@ class Havaintokontrolleri extends Kontrolleripohja{
     /**
      * Lisää havainnot, joiden kaikkien tiedot on kopioitu valituista. 
      * Kopioida saa kaikkien havaintoja, myös omia, jos siihen näkee tarvetta. 
+     * Yleensä toki kopioidaan toisen havaintoja.
      * 
      * <p>Antaa ilmoitukset ja ilmoituksen onnistumisesta $palauteolion kautta.
      * Palauttaa käyttäjän havaintojen näyttötilaan.</p>
      * 
-     * 
+     * Huom: vakiopaikka asetetaan ei-määritellyksi, koska mahdollinen
+     * vakipaikka on toisen omistama. Samoin linkkiä havaintotapahtumaan ei 
+     * kopioida.
      * 
      * @return \Palaute Palauttaa Palaute-luokan olion.
      */
@@ -738,7 +741,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     $uusi->set_vuosi($kopioitava->get_vuosi());
                     $uusi->set_maa($kopioitava->get_maa());
                     $uusi->set_paikka($kopioitava->get_paikka());
-                    $uusi->set_vakipaikka($kopioitava->get_vakipaikka());
+                    $uusi->set_vakipaikka(Parametrit::$EI_MAARITELTY);
                     $uusi->set_varmuus($kopioitava->get_varmuus());
                     $uusi->set_kommentti("");   // Kommentiksi tyhjä.
                     $uusi->set_arvo($kopioitava->get_sukupuoli(), 
@@ -1324,56 +1327,89 @@ class Havaintokontrolleri extends Kontrolleripohja{
     }
     
     /**
-     * Toteuttaa yksittäisen uuden havainnon tallennuksen.
+     * Toteuttaa yksittäisen uuden havainnon tallennuksen. Luo myös uuden
+     * havaintotapahtuman, ellei valittu jo olemassa olevaa. Uutta luodessa
+     * tehdään automaatio, eli havaintotapahtuman nimeksi tulee havainnon
+     * paikka, aloitusajaksi havainnon pvm ja muuten tyhjää / ei-määriteltyä.
      * @param Palaute $palauteolio
      */
     public function toteuta_tallenna_uusi(&$palauteolio) {
         
-        $id_lj = $this->get_parametriolio()->lajiluokka_id_hav;
-        $uusi = $this->luo_aseta_tallenna_havainto($this->get_parametriolio(), $id_lj);
+        // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
+        // tallennettua (tieto parametrioliolla).
+        $param = $this->get_parametriolio();
+        $tietokantaolio = $this->tietokantaolio();
+        $monitallennus = false;
         
-        if($uusi instanceof Havainto){
+        $this->luo_havaintojakso_olio($param, $tietokantaolio, $monitallennus);
+        $havjaks = new Havaintojakso($param->id_havjaks, $tietokantaolio);
+        
+        // Jatketaan vain, jos havaintojakso tietokannassa:
+        if($havjaks->olio_loytyi_tietokannasta){
+        
+            $id_lj = $this->get_parametriolio()->lajiluokka_id_hav;
+            $uusi = $this->luo_aseta_tallenna_havainto($param, $id_lj);
 
-            // Tallennetaan havainnon lisäluokitukset:==========================
-            $valitut = $this->get_parametriolio()->lisaluokitusvalinnat_hav;
-            foreach ($valitut as $lisaluokitusarvo) {
-                $palaute = $uusi->tallenna_uusi_lisaluokitus($lisaluokitusarvo);
-                if($palaute === Havainto::$VIRHE){
-                    $palauteolio->lisaa_virheilmoitus(
-                            Bongaustekstit::$ilm_havainnon_lisaluokan_tallennus_eiok.
-                            " ".$uusi->tulosta_virheilmoitukset());
+            if($uusi instanceof Havainto){
+
+                // Tallennetaan havainnon lisäluokitukset:==========================
+                $valitut = $this->get_parametriolio()->lisaluokitusvalinnat_hav;
+                foreach ($valitut as $lisaluokitusarvo) {
+                    $palaute = $uusi->tallenna_uusi_lisaluokitus($lisaluokitusarvo);
+                    if($palaute === Havainto::$VIRHE){
+                        $palauteolio->lisaa_virheilmoitus(
+                                Bongaustekstit::$ilm_havainnon_lisaluokan_tallennus_eiok.
+                                " ".$uusi->tulosta_virheilmoitukset());
+                    }
                 }
+                //==================================================================
+
+                $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havainnon_lisays_ok);
+                $this->toteuta_nayta($palauteolio);
+                $palauteolio->set_muokatun_id($uusi->get_id());
+
+                // Lisätään linkki havaintojaksoon (tapahtumaan):
+                $tarkista = true;
+                $uusi->lisaa_havaintojaksoon($havjaks->get_id(), $tarkista);
+                
+                // Aktiivisuusmerkintä:
+                $tallentaja = new Henkilo($this->get_parametriolio()->get_omaid(), 
+                                        $this->get_tietokantaolio());
+                $tallentaja->paivita_aktiivisuus(Aktiivisuus::$HAVAINTOTALLENNUS_UUSI);
+
+                $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
+
+
+
             }
-            //==================================================================
-            
-            $palauteolio->set_ilmoitus(Bongaustekstit::$ilm_havainnon_lisays_ok);
-            $this->toteuta_nayta($palauteolio);
-            $palauteolio->set_muokatun_id($uusi->get_id());
-            
-            // Aktiivisuusmerkintä:
-            $tallentaja = new Henkilo($this->get_parametriolio()->get_omaid(), 
-                                    $this->get_tietokantaolio());
-            $tallentaja->paivita_aktiivisuus(Aktiivisuus::$HAVAINTOTALLENNUS_UUSI);
-            
-            $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
-                    
-                    
-            
-        }
-        else{
+            else{
+                $palauteolio->set_onnistumispalaute(
+                                Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_UUSI);
+
+                $palaute = Bongaustekstit::$ilm_havainnon_lisays_eiok.
+                        Html::luo_br().
+                        $this->tulosta_virheilmoitukset();
+
+                // Parametriolion kautta saadaan lomakkeeseen palaute myös.
+                $this->get_parametriolio()->set_tallennuspalaute($palaute);
+                $palauteolio->set_ilmoitus($palaute);
+
+                // Asetetaan valituksi uusi: ???
+                //$this->valittujen_idt = array($uusi->get_id());
+                $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
+            }
+        } else{ // Ellei havjaksoa löytynyt tietokannasta.
             $palauteolio->set_onnistumispalaute(
-                            Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_UUSI);
-            
-            $palaute = Bongaustekstit::$ilm_havainnon_lisays_eiok.
+                                Palaute::$ONNISTUMISPALAUTE_VIRHE_TALLENNUS_UUSI);
+
+            $palaute = Bongaustekstit::$virheilm_havaintojakson_lisays_eiok.
                     Html::luo_br().
                     $this->tulosta_virheilmoitukset();
-            
+
             // Parametriolion kautta saadaan lomakkeeseen palaute myös.
             $this->get_parametriolio()->set_tallennuspalaute($palaute);
             $palauteolio->set_ilmoitus($palaute);
-            
-            // Asetetaan valituksi uusi: ???
-            //$this->valittujen_idt = array($uusi->get_id());
+
             $this->toteuta_nayta_yksi_uusi_lomake($palauteolio);
         }
     }
@@ -1402,7 +1438,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         //======================================================================
         // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
         // tallennettua.
-        $this->luo_havaintojakso_olio($param, $tietokantaolio);
+        $this->luo_havaintojakso_olio($param, $tietokantaolio, true);
         $havjaks = new Havaintojakso($param->id_havjaks, $tietokantaolio);
         
         // Jatketaan vain, jos havaintojakso tietokannassa:
@@ -1758,10 +1794,23 @@ class Havaintokontrolleri extends Kontrolleripohja{
      * Onnistuesssaan, tai kun havaintojakso jo olemassa, palauttaa arvon 
      * OPERAATIO_ONNISTUI. Muussa tapauksessa palauttaa arvon VIRHE
      * ja jättää tarvittaessa ilmoituksen Havaintokontrollerioliolle.
+     * 
+     * Täällä hoidetaan sekä käyttäjän määrittämä (monihavaintotallennus) että
+     * automaattinen (yhden havainnon tallennus) havaintojakso. Yhden havainnon
+     * tallennuksessa luodaan automaattisesti havaintojakso kyseiselle päivälle,
+     * nimeksi asetetaan paikka ja kommentti jätetään tyhjäksi. Aloitusajaksi
+     * asetetaan havainnon pvm ja kestoksi Parametrit::ei_maaritelty-arvo, 
+     * joka tallentuu myös tietokantaan.
+     * 
      * @param Parametrit $parametriolio
      * @param Tietokantaolio $tietokantaolio
+     * @param bool $monitallennus If true, user defined havaintojakso, otherwise
+     * automatic havaintojakso (while saving a single havainto).
      */
-    private function luo_havaintojakso_olio(&$parametriolio, $tietokantaolio){
+    private function luo_havaintojakso_olio(&$parametriolio, 
+                                            $tietokantaolio,
+                                            $monitallennus){
+                                
         // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
         // tallennettua.
         $palautusarvo = Havaintojakso::$OPERAATIO_ONNISTUI;
@@ -1774,45 +1823,62 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $uusi = new Havaintojakso(Havaintojakso::$MUUTTUJAA_EI_MAARITELTY, 
                                         $tietokantaolio);
             
-            // Haetaan ja muotoillaan alkuaika (unix time stamp) ja kesto (min):
-            $vuosi = $param->alkuaika_vuosi_havjaks;
-            $kk = $param->alkuaika_kk_havjaks;
-            $paiva = $param->alkuaika_paiva_havjaks;
-            $h = $param->alkuaika_h_havjaks;
-            if($h === "" || $h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
-            $min = $param->alkuaika_min_havjaks;
-            if($min == "" ||$min < 0){ $min = 0;}
-            
-            $sek = 0;   // Sekunteja ei tallenneta.
-            
-            /*$alkuaika = new DateTime($vuosi."-".$kk."-".$paiva." ".
-                                        $h.":".$min.":01");
+            // Ensin käyttäjän määrittämät tiedot:
+            if($monitallennus){
+                // Haetaan ja muotoillaan alkuaika (unix time stamp) ja kesto (min):
+                $vuosi = $param->alkuaika_vuosi_havjaks;
+                $kk = $param->alkuaika_kk_havjaks;
+                $paiva = $param->alkuaika_paiva_havjaks;
+                $h = $param->alkuaika_h_havjaks;
+                if($h === "" || $h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
+                $min = $param->alkuaika_min_havjaks;
+                if($min === "" ||$min < 0){ $min = 0;}
 
-            $alkuaika_sek = $alkuaika->getTimestamp();*/ // Ei parsinta onnannu.
-            
-            $alkuaika_sek = mktime($h, $min, $sek, $kk, $paiva, $vuosi);
+                $sek = 0;   // Sekunteja ei tallenneta.
+                $alkuaika_sek = mktime($h, $min, $sek, $kk, $paiva, $vuosi);
 
-            $param->alkuaika_sek_havjaks = $alkuaika_sek;
-            
-            // Haetaan kesto minuutteina:
-            $kestovrk = $param->kesto_vrk_havjaks;
-            $kestoh = $param->kesto_h_havjaks;
-            $kestomin = $param->kesto_min_havjaks;
-            
-            // Ellei määritelty, pistetään nollaksi:
-            if($kestovrk < 1){
-                $kestovrk = 0;
-            }
-            if($kestoh < 1){
-                $kestoh = 0;
-            }
-            if($kestomin < 1){
-                $kestomin = 0;
-            }
-            
-            $kestomintotal = $kestovrk * 24 * 60 + $kestoh * 60 + $kestomin; 
+                $param->alkuaika_sek_havjaks = $alkuaika_sek;
 
-            $uusi->set_arvo($param->alkuaika_sek_havjaks, 
+                // Haetaan kesto minuutteina:
+                $kestovrk = $param->kesto_vrk_havjaks;
+                $kestoh = $param->kesto_h_havjaks;
+                $kestomin = $param->kesto_min_havjaks;
+
+                // Ellei määritelty, pistetään nollaksi:
+                if($kestovrk < 1){
+                    $kestovrk = 0;
+                }
+                if($kestoh < 1){
+                    $kestoh = 0;
+                }
+                if($kestomin < 1){
+                    $kestomin = 0;
+                }
+
+                $kestomintotal = $kestovrk * 24 * 60 + $kestoh * 60 + $kestomin;
+                
+                $nimi = $param->nimi_havjaks;
+                $kommentti = $parametriolio->kommentti_havjaks;
+                $nakyvyys = $parametriolio->nakyvyys_havjaks;
+                
+            } else {
+                // Aloitusajaksi havainnon aika:
+                $vuosi = $parametriolio->vuosi_hav;
+                $kk = $parametriolio->kk_hav;
+                $paiva = $parametriolio->paiva_hav;
+                $h = 0;
+                $min = 0;
+                $sek = 0;
+                $alkuaika_sek = mktime($h, $min, $sek, $kk, $paiva, $vuosi);
+                
+                // Kestoa ei määritellä:
+                $kestomintotal = Parametrit::$EI_MAARITELTY;
+                $nimi = $parametriolio->paikka_hav; 
+                $kommentti = "";
+                $nakyvyys = $parametriolio->nakyvyys_havjaks; // Default Julkinen
+            }
+            
+            $uusi->set_arvo($alkuaika_sek, 
                     Havaintojakso::$SARAKENIMI_ALKUAIKA_SEK);
             
             $uusi->set_arvo($kestomintotal, 
@@ -1821,13 +1887,13 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $uusi->set_arvo($parametriolio->get_omaid(), 
                     Havaintojakso::$SARAKENIMI_HENKILO_ID);
             
-            $uusi->set_arvo($param->nimi_havjaks, 
+            $uusi->set_arvo($nimi, 
                     Havaintojakso::$SARAKENIMI_NIMI);
             
-            $uusi->set_arvo($param->kommentti_havjaks, 
+            $uusi->set_arvo($kommentti, 
                     Havaintojakso::$SARAKENIMI_KOMMENTTI);
             
-            $uusi->set_arvo($param->nakyvyys_havjaks, 
+            $uusi->set_arvo($nakyvyys, 
                     Havaintojakso::$SARAKENIMI_NAKYVYYS);
             
             $palaute = $uusi->tallenna_uusi();
