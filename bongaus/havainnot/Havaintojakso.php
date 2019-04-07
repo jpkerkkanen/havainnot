@@ -57,7 +57,6 @@ class Havaintojakso extends Malliluokkapohja {
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
             array(new Tietokantasolu(Havaintojakso::$SARAKENIMI_ID, 
-
                                                     Tietokantasolu::$luku_int,$tietokantaolio),  
                 new Tietokantasolu(Havaintojakso::$SARAKENIMI_HENKILO_ID, 
                                                     Tietokantasolu::$luku_int,$tietokantaolio), 

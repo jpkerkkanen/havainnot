@@ -3,6 +3,7 @@ Nämä ovat www.havainnot.net-sivustolla käytettäviä mysql-tauluja.
 
 Muutokset 3/2019:
 -lisätty taulu havaintojaksolinkit
+-lisätty taulu havaintopaikat (vakipaikat)
 -havainnot-tauluun lisätty vakipaikka_id: (riittääkö one-many?)
  alter table havainnot add column vakipaikka_id int default -1;
 */
@@ -316,7 +317,7 @@ create table havaintokuvalinkit
                       ON DELETE CASCADE
 ) ENGINE=INNODB;
 
-/* Omat paikat: mahdollistaa haun paikan mukaan. */
+/* LISÄYS 3/2019:Omat paikat: mahdollistaa haun paikan mukaan. */
 create table havaintopaikat
 (
   id                    int auto_increment not null,
@@ -326,9 +327,7 @@ create table havaintopaikat
   maa_id                int not null,
   primary key (id),
   index(henkilo_id),
-  index(maa_id),
-  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
-                      ON DELETE CASCADE
+  index(maa_id)
 ) ENGINE=INNODB;
 
 

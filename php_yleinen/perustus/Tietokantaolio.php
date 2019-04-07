@@ -691,7 +691,7 @@ class Tietokantaolio extends Pohja
                 $arvot .= ")";
                 
                 $insert_koodi ="INSERT INTO ".$taulu." ";
-                $value_koodi = " VALUE ";
+                $value_koodi = " VALUES ";
                
                 $kyselylause = $insert_koodi.$sarakenimet.
                                 $value_koodi.$arvot;

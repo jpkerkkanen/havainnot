@@ -5,18 +5,14 @@ var ajaxkyselytiedosto_osoite = "ajax_ja_js/ajax_kyselyt.php";
 function tarkista_lisaluokitusvalinnat(class_arvo){
     var valintaboxit = document.getElementsByClassName(class_arvo);
     
-    // Jos kotipiha on valittu, valitaan myös eko ja eko2:
+    // Jos Eko on valittu, valitaan myös eko1:
     if(valintaboxit[0].checked){
         valintaboxit[1].checked="checked";
-        valintaboxit[2].checked="checked";
-        
-    } else if(valintaboxit[1].checked){ // eko -> eko2
-        valintaboxit[2].checked="checked";
-    }
+    } 
     
     // Elis -> maaelis
-    if(valintaboxit[4].checked){
-        valintaboxit[5].checked="checked";
+    if(valintaboxit[3].checked){
+        valintaboxit[4].checked="checked";
     } 
     
     /*for (i=0;i<valintaboxit.length;i++){
@@ -813,7 +809,17 @@ function hae_vakipaikkalomake(vakipaikka_id_name, vakipaikka_id){
 
 function poistu_vakipaikkalomakkeesta(lomakeruutu_id){
     setElemDisplay(lomakeruutu_id, "none");
-    setElemDisplay("tietolomake_rajaton", "block");
+    
+    // Havaintolomake näkyviin:
+    var havaintolomakkeen_id_one = "tietolomake_rajaton"; // yksilisäyslomake.
+    var havaintolomakkeen_id_many = "tietolomake_maxi"; // Monilisäyslomake
+
+    if(find(havaintolomakkeen_id_one)){
+        setElemDisplay(havaintolomakkeen_id_one, "block");
+    } else if(find(havaintolomakkeen_id_many)){
+        setElemDisplay(havaintolomakkeen_id_many, "block");
+    }
+    
 }
 
 /* Näyttää vakipaikkalomakkeen, eli haetun html-koodin yleislaatikon sisällä.*/
@@ -821,9 +827,16 @@ function nayta_vakipaikkalomake(html){
     try{
         //alert(html);
         var yleislaatikon_id = "yleislaatikko";
-        var havaintolomakkeen_id = "tietolomake_rajaton";
+        var havaintolomakkeen_id_one = "tietolomake_rajaton";
+        var havaintolomakkeen_id_many = "tietolomake_maxi";
    
-        find(havaintolomakkeen_id).style.display="none";
+        if(find(havaintolomakkeen_id_one)){
+            find(havaintolomakkeen_id_one).style.display="none";
+        } else if(find(havaintolomakkeen_id_many)){
+            find(havaintolomakkeen_id_many).style.display="none";
+        }
+   
+        
    
         // luodaan uusi elementti vain, ellei sellaista jo olemassa:
         if(!document.getElementById(yleislaatikon_id)){
@@ -936,8 +949,6 @@ function tallenna_vakipaikka(vakipaikka_id, // olion id > 0, jos vanhan muokkaus
                         'nayta_vakipaikkatallennustulos','post', 'xml',
                         nayta_viiveilmoitus);
         }
-        
-        
     }
 
     catch(virhe){
@@ -971,8 +982,14 @@ function nayta_vakipaikkatallennustulos(tulosxml){
     nayta_viesti(kommentti);
     
     // Havaintolomake näkyviin:
-    var havaintolomakkeen_id = "tietolomake_rajaton";
-    find(havaintolomakkeen_id).style.display="block";
+    var havaintolomakkeen_id_one = "tietolomake_rajaton"; // yksilisäyslomake.
+    var havaintolomakkeen_id_many = "tietolomake_maxi"; // Monilisäyslomake
+
+    if(find(havaintolomakkeen_id_one)){
+        find(havaintolomakkeen_id_one).style.display="block";
+    } else if(find(havaintolomakkeen_id_many)){
+        find(havaintolomakkeen_id_many).style.display="block";
+    }
     
     // Suljetaan vakipaikkalomake:
     find("yleislaatikko").style.display="none";

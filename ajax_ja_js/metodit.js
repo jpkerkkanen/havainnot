@@ -980,57 +980,63 @@ function tyhjenna_pvm()
  */
 function nayta_ed(id_erotin)
 {
-    // Päivitys tapahtuman aikaan (jokin stupid idea, mutta olkoon):
-    if(id_erotin === "" || id_erotin === 0){
-      id_erotin = 2;
-    }
-    muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+    // Monen uuden havainnon päivämäärän päivitys tapahtumalle aikaan (pvm
+    // muuttuu sekä havainnossa että tapahtumassa).
+    if(id_erotin === "moniuusilomake"){
+        muuta_pvm(-1, "paiva", "kk", "vuosi", "pvm_naytto");
+        muuta_pvm(-1, "paiva2", "kk2", "vuosi2", "pvm_naytto2");
+    } else{
+        muuta_pvm(-1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+    
+    }
+    
+                  
+    
+    
 }
 
 function nayta_seur(id_erotin)
 {
-                  
-    // Päivitys tapahtuman aikaan:
-    if(id_erotin === "" || id_erotin === 0){
-      id_erotin = 2;
-    }
-    
-    muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+    if(id_erotin === "moniuusilomake"){
+        muuta_pvm(1, "paiva", "kk", "vuosi", "pvm_naytto");
+        muuta_pvm(1, "paiva2", "kk2", "vuosi2", "pvm_naytto2");
+    } else{
+        muuta_pvm(1, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+    } 
 }
 
 function nayta_seur_vko(id_erotin)
-{                 
-    // Päivitys tapahtuman aikaan:
-    if(id_erotin === "" || id_erotin === 0){
-      id_erotin = 2;
-      
-    }
-    muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+{   
+    if(id_erotin === "moniuusilomake"){
+        muuta_pvm(7, "paiva", "kk", "vuosi", "pvm_naytto");
+        muuta_pvm(7, "paiva2", "kk2", "vuosi2", "pvm_naytto2");
+    } else{
+        muuta_pvm(7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+    }
 }
 
 function nayta_ed_vko(id_erotin)
 {
-    // Päivitys tapahtuman aikaan:
-    if(id_erotin === "" || id_erotin === 0){
-      id_erotin = 2;
-      
-    }
-    muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+    if(id_erotin === "moniuusilomake"){
+        muuta_pvm(-7, "paiva", "kk", "vuosi", "pvm_naytto");
+        muuta_pvm(-7, "paiva2", "kk2", "vuosi2", "pvm_naytto2");
+    } else{
+        muuta_pvm(-7, "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+    }
 }
 
 function nayta_nyk_pvm(id_erotin){
-    // Päivitys tapahtuman aikaan:
-    if(id_erotin === "" || id_erotin === 0){
-      id_erotin = 2;
-      
-    }
-   
-    muuta_pvm("nyt", "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
+    if(id_erotin === "moniuusilomake"){
+        muuta_pvm("nyt", "paiva", "kk", "vuosi", "pvm_naytto");
+        muuta_pvm("nyt", "paiva2", "kk2", "vuosi2", "pvm_naytto2");
+    } else{
+        muuta_pvm("nyt", "paiva"+id_erotin, "kk"+id_erotin, "vuosi"+id_erotin, 
                   "pvm_naytto"+id_erotin);
+    }
 }
 function nayta_pvm_havjaks(){
   nayta_pvm("paiva2", "kk2", "vuosi2", "pvm_naytto2");

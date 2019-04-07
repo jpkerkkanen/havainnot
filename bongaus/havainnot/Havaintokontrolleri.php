@@ -600,9 +600,11 @@ class Havaintokontrolleri extends Kontrolleripohja{
     public function toteuta_nayta_vakipaikkalomake(&$palauteolio){
         
         $omaid = $this->get_parametriolio()->get_omaid();
-        $mie = new Henkilo($oma_id, $this->get_tietokantaolio());
+        $mie = new Henkilo($omaid, $this->get_tietokantaolio());
         if($mie->olio_loytyi_tietokannasta){
             $asuinmaa_id = $mie->get_arvo(Henkilo::$sarakenimi_asuinmaa);
+        } else{
+            $asuinmaa_id = "unknown";
         }
         
         $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
@@ -736,6 +738,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
                     $uusi->set_vuosi($kopioitava->get_vuosi());
                     $uusi->set_maa($kopioitava->get_maa());
                     $uusi->set_paikka($kopioitava->get_paikka());
+                    $uusi->set_vakipaikka($kopioitava->get_vakipaikka());
                     $uusi->set_varmuus($kopioitava->get_varmuus());
                     $uusi->set_kommentti("");   // Kommentiksi tyhjä.
                     $uusi->set_arvo($kopioitava->get_sukupuoli(), 
@@ -1399,7 +1402,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         //======================================================================
         // Tallennetaan uusi tapahtuma (Havaintojakso), ellei valittu jo
         // tallennettua.
-        $havjakstallennus = $this->luo_havaintojakso_olio($param, $tietokantaolio);
+        $this->luo_havaintojakso_olio($param, $tietokantaolio);
         $havjaks = new Havaintojakso($param->id_havjaks, $tietokantaolio);
         
         // Jatketaan vain, jos havaintojakso tietokannassa:
@@ -1744,10 +1747,8 @@ class Havaintokontrolleri extends Kontrolleripohja{
         if($palaute === Malliluokkapohja::$OPERAATIO_ONNISTUI){
             $parametriolio->id_hav = $hav->get_id();
             $palautusarvo = $hav;
-            echo "vakipaikka_id=".$hav->get_vakipaikka();
         } else{
             $this->lisaa_virheilmoitus($hav->tulosta_virheilmoitukset());
-            echo "virhe - vakipaikka_id=".$hav->get_arvo(Havainto::$SARAKENIMI_VAKIPAIKKA)." ja onnistuminen=".$palaute;
         }
         return $palautusarvo;
     }

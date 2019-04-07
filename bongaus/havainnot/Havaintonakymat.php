@@ -1731,13 +1731,13 @@ class Havaintonakymat extends Nakymapohja{
                     array(Maarite::id("b1"), 
                             Maarite::type("button"),
                             Maarite::title(Bongauspainikkeet::$ed_vko_title ),
-                            Maarite::onclick("nayta_ed_vko", array("")))).
+                            Maarite::onclick("nayta_ed_vko", array("moniuusilomake")))).
 
                 Html::luo_button(Bongauspainikkeet::$ed_paiva, 
                     array(Maarite::id("b2"), 
                             Maarite::type("button"),
                             Maarite::title(Bongauspainikkeet::$ed_paiva_title),
-                            Maarite::onclick("nayta_ed", array(""))))." ".
+                            Maarite::onclick("nayta_ed", array("moniuusilomake"))))." ".
 
                 Html::luo_input(array(
                         Maarite::type("text"),
@@ -1779,19 +1779,25 @@ class Havaintonakymat extends Nakymapohja{
                     array(Maarite::id("b3"), 
                             Maarite::type("button"),
                             Maarite::title(Bongauspainikkeet::$seur_paiva_title),
-                            Maarite::onclick("nayta_seur", array("")))).
+                            Maarite::onclick("nayta_seur", array("moniuusilomake")))).
 
                 Html::luo_button(Bongauspainikkeet::$seur_vko, 
                     array(Maarite::id("b4"), 
                             Maarite::type("button"),
                             Maarite::title(Bongauspainikkeet::$seur_vko_title),
-                            Maarite::onclick("nayta_seur_vko", array("")))),
+                            Maarite::onclick("nayta_seur_vko", array("moniuusilomake")))),
                 array(Maarite::classs("havaintolomakerivi")));
         
         // Vakipaikkavalikko:
+        $dropdown = $this->luo_havaintopaikkavalikko(
+                        Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY, 
+                        $this->parametriolio->get_omaid());
         $paikkavalikko = 
-            $this->luo_havaintopaikkavalikko(Havaintopaikka::$MUUTTUJAA_EI_MAARITELTY, 
-                                            $this->parametriolio->get_omaid());
+            Html::luo_span($dropdown, 
+                            array(Maarite::id(Bongausasetuksia::
+                                    $havaintolomake_vakipaikkavalikko_id)));   //span
+
+            
         $uusi_paikka_nappi = $this->luo_havaintopaikka_uusipainike();
         
         // Tyhjä, koska täytetään tarvittaessa ajaxin avulla.
@@ -2400,25 +2406,25 @@ class Havaintonakymat extends Nakymapohja{
                         Html::luo_button(
                             Bongauspainikkeet::$ed_vko,
                             array(Maarite::id("b1"),
-                                Maarite::onclick("nayta_ed_vko", ""))). // button1-elementti
+                                Maarite::onclick("nayta_ed_vko", array("")))). // button1-elementti
 
                         Html::luo_button(
                             Bongauspainikkeet::$ed_paiva,
                             array(Maarite::id("b2"),
-                                Maarite::onclick("nayta_ed", ""))). // button2-elementti
+                                Maarite::onclick("nayta_ed", array("")))). // button2-elementti
 
                         Html::luo_button(
                             Bongauspainikkeet::$seur_paiva,
                             array(Maarite::id("b3"),
-                                Maarite::onclick("nayta_seur()", ""))). // button3-elementti
+                                Maarite::onclick("nayta_seur", array("")))). // button3-elementti
 
                         Html::luo_button(
                             Bongauspainikkeet::$seur_vko,
                             array(Maarite::id("b4"),
-                                Maarite::onclick("nayta_seur_vko()", ""))), // button4-elementti
+                                Maarite::onclick("nayta_seur_vko", array("")))), // button4-elementti
 
                         array(Maarite::colspan(2),
-                            Maarite::align("left"))), // solu
+                            Maarite::align("center"))), // solu
                     $maar_array);   // taulukkorivi 
 
         // Rivi3: pvm-kentät
