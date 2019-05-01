@@ -86,7 +86,17 @@ class Bongauspainikkeet{
     public static $HAVAINNOT_SULJE_HENKILON_HAVAINNOT_VALUE =
         "Sulje";
 
-
+    public static $havjaks_nayta_lomake_VALUE =
+        "Muokkaa havaintotapahtumatietoja";
+    
+    public static $havjaks_nayta_lomake_TITLE =
+        "Täällä voit asettaa havaintotapahtuman tiedot tai valita vanhan.
+         Muussa tapauksessa luodaan automaattisesti uusi tapahtuma samalle päivälle.";
+    
+    public static $havjaks_piilota_lomake_VALUE =
+        "Piilota havaintotapahtumatiedot";
+    
+    
     // Aikavalinnat:
     public static $ed_paiva = "<";
     public static $seur_paiva = ">";

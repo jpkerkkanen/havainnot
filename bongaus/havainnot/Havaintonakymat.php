@@ -104,6 +104,7 @@ class Havaintonakymat extends Nakymapohja{
                                             $this->parametriolio->get_omaid());
             $uusi_paikka_nappi = $this->luo_havaintopaikka_uusipainike();
             
+            
             //=============================================================
 
             $poistunappi = Html::luo_input(
@@ -622,6 +623,7 @@ class Havaintonakymat extends Nakymapohja{
                                 Maarite::action("index.php".$url_id),
                                 Maarite::id(Bongausasetuksia::$havaintolomakkeen_id)));
 
+            
             // näytetään js-päivämäärä
             $html .= Html::luo_script_js("nayta_pvm();");
         }
@@ -1500,6 +1502,25 @@ class Havaintonakymat extends Nakymapohja{
                                 Maarite::title(Bongauspainikkeet::
                                             $TALLENNA_MONTA_HAV_KERRALLA_TITLE)));
 
+        // Painikkeet, joista saa näkyviin tai pois havaintojaksotiedot:
+        $show_havjakstiedot_btn = Html::luo_button(
+            Bongauspainikkeet::$havjaks_nayta_lomake_VALUE, 
+            array(Maarite::id("havjaksinfo_showButton"),
+                Maarite::classs("rinnakkain"),
+                Maarite::title(Bongauspainikkeet::$havjaks_nayta_lomake_TITLE),
+                Maarite::onclick("showHavjaksInfo", 
+                    array("havaintojaksolomakeruutu", "havjaksinfo_showButton", 
+                        "havjaksinfo_hideButton"))));
+        
+        $hide_havjakstiedot_btn = Html::luo_button(
+            Bongauspainikkeet::$havjaks_piilota_lomake_VALUE, 
+            array(Maarite::id("havjaksinfo_hideButton"),
+                Maarite::classs("rinnakkain"),
+                Maarite::style("display:none"),
+                Maarite::onclick("hideHavjaksInfo", 
+                    array("havaintojaksolomakeruutu", "havjaksinfo_showButton", 
+                        "havjaksinfo_hideButton"))));
+        
         $suurin_havaintoid = 
                 Yleismetodit::hae_suurin_id($tietokantaolio, Havainto::$taulunimi);
 
@@ -1832,9 +1853,11 @@ class Havaintonakymat extends Nakymapohja{
                 Html::luo_div(  
                     Bongaustekstit::$havaintolomake_lisaluokitukset.": ".
                     $lisaluokitusradionapit,
-                    array(Maarite::classs("havaintolomakerivi"))),
+                    array(Maarite::classs("havaintolomakerivi"))).
+                
+                Html::luo_div($show_havjakstiedot_btn.$hide_havjakstiedot_btn, 
+                    array()),
                 array(Maarite::id("havaintolomake_osa1"))).
-
  
             $this->luo_havaintojaksolomakeruutu($hj_uusi, 
                                                 $hj_nimi, 
@@ -2245,7 +2268,8 @@ class Havaintonakymat extends Nakymapohja{
                 $havjaks_kellonaika_ja_kesto;    
         
         $html = Html::luo_div($sisalto, 
-                            array(Maarite::id("havaintojaksolomakeruutu")));
+                            array(Maarite::id("havaintojaksolomakeruutu"),
+                                Maarite::style("display:none")));
         
         return $html;
     }

@@ -1795,12 +1795,16 @@ class Havaintokontrolleri extends Kontrolleripohja{
      * OPERAATIO_ONNISTUI. Muussa tapauksessa palauttaa arvon VIRHE
      * ja jättää tarvittaessa ilmoituksen Havaintokontrollerioliolle.
      * 
-     * Täällä hoidetaan sekä käyttäjän määrittämä (monihavaintotallennus) että
+     * Täällä hoidetaan sekä käyttäjän mahdollisesti määrittämä 
+     * (monihavaintotallennus) että
      * automaattinen (yhden havainnon tallennus) havaintojakso. Yhden havainnon
      * tallennuksessa luodaan automaattisesti havaintojakso kyseiselle päivälle,
      * nimeksi asetetaan paikka ja kommentti jätetään tyhjäksi. Aloitusajaksi
      * asetetaan havainnon pvm ja kestoksi Parametrit::ei_maaritelty-arvo, 
      * joka tallentuu myös tietokantaan.
+     * 
+     * Monihavaintotallennuksessa käyttäjä voi antaa tarkemmat tiedot tai sitten
+     * tehdään saman tyyppinen automaattiratkaisu kuin yhden havainnon tapauksessa.
      * 
      * @param Parametrit $parametriolio
      * @param Tietokantaolio $tietokantaolio
@@ -1827,8 +1831,17 @@ class Havaintokontrolleri extends Kontrolleripohja{
             if($monitallennus){
                 // Haetaan ja muotoillaan alkuaika (unix time stamp) ja kesto (min):
                 $vuosi = $param->alkuaika_vuosi_havjaks;
+                if($vuosi === "" || $vuosi === Parametrit::$EI_MAARITELTY){
+                    $vuosi = $parametriolio->vuosi_hav;
+                }
                 $kk = $param->alkuaika_kk_havjaks;
+                if($kk === "" || $kk === Parametrit::$EI_MAARITELTY){
+                    $kk = $parametriolio->vuosi_kk;
+                }
                 $paiva = $param->alkuaika_paiva_havjaks;
+                if($paiva === "" || $paiva === Parametrit::$EI_MAARITELTY){
+                    $paiva = $parametriolio->paiva_hav;
+                }
                 $h = $param->alkuaika_h_havjaks;
                 if($h === "" || $h < 0){ $h = 0;}    // Jos jätetty tyhjäksi.
                 $min = $param->alkuaika_min_havjaks;
@@ -1857,7 +1870,17 @@ class Havaintokontrolleri extends Kontrolleripohja{
 
                 $kestomintotal = $kestovrk * 24 * 60 + $kestoh * 60 + $kestomin;
                 
+                // Jos nolla, viittaa siihen, ettei määritelty:
+                if($kestomintotal === 0){
+                    $kestomintotal = Parametrit::$EI_MAARITELTY;
+                }
+                
                 $nimi = $param->nimi_havjaks;
+
+                if($nimi === ""){
+
+                    $nimi = $parametriolio->paikka_hav;
+                }
                 $kommentti = $parametriolio->kommentti_havjaks;
                 $nakyvyys = $parametriolio->nakyvyys_havjaks;
                 

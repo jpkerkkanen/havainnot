@@ -60,6 +60,19 @@ function vaihda_kommenttinakyvyys(elementin_name){
             "Kavenna";
     }
 }
+// Shows the text field for setting event info:
+function showHavjaksInfo(id_info, id_showBtn, id_hideBtn){
+    alert("moi");
+    setElemDisplay(id_info, "block");
+    setElemDisplay(id_showBtn, "none");
+    setElemDisplay(id_hideBtn, "inline");
+}
+// Hides the same thing:
+function hideHavjaksInfo(id_info, id_showBtn, id_hideBtn){
+    setElemDisplay(id_info, "none");
+    setElemDisplay(id_showBtn, "inline");
+    setElemDisplay(id_hideBtn, "none");
+}
 
 /**
  * Muokkaa havaintojen monimuokkauslomaketta sen mukaan, kuinka käyttäjä
