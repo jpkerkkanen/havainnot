@@ -412,12 +412,28 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $JOIN_lisaluokitus = "";
         }
         
+        // Henkilöehto vaatii ylimääräisen liitoksen tekemisen. Henkilöä ei
+        // käytetä esim vakipaikan havainnoissa.
+        if(is_numeric($henkilo_id) && $henkilo_id > 0){
+
+            $henkiloehto = " AND ".Henkilo::$taulunimi.".".
+                            Henkilo::$SARAKENIMI_ID."=".$henkilo_id;
+        
+            $JOIN_henkilo = " JOIN ".Henkilo::$taulunimi.
+                            " ON ".Havainto::$taulunimi.".".
+                            Havainto::$SARAKENIMI_HENKILO_ID."=".
+                            Henkilo::$taulunimi.".".Henkilo::$SARAKENIMI_ID;
+        }
+        else{
+            $henkiloehto = "";
+            $JOIN_henkilo = "";
+        }
+        
         $hakulause =
             "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                     ".Kuvaus::$taulunimi.".nimi AS nimi
             FROM ".Havainto::$taulunimi."
-            JOIN henkilot
-            ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
+            
             JOIN ".Lajiluokka::$taulunimi."
             ON ".Havainto::$taulunimi.".lajiluokka_id = ".
                 Lajiluokka::$taulunimi.".id
@@ -425,10 +441,12 @@ class Havaintokontrolleri extends Kontrolleripohja{
             ON (".Havainto::$taulunimi.".lajiluokka_id = ".
                 Kuvaus::$taulunimi.".lajiluokka_id
             AND ".Kuvaus::$taulunimi.".kieli=".Kielet::$SUOMI.")".
+            $JOIN_henkilo.
             $JOIN_lisaluokitus.
 
-            " WHERE henkilot.id =".$henkilo_id.
-            " AND ".$ylaluokkaehto.
+            " WHERE ".
+            $ylaluokkaehto.
+            $henkiloehto.
             $jaksoaikaehto.
             $varmuusehto.
             $alue_ehto.
@@ -481,6 +499,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             // Vakipaikan havainnoissa nimeä eikä kautta näytetä.
             $henkilonimi = "";  // Tällä hetkellä vain omat lajit näkyvät.
             $kausi = "";    // Oletuksena kaikkien aikojen havainnot näkyvät.
+            $bongaaja_id = -1;  
         } else{
             $sijainti = "";
         }
