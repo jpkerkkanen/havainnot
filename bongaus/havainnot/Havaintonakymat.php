@@ -1911,9 +1911,15 @@ class Havaintonakymat extends Nakymapohja{
                     <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>";
         }
         else{ // Muotoillaan tiedot nätisti:
+            if($vuosi != ""){
+                $vuosi = ", ".$vuosi;
+            }
+            if($sijainti != ""){
+                $sijaint = ", ".$sijainti;
+            }
             $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
                     $sulkemisnappi."<br />".
-                    "(".$henkilo.", ".$vuosi.", ".$sijainti.")</div>";
+                    "(".$henkilo.$vuosi.$sijainti.")</div>";
 
             $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
                 <tr>

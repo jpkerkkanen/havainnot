@@ -36,6 +36,8 @@ class Bongauspainikkeet{
     public static $HAVAINNOT_TILASTOT_TITLE = 
             "T&auml;st&auml; p&auml;&auml;set katselemaan havaintotilastoja!";
     
+    
+    
     public static $HAVAINNOT_MONIPOISTOVAHVISTUS_VALUE = 
             "Vahvista valittujen havaintojen poisto";
     
@@ -73,6 +75,12 @@ class Bongauspainikkeet{
     
     public static $HAVAINNOT_NAYTA_PAIKAN_HAVAINNOT_TITLE =
         "Klikkaamalla n&auml;et kyseisen paikan kaikki havainnot";
+    
+    public static $HAVAINNOT_NAYTA_PAIKAN_LAJIT_TITLE =
+        "Klikkaamalla n&auml;et kyseisessä paikassa havaitut eri lajit";
+    
+    public static $HAVAINNOT_NAYTA_PAIKAN_LAJIT_VALUE =
+        "Lajit";
     
     public static $HAVAINNOT_NAYTA_HENKILON_LAJIT_SUOMI_TITLE =
         "Klikkaamalla saat listan henkil&ouml;n Suomessa havaitsemista lajeista";

@@ -312,6 +312,25 @@ function hae_henkilon_pinnalajit(henk_id, vuosi, havaintoalue, lisaluok_arvo, li
     }
 }
 
+/* Tässä haetaan vain havaitut eri lajit. Lisäluokitukset
+ * otetaan huomioon täällä! */
+function hae_paikan_pinnalajit(vuosi, vakipaikka_id, vakipaikka_id_name){
+    try{
+        kysely = "kysymys=nayta_vakipaikan_pinnalajit"+
+                "&vuosi_hav="+vuosi+
+                "&"+vakipaikka_id_name+"="+vakipaikka_id;
+        nayta_viiveilmoitus = 1;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_havainnot_left','post', 'text', nayta_viiveilmoitus);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/hae_henkilon_bongauslajit): "+virhe.description;
+    }
+}
+
+
 function hae_vakipaikan_havainnot(vakipaikka_id, vakipaikka_name){
     try{
         kysely = "kysymys=nayta_vakipaikan_havainnot&"+

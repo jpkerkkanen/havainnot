@@ -150,7 +150,19 @@ class Havaintokontrolleri extends Kontrolleripohja{
                         Bongauspainikkeet::$HAVAINNOT_SULJE_HENKILON_HAVAINNOT_VALUE.
                         "</button>";
 
-
+        $lajipainike = Html::luo_button(
+            Bongauspainikkeet::$HAVAINNOT_NAYTA_PAIKAN_LAJIT_VALUE, 
+            array(
+                Maarite::title(Bongauspainikkeet::$HAVAINNOT_NAYTA_PAIKAN_LAJIT_TITLE),
+                Maarite::onclick("hae_paikan_pinnalajit", 
+                    array(0,  // Vuosi < 1900 -> haetaan kaikki.  
+                        $vakipaikka_id,
+                        Havaintokontrolleri::$name_havaintopaikka_id
+                    )   // array
+                ) // onclick
+            )   // button settings array
+        );  
+        
         $tulos = "";
 
         // Muotoillaan yläluokan lause:
@@ -215,7 +227,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $maa = ", ".Maat::hae_maan_nimi($havainto->maa);
             $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
                     "Havainnot (".$havainto->vakipaikka.
-                    $maa.")".$sulkemisnappi."</div>";
+                    $maa.")".$lajipainike.$sulkemisnappi."</div>";
 
             $omaid = $parametriolio->get_omaid();
             $toiminto_otsikko = "";
@@ -352,7 +364,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         }
 
         // Muotoillaan vuoden valinta.
-        if(!is_numeric($vuosi) || $vuosi > 0){
+        if(is_numeric($vuosi) && $vuosi > 0){
 
             $jaksoaikaehto = " AND ".Havainto::$taulunimi.".vuosi = ".$vuosi;
         }
@@ -360,7 +372,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $jaksoaikaehto = "";    /* Haetaan kaikki! */
         }
 
-        // Muotoillaan varmuusehto:
+        // Muotoillaan varmuusehto (vain "varmat" mukaan):
         $varmuusehto = " AND ".Havainto::$taulunimi.".varmuus >= ".
                         Varmuus::$melkoisen_varma;
 
@@ -426,8 +438,9 @@ class Havaintokontrolleri extends Kontrolleripohja{
 
         $havaintotaulu = 
             $tietokantaolio->tee_OMAhaku_oliotaulukkopalautteella($hakulause);
-        
+
         return $havaintotaulu;
+      
     }
     
     /**
@@ -439,12 +452,20 @@ class Havaintokontrolleri extends Kontrolleripohja{
         
         $parametriolio = $this->get_parametriolio();
         
-
+        $bongaaja_id = $parametriolio->get_omaid();
+        $bongaaja = new Henkilo($bongaaja_id, $this->tietokantaolio());
+        if($bongaaja->olio_loytyi_tietokannasta){
+            $henkilonimi = $bongaaja->get_arvo(Henkilo::$sarakenimi_etunimi);
+        } else{
+            $henkilonimi = "";
+        }
+       
+        $vuosi = $parametriolio->vuosi_hav;
+        $lisaluokitus = $parametriolio->lisaluokitusehto_hav;
+        $vakipaikka_id = $parametriolio->havaintopaikka_id;
         
+        $vakipaikka = new Havaintopaikka($vakipaikka_id, $this->tietokantaolio());
         
-        $bongaaja = new Henkilo($henkilo_id, $tietokantaolio);
-        $henkilonimi = $bongaaja->get_arvo(Henkilo::$sarakenimi_etunimi);
-
         // muotoillaan kausi:
         if(!is_numeric($vuosi) || $vuosi < 1900){
             $kausi = Bongaustekstit::$havainnot_elikset;
@@ -453,9 +474,21 @@ class Havaintokontrolleri extends Kontrolleripohja{
             $kausi = Bongaustekstit::$havainnot_vuonna." ";
             $kausi .= $vuosi;
         }
+        
+        if($vakipaikka->olio_loytyi_tietokannasta){
+            $sijainti = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+            
+            // Vakipaikan havainnoissa nimeä eikä kautta näytetä.
+            $henkilonimi = "";  // Tällä hetkellä vain omat lajit näkyvät.
+            $kausi = "";    // Oletuksena kaikkien aikojen havainnot näkyvät.
+        } else{
+            $sijainti = "";
+        }
+        
+        
 
         // Ilmoitetaan, onko havainnot Suomesta vai kaikkialta:
-        $havainnot = Bongaustekstit::$havainnot_kaikkialla;
+        $havainnot = Bongaustekstit::$havainnot_kaikkialla; // Oletus
         if($parametriolio->havaintoalue_hav == 
                 Bongausasetuksia::$nayta_vain_suomessa_havaitut){
             $havainnot = Bongaustekstit::$havainnot_suomessa;
@@ -475,14 +508,15 @@ class Havaintokontrolleri extends Kontrolleripohja{
 
         $db_tulostaulu = 
             $this->hae_pinnalajit(
-                $henkilo_id, $vuosi, $lisaluokitus, $vakipaikka_id);
+                $bongaaja_id, $vuosi, $lisaluokitus, $vakipaikka_id);
         
         $lajit = $this->havaintonakymat->nayta_pinnalajitaulukko($db_tulostaulu, 
                                                                 $sulkemisnappi, 
                                                                 $henkilonimi, 
                                                                 $kausi, 
                                                                 $sijainti);
-
+                                                                
+      
         $palauteolio->set_sisalto($lajit);
         
     }
@@ -529,6 +563,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         // Tämä nyt enempi kosmeettinen, ennenkuin keksin jotakin. Nyt aina ok..
         $palauteolio->set_onnistumispalaute(Palaute::$ONNISTUMISPALAUTE_KAIKKI_OK);
     }
+    
     
     public function toteuta_hae_henkilon_havainnot(&$palauteolio){
         

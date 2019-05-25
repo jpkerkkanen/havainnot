@@ -417,6 +417,15 @@ else    // Jos tunnistus on kunnossa.
             
             echo $palaute;
         }
+        
+        /*********************** havaintojen haku vakipaikan mukaan  ********/
+        else if($kysymys === "nayta_vakipaikan_pinnalajit"){
+            $havaintokontrolleri->
+                    toteuta_nayta_pinnalajit($palauteolio);
+            $palaute = $palauteolio->get_sisalto();
+            
+            echo $palaute;
+        }
 
         /*********************** havaintojen haku lajin mukaan *************/
         else if($kysymys === "nayta_lajihavainnot"){
