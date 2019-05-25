@@ -47,8 +47,8 @@ class Kontrolleri_lj extends Kontrolleripohja{
 
     /**
      * Luokan rakentaja:
-     * @param <type> $tietokantaolio
-     * @param <type> $parametriolio
+     * @param Tietokantaolio $tietokantaolio
+     * @param Parametrit $parametriolio
      */
     public function __construct($tietokantaolio, $parametriolio) {
         parent::__construct($tietokantaolio, $parametriolio);
@@ -268,7 +268,7 @@ class Kontrolleri_lj extends Kontrolleripohja{
         $uusi->set_kuvaus($this->get_parametriolio()->kuv_kuv);
         
         $palaute = $uusi->tallenna_uusi();
-        $palauteolio->set_muokatun_id(mysql_insert_id());
+        $palauteolio->set_muokatun_id($this->get_tietokantaolio()->get_insert_id());
         
         if($palaute == Kuvaus::$OPERAATIO_ONNISTUI){
             $palaute = Bongaustekstit::$kuvaus_tallennus_uusi_ok;
@@ -770,9 +770,10 @@ class Kontrolleri_lj extends Kontrolleripohja{
                                 $lj->ylaluokka_id.",'".
                                 $lj->nimi_latina."')";
                 
-                $kyselyn_tila = mysql_query($kyselylause);
+                $tko = $this->get_tietokantaolio();
+                $tko->result = $tko->yhteys->query($kyselylause);
 
-                if($kyselyn_tila && (mysql_affected_rows() == 1)){
+                if($tko->result && ($tko->get_number_of_affected_rows() === 1)){
                     $laskuri++;
                 } 
             }
@@ -798,9 +799,10 @@ class Kontrolleri_lj extends Kontrolleripohja{
                                     $kuv->kuvaus."',".
                                     $kuv->kieli.")";
 
-                    $kyselyn_tila = mysql_query($kyselylause);
+                    $tko = $this->get_tietokantaolio();
+                    $tko->result = $tko->yhteys->query($kyselylause);
 
-                    if($kyselyn_tila && (mysql_affected_rows() == 1)){
+                    if($tko->result && ($tko->get_number_of_affected_rows() === 1)){
                         $laskuri_kuv++;
                     } 
                 }
@@ -908,9 +910,10 @@ class Kontrolleri_lj extends Kontrolleripohja{
                                     Lisaluokitus::$ei_maaritelty.",". //ll2
                                     Lisaluokitus::$ei_maaritelty.")"; //ll3
 
-                    $kyselyn_tila = mysql_query($kyselylause);
+                    $tko = $this->get_tietokantaolio();
+                    $tko->result = $tko->yhteys->query($kyselylause);
 
-                    if($kyselyn_tila && (mysql_affected_rows() == 1)){
+                    if($tko->result && ($tko->get_number_of_affected_rows() === 1)){
                         $laskuri++;
                     } 
                 }

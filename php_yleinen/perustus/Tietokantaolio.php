@@ -396,11 +396,9 @@ class Tietokantaolio extends Pohja
      * Escapes the string used in an SQL-query. Takes into account the
      * charset uset in the connection.
      * @param type $string
-<<<<<<< HEAD
-     * @return type
-=======
+
      * @return the escaped string
->>>>>>> d3577bc4d733b4c364a6acb1f12de0955aa20345
+
      */
     function real_escape_string($string){
         return $this->yhteys->real_escape_string($string);

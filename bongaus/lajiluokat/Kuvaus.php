@@ -81,8 +81,8 @@ class Kuvaus extends Malliluokkapohja{
     }
     
     public function set_nimi($uusi){
-        // Tarkistetaan (käyttäjän syöte).
-        $uusi = mysql_real_escape_string(stripslashes(trim($uusi)));
+        // Puhdistetaan (käyttäjän syöte).
+        $uusi = trim($uusi);
         
         // ekat kirjaimet sopivan suuriksi:
         if($this->hae_lajiluokka()->get_ylaluokka_id() != -1){

@@ -147,7 +147,7 @@ class Lajiluokka extends Malliluokkapohja {
      */
     public function set_nimi_latina($uusi){
         // Tarkistetaan (käyttäjän syöte)
-        $uusi = mysql_real_escape_string(stripslashes(trim($uusi)));
+        $uusi = trim($uusi);
         
         if($this->get_ylaluokka_id() != -1){
                 $uusi = Yleismetodit::eka_kirjain_pieneksi($uusi);
@@ -624,7 +624,7 @@ class Lajiluokka extends Malliluokkapohja {
             // ole sellaiset tietokantarivit, joiden tiedoissa ei havaittu muutoksia.
             // Vain todelliset muutokset lasketaan. Palauttaa -1, jos tapahtui jokin
             // virhe.
-            $palaute = mysql_affected_rows();
+            $palaute = $this->tietokantaolio->get_number_of_affected_rows();
         }
         
         return $palaute;
