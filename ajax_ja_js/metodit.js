@@ -222,13 +222,13 @@ function vie_muistiin_ikkunan_leveys(){
 
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/vie_muistiin_ikkunan_leveys): "+virhe.description;
     }
 }
 // Ylläolevan toiminnan testaus
 function leveys_testi(html){
-    document.getElementById("ilmoitus2").innerHTML = html;
+    document.getElementById("ilmoitus").innerHTML = html;
 }
 
 /******************************************************************************/
@@ -258,7 +258,7 @@ function nayta_aika(aika)
         }
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_aika): "+virhe.description;
     }
 }
@@ -276,7 +276,7 @@ function nayta_aika_lm(aika)
         }
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_aika): "+virhe.description;
     }
 }
@@ -292,7 +292,7 @@ function kommentoi(teema_id, aihe, viesti, emoid){
                     'nayta_kommenttilomake','post', 'text',0);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/kommentoi): "+virhe.description;
     }
 }
@@ -302,10 +302,10 @@ function nayta_kommenttilomake(tulosHTML){
         
         document.getElementById("muokkauslaatikko").innerHTML = tulosHTML;
 
-        document.getElementById("ilmoitus2").innerHTML = "Kommentin kirjoitus";
+        document.getElementById("ilmoitus").innerHTML = "Kommentin kirjoitus";
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js): "+virhe.description;
     }
 }
@@ -322,7 +322,7 @@ function hae_viestin_muokkaus(id, teema_id, aihe, viesti, emoid, taso){
                     'nayta_viestin_muokkauslomake','post', 'text',0);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/hae_viestin_muokkaus): "+virhe.description;
     }
 }
@@ -332,7 +332,7 @@ function nayta_viestin_muokkauslomake(tulosHTML){
     try{
         document.getElementById("muokkauslaatikko").innerHTML = tulosHTML;
 
-        document.getElementById("ilmoitus2").innerHTML = "Viestin muokkaus";
+        document.getElementById("ilmoitus").innerHTML = "Viestin muokkaus";
         
         // Tässä oli ovela ajatus, mutta IE ei suostunut laittamaan
         // lomaketta lomakkeen sisään. Voi olla hyväkin. Täten turha.
@@ -347,7 +347,7 @@ function nayta_viestin_muokkauslomake(tulosHTML){
         document.getElementById("ilmoitus").innerHTML = "Viestin muokkaus";*/
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js): "+virhe.description;
     }
 }
@@ -356,11 +356,11 @@ function nayta_viestin_muokkauslomake(tulosHTML){
 function viestin_peruutus(){
     try{
         document.getElementById("muokkauslaatikko").innerHTML = "";
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Viestin luonti/muokkaus peruutettu";
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/viestin_peruutus): "+virhe.description;
     }
 }
@@ -375,7 +375,7 @@ function nayta_ajax_vastaus(tulos, id)
         document.getElementById(id).innerHTML = tulos;
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_vastaus): "+virhe.description;
     }
     
@@ -401,7 +401,7 @@ function hae_uudet_kuvat_lkm(){
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/hae_uudet_kuvat_lkm): "+virhe.description;
     }
 
@@ -416,7 +416,7 @@ function nayta_uudet_kuvat_lkm(tuloshtml)
         
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_uudet_kuvat_lkm): "+virhe.description;
     }
 }
@@ -439,7 +439,7 @@ function hae_keskustelu(id, auki){
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/hae_keskustelu): "+virhe.description;
     }
 }
@@ -474,7 +474,7 @@ function nayta_keskustelu(tulosxml){
         document.getElementById(kesk_id).innerHTML = keskustelu;
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_keskustelu): "+virhe.description;
     }
 }
@@ -506,7 +506,7 @@ function hae_viestit(omaid, vikaviesti_id, aikaraja, teema_indeksi){
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/hae_viestit): "+virhe.description;
     }
 }
@@ -516,7 +516,7 @@ function nayta_viestit(tulosHTML){
         document.getElementById("sisaltoteksti").innerHTML = tulosHTML;
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_viestit): "+virhe.description;
     }
 }
@@ -531,7 +531,7 @@ function hae_teemakuvaus(teema_id){
                     'nayta_teemakuvaus','post', 'text',0);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/hae_teemakuvaus): "+virhe.description;
     }
 }
@@ -543,7 +543,7 @@ function nayta_teemakuvaus(tulosHTML){
         document.getElementById("teemakuvaus").innerHTML = tulosHTML;
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_teemakuvaus): "+virhe.description;
     }
 }
@@ -570,7 +570,7 @@ function hae_teema_id(){
         }
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/hae_teema_id): "+virhe.description;
         id = 1;
     }
@@ -584,7 +584,7 @@ function aseta_luokka(onAlaik, omaid, vikaviesti_id, aikaraja, valintaindex){
         hae_viestit(omaid, vikaviesti_id, aikaraja, valintaindex);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/aseta_luokka): "+virhe.description;
     }
 }
@@ -622,12 +622,12 @@ function sulje_selitys()
 // kun hiiri menee päivitysnapin päälle.
 function paivita_ohje(){
     try{
-        document.getElementById('ilmoitus2').innerHTML =
+        document.getElementById('ilmoitus').innerHTML =
         "T&auml;st&auml; painikkeesta viestit p&auml;ivittyv&auml;t "+
         "eli uusimmatkin tulevat n&auml;kyviin.";
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/paivita_ohje): "+virhe.description;
     }
 }
@@ -637,7 +637,7 @@ function kaynnista_metodit()
 {
     //kaynnista_kello();
     //tarkkaile_osallistujia();
-    //tarkkaile_ilmoituksia("ilmoitus2");
+    //tarkkaile_ilmoituksia("ilmoitus");
     //tarkkaile_viesteja();
     //tarkkaile_ilmoituksia();
     //hae_uudet_kuvat_lkm();
@@ -697,7 +697,7 @@ function kaynnista_kello()
         1000);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/kaynnista_kello): "+virhe.description;
     }
     
@@ -717,7 +717,7 @@ function tarkkaile_osallistujia()
         10000);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/tarkkaile_osallistujia): "+virhe.description;
     }
 }
@@ -729,7 +729,7 @@ function nayta_osallistujat(tulosHTML)
         document.getElementById('kirjautuneet').innerHTML = tulosHTML;
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_osallistujat): "+virhe.description;
     }
 }
@@ -748,7 +748,7 @@ function tarkkaile_viesteja()
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/tarkkaile_viesteja): "+virhe.description;
     }
 }
@@ -771,7 +771,7 @@ function nayta_uudet_lkm(tulosxml)
         }
     }
     catch(virhe){
-        /*document.getElementById("ilmoitus2").innerHTML =
+        /*document.getElementById("ilmoitus").innerHTML =
                 "Virhe (metodit.js/nayta_uudet_lkm): "+virhe.description;*/
     }
 }
@@ -794,7 +794,7 @@ function hae_uudet_viestit(){
     }
 
     catch(virhe){
-        /*document.getElementById("ilmoitus2").innerHTML =
+        /*document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/hae_uudet_viestit): "+virhe.description;*/
     }
 
@@ -811,7 +811,7 @@ function pysayta_metodit()
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/pysayta_metodit): "+virhe.description;
     }
 }
@@ -826,7 +826,7 @@ function siirra(uusiURL)
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/siirra): "+virhe.description;
     }
 }
@@ -849,7 +849,7 @@ function siirra_hitaasti(uusiURL, aikamillisek)
     }
 
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/siirra_hitaasti): "+virhe.description;
     }
 }
@@ -914,7 +914,7 @@ function nayta_pvm(idpaiva, idkk, idvuosi, idpvm)
         document.getElementById(idpvm).innerHTML = tulos;
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/nayta_pvm): "+virhe.description;
     }
 
@@ -951,7 +951,7 @@ function muuta_pvm(muutos, idpaiva, idkk, idvuosi, idpvm)
         nayta_pvm(idpaiva, idkk, idvuosi, idpvm);
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/muuta_pvm): "+virhe.description;
     }
 }
@@ -966,7 +966,7 @@ function tyhjenna_pvm()
         document.getElementById("pvm_naytto").innerHTML = "";
     }
     catch(virhe){
-        document.getElementById("ilmoitus2").innerHTML =
+        document.getElementById("ilmoitus").innerHTML =
             "Virhe (metodit.js/tyhjenna_pvm): "+virhe.description;
     }
 }
