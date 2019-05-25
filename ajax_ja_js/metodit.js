@@ -859,6 +859,7 @@ function siirra_hitaasti(uusiURL, aikamillisek)
 // Näyttää viikonpäivän ja päivämäärän käyttäjän antamien tietojen mukaan.
 function nayta_pvm(idpaiva, idkk, idvuosi, idpvm)
 {
+    //alert("idpaiva="+idpaiva+", idkk="+idkk+", idvuosi="+idvuosi+" idpvm="+idpvm);
     try{
         var tulos = "";
         var paiva = document.getElementById(idpaiva).value;
@@ -879,7 +880,7 @@ function nayta_pvm(idpaiva, idkk, idvuosi, idpvm)
                 }
             }
             else{
-                if((Number(kk) != NaN) && (Number(vuosi) != NaN)){//Ei toimi!
+                if((Number(kk) !== NaN) && (Number(vuosi) !== NaN)){//Ei toimi!
                     tulos = kk+"/"+vuosi;
                 }
                 else{

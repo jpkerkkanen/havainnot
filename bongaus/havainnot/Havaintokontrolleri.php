@@ -1801,6 +1801,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
         $paikka = $this->get_parametriolio()->paikka_hav;
         
         // Jos vakipaikka määritelty, haetaan maa ja paikka(?) siltä:
+        // HUOM: tällöin ei haittaa, jotta valikko disabled (ei lähetä maa-arvoa)!
         $vakipaikka_id = $this->get_parametriolio()->havaintopaikka_id;
         
         if($vakipaikka_id != Havaintopaikka::$ei_asetettu){
@@ -1966,7 +1967,7 @@ class Havaintokontrolleri extends Kontrolleripohja{
             
             $uusi->set_arvo($nimi, 
                     Havaintojakso::$SARAKENIMI_NIMI);
-            
+
             $uusi->set_arvo($kommentti, 
                     Havaintojakso::$SARAKENIMI_KOMMENTTI);
             

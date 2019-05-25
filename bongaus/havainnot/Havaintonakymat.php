@@ -625,7 +625,7 @@ class Havaintonakymat extends Nakymapohja{
 
             
             // näytetään js-päivämäärä
-            $html .= Html::luo_script_js("nayta_pvm();");
+            $html .= Html::luo_script_js("nayta_pvm('paiva', 'kk', 'vuosi', 'pvm_naytto');");
         }
         
         return $html;
@@ -2718,7 +2718,7 @@ class Havaintonakymat extends Nakymapohja{
                             Maarite::id(Bongausasetuksia::$havaintolomakkeen_id)));
 
         // näytetään js-päivämäärä
-        $html .= Html::luo_script_js("nayta_pvm();");
+        $html .= Html::luo_script_js("nayta_pvm('paiva', 'kk', 'vuosi', 'pvm_naytto');");
         
         
         return $html;

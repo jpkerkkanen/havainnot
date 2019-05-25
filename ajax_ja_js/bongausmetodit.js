@@ -229,9 +229,10 @@ function nayta_paikka_ja_maa(tulosxml){
     var paikkakentta = find(paikkakentta_id);
     if(paikkakentta){
         paikkakentta.value = paikka;
-        paikkakentta.disabled = vakipaikka_on;
+        paikkakentta.readOnly = vakipaikka_on;
     }
     
+    // Disabled -> ei lähetä arvoa, joten silloin maa otetaan vakipaikalta.
     var maavalikko = find(maavalikko_id);
     if(maavalikko){
         setSelected(maavalikko_id, maa_id);
