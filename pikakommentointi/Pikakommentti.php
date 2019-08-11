@@ -54,13 +54,15 @@ class Pikakommentti extends Malliluokkapohja{
     function __construct($id, $tietokantaolio) {
         
         $tietokantasolut = 
-            array(new Tietokantasolu(Pikakommentti::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio),
-                new Tietokantasolu(Pikakommentti::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int, $tietokantaolio),
-                new Tietokantasolu(Pikakommentti::$SARAKENIMI_KOHDE_ID, Tietokantasolu::$luku_int, $tietokantaolio),
-                new Tietokantasolu(Pikakommentti::$SARAKENIMI_KOHDE_TYYPPI, Tietokantasolu::$luku_int, $tietokantaolio),
-                new Tietokantasolu(Pikakommentti::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio),
-                new Tietokantasolu(Pikakommentti::$SARAKENIMI_MUOKKAUSHETKI, Tietokantasolu::$luku_int, $tietokantaolio),
-                new Tietokantasolu(Pikakommentti::$SARAKENIMI_TALLENNUSHETKI, Tietokantasolu::$luku_int, $tietokantaolio));
+
+            array(new Tietokantasolu(Pikakommentti::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Pikakommentti::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Pikakommentti::$SARAKENIMI_KOHDE_ID, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Pikakommentti::$SARAKENIMI_KOHDE_TYYPPI, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Pikakommentti::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio),
+                new Tietokantasolu(Pikakommentti::$SARAKENIMI_MUOKKAUSHETKI, Tietokantasolu::$luku_int,$tietokantaolio),
+                new Tietokantasolu(Pikakommentti::$SARAKENIMI_TALLENNUSHETKI, Tietokantasolu::$luku_int,$tietokantaolio));
+
         
         $taulunimi = Pikakommentti::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
@@ -247,7 +249,7 @@ class Pikakommentti extends Malliluokkapohja{
                     FROM ".Pikakommentti::$taulunimi."
                     WHERE ".Pikakommentti::$SARAKENIMI_KOHDE_TYYPPI."=".$kohde_tyyppi.
                     " AND ".Pikakommentti::$SARAKENIMI_KOHDE_ID."=".$kohde_id.
-                    " ORDER BY ".Pikakommentti::$SARAKENIMI_TALLENNUSHETKI." DESC";
+                    " ORDER BY ".Pikakommentti::$SARAKENIMI_TALLENNUSHETKI;
 
         $osumat =
             $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
@@ -307,7 +309,7 @@ class Pikakommentti extends Malliluokkapohja{
                     " AND ".Henkilo::$taulunimi.".".Henkilo::$sarakenimi_poppoo_id.
                             "=".$poppoo_id.
                     " ORDER BY ".Pikakommentti::$taulunimi.".".
-                            Pikakommentti::$SARAKENIMI_TALLENNUSHETKI." DESC";
+                            Pikakommentti::$SARAKENIMI_TALLENNUSHETKI;
 
         $osumat =
             $tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);

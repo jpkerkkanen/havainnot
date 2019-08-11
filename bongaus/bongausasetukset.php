@@ -6,7 +6,7 @@
  */
 class Bongauspainikkeet{
 
-    // Havainnot (toiminnot): Ääkköset aiheuttaa ongelmia painikkeissa!
+    // Havainnot (toiminnot)
     public static $NAYTA_MONEN_HAVAINNON_VALINTA_VALUE = 
             "Lisää monta kerralla";
     public static $NAYTA_MONEN_HAVAINNON_VALINTA_TITLE = 
@@ -35,6 +35,8 @@ class Bongauspainikkeet{
     public static $HAVAINNOT_TILASTOT_VALUE = "Tilastot";
     public static $HAVAINNOT_TILASTOT_TITLE = 
             "T&auml;st&auml; p&auml;&auml;set katselemaan havaintotilastoja!";
+    
+    
     
     public static $HAVAINNOT_MONIPOISTOVAHVISTUS_VALUE = 
             "Vahvista valittujen havaintojen poisto";
@@ -71,6 +73,15 @@ class Bongauspainikkeet{
     public static $HAVAINNOT_NAYTA_HENKILON_HAVAINNOT_TITLE =
         "Klikkaamalla n&auml;et henkil&ouml;n havainnot";
     
+    public static $HAVAINNOT_NAYTA_PAIKAN_HAVAINNOT_TITLE =
+        "Klikkaamalla n&auml;et kyseisen paikan kaikki havainnot";
+    
+    public static $HAVAINNOT_NAYTA_PAIKAN_LAJIT_TITLE =
+        "Klikkaamalla n&auml;et kyseisessä paikassa havaitut eri lajit";
+    
+    public static $HAVAINNOT_NAYTA_PAIKAN_LAJIT_VALUE =
+        "Lajit";
+    
     public static $HAVAINNOT_NAYTA_HENKILON_LAJIT_SUOMI_TITLE =
         "Klikkaamalla saat listan henkil&ouml;n Suomessa havaitsemista lajeista";
     
@@ -83,12 +94,29 @@ class Bongauspainikkeet{
     public static $HAVAINNOT_SULJE_HENKILON_HAVAINNOT_VALUE =
         "Sulje";
 
-
+    public static $havjaks_nayta_lomake_VALUE =
+        "Muokkaa havaintotapahtumatietoja";
+    
+    public static $havjaks_nayta_lomake_TITLE =
+        "Täällä voit asettaa havaintotapahtuman tiedot tai valita vanhan.
+         Muussa tapauksessa luodaan automaattisesti uusi tapahtuma samalle päivälle.";
+    
+    public static $havjaks_piilota_lomake_VALUE =
+        "Piilota havaintotapahtumatiedot";
+    
+    
     // Aikavalinnat:
-    public static $ed_paiva = "Edellinen p&auml;iv&auml;";
-    public static $seur_paiva = "Seuraava p&auml;iv&auml;";
-    public static $ed_vko = "Edellinen viikko";
-    public static $seur_vko = "Seuraava viikko";
+    public static $ed_paiva = "<";
+    public static $seur_paiva = ">";
+    public static $ed_vko = "<<";
+    public static $seur_vko = ">>";
+    public static $today = "=";
+    
+    public static $ed_paiva_title = "Edellinen p&auml;iv&auml;";
+    public static $seur_paiva_title = "Seuraava p&auml;iv&auml;";
+    public static $ed_vko_title = "Edellinen viikko";
+    public static $seur_vko_title = "Seuraava viikko";
+    public static $today_title = "Tänään";
 
     // Lajiluokat:
     public static $TALLENNA_UUSI_LAJILUOKKA_VALUE = "Tallenna uusi lajiluokka";
@@ -153,6 +181,23 @@ class Bongauspainikkeet{
     public static $NAYTA_ESIKATSELUKUVAT_TITLE = "Avaa albumin esikatselukuvat";
     public static $KAYNNISTA_DIAESITYS_TITLE = 
                 "Käynnistää automaattisen kuvaesityksen";
+    
+    // Vakihavaintopaikat;
+    public static $vakipaikka_luo_uusi_value = "Luo uusi";
+    public static $vakipaikka_luo_uusi_title = 
+            "Luo uusi vakipaikka, jos käyt siellä toistuvasti";
+    
+    public static $vakipaikka_muokkaa_value = "Muokkaa";
+    public static $vakipaikka_muokkaa_title = 
+            "Muokkaa aktiivisen havaintopaikan tietoja";
+    
+    public static $vakipaikka_tallenna_uusi_value = "Tallenna uusi";
+    public static $vakipaikka_tallenna_uusi_title = 
+            "Tallentaa uuden vakipaikan";
+    public static $vakipaikka_sulje_lomake_value = "Lopeta";
+    public static $vakipaikka_sulje_lomake_title = 
+            "Sulkee lomakenäkymän. Huomaa: ei tallenna mitään!";
+    
 
     // YLEISET:
     public static $KIRJAUDU_ULOS_VALUE = "Kirjaudu ulos";
@@ -169,6 +214,8 @@ class Bongaustekstit{
      * @var type 
      */
     public static $tuntematon = "Tuntematon";
+    public static $undefined = "-- ei-määritelty --";
+    public static $ja = "ja";
     
     public static $havtauluots_nro = "Nro";
     public static $havtauluots_laji = "Laji";
@@ -193,8 +240,15 @@ class Bongaustekstit{
     public static $havtaul_lisaluok_tornien_taisto = "TORNIENTAISTO";
     public static $havtaul_lisaluok_vesilla = "VESILL&Auml;";
     //=========================================================================
+    public static $havaintopaikkavalikko_otsikko = "Vakipaikka";
+    public static $havaintopaikkalomakeohje = "Vakituisen paikan tiedot";
+    public static $havaintopaikkalomake_Maa = "Maa";
+    public static $havaintopaikkalomake_Selitys = "Selitys";
     
+    //=========================================================================
     public static $otsikko1_bongaussivu1 = "Bong!";
+    
+    
     
     public static $otsikko1_tilastot_puolivuotis = 
             "Havaittujen lajien lukum&auml;&auml;r&auml; puolivuosittain. 
@@ -259,6 +313,44 @@ class Bongaustekstit{
     public static $ilm_havainnon_lisaluokkaa_tallennettu = 
             "havainnon lis&auml;luokkaa tallennettu!";
     
+    
+    public static $havaintojakso_virheilm_tallennus_eiok = 
+            "Havaintojakson tallennus ei onnistunut, eikä havaintoja tallennettu!";
+    
+    public static $ilm_havaintojaksolinkin_tallennus_eiok = 
+            "Havaintojaksolinkin tallennus ei onnistunut!";
+    
+    public static $ilm_havaintojaksolinkki_jo_olemassa = 
+            "Havainto on jo liitetty kyseiseen tapahtumaan!";
+    
+    public static $ilm_havaintojaksolinkkeja_luotu_kpl = 
+            "kpl havaintoja liitetty havaintotapahtumaan.";
+    
+    public static $virheilm_havaintojakson_lisays_eiok = 
+            "Virhe uuden havaintojakson lis&aumlyksessä!";
+    
+    // Havaintopaikkatoiminnot:
+    public static $ilm_havaintopaikan_lisays_ok = 
+            "Uusi havaintopaikka lis&auml;ttiin onnistuneesti!";
+    public static $virheilm_havaintopaikan_lisays_eiok = 
+            "Virhe uuden havaintopaikan lis&aumlyksessä!";
+    public static $ilm_havaintopaikan_poisto_ok = 
+            "Havaintopaikka poistettiin onnistuneesti!";
+    public static $virheilm_havaintopaikan_poisto_eiok = 
+            "Virhe havaintopaikan poistossa!";
+    public static $ilm_havaintopaikan_muutos_ok = 
+            "Havaintopaikan muutokset tallennettu onnistuneesti!";
+    public static $virheilm_havaintopaikan_muutos_eiok = 
+            "Virhe havaintopaikan muutosten tallennuksessa!";
+    public static $havaintopaikan_poistovarmistus = 
+            "Haluatko varmasti poistaa havaintopaikan?";
+    
+    public static $ilm_havaintopaikkaa_ei_loytynyt = 
+            "Havaintopaikkaa ei löytynyt tietokannasta!";
+    
+    public static $ilm_havaintoa_ei_loytynyt = 
+            "Havaintoa ei löytynyt tietokannasta!";
+    
     // Seuraavat kaksi kuuluvat yhteen:
     public static $ilm_pikak_kpl_poistettu = 
             "pikakommenttia poistettu";
@@ -318,6 +410,16 @@ class Bongaustekstit{
     public static $havaintolomake_uusien_tallennus_ohje =
     "Valitse lajit, anna yhteiset tiedot ja paina Tallenna-nappia! (T&auml;hdelliset pakollisia.)";
     
+    public static $havaintolomake_havjaksohje = 
+        "Havaintotapahtuma: valitse tapahtuma tai anna uuden tiedot";
+    
+    public static $havaintolomake_havjaksohje_tarkempi = 
+        "Jokainen havainto liittyy johonkin tapahtumaan, oli se sitten
+        ikkunasta katselu, tornilla käynti tai viikon matka.
+        Tällä tavalla havainnot saadaan ryhmiteltyä ja näytettyä
+        vaihtoehtoisilla tavoilla erityisesti, kun tapahtumaan
+        liittyy useampia havaintoja." ;
+    
     public static $havaintolomakemuokkaus_ohje =
     "Havainnon muokkaus (T&auml;hdelliset pakollisia.)";
     
@@ -334,6 +436,7 @@ class Bongaustekstit{
     public static $havaintolomake_kk = "Kuukausi";
     public static $havaintolomake_paiva = "P&auml;iv&auml;";
     public static $havaintolomake_paikka = "Paikka";
+    public static $havaintolomake_vakipaikka = "Vakipaikka";
     public static $havaintolomake_kommentti = "Kommentti";
     public static $havaintolomake_henkilo_id = "Henkil&ouml;n id";
     public static $havaintolomake_maa = "Maa";
@@ -341,14 +444,40 @@ class Bongaustekstit{
     public static $havaintolomake_lkm = "Lkm";
     public static $havaintolomake_sukupuoli = "Sukupuoli";
     public static $havaintolomake_lisaluokitukset = "Lis&auml;luokitukset";
+    public static $havaintolomake_aloitus = "Alkupvm";
+    public static $havaintolomake_aloitusaika = "Aloitusaika (kello)";
+    public static $havaintolomake_kesto = "Kesto";
+    public static $havaintolomake_kellonaika = "Kellonaika";
+    public static $havaintolomake_vrk = "vrk";
+    public static $havaintolomake_h = "h";
+    public static $havaintolomake_min = "min";
+    public static $havaintolomake_uusi = "uusi";
+    public static $havaintolomake_jaksovalikko_otsikko = "Tapahtuma";
+    
+    public static $havaintolomake_jaksonimiohje = "Esim: Päivälintuilu";
+    public static $havaintolomake_jaksokommenttiohje = 
+        "Esim: Kiva päiväretki Mustasaareen";
+    
+    public static $havaintolomake_noedit_ilm = "Ei valittu - vanha arvo säilyy";
+    
+    public static $havaintolomake_muok_jaksolisaysohje = 
+            "Jos muutat oletusta, havainto liitetään valittuun "
+            . "tapahtumaan (mahdollisten entisten lisäksi).";
+    
+    public static $havaintolomake_uusiyksihav_jaksolisaysohje = 
+            "Havainto liitetään valittuun tapahtumaan. Jos ".
+            "valittu uusi, luodaan automaattisesti uusi tapahtuma.";
+    
    
     // Lomakkeen tms. kentät (mieluummin kuten yllä)
     public static $paiva = "P&auml;iv&auml;";
+    public static $pvm = "Pvm";
     public static $kk = "Kuu";
     public static $vuosi = "Vuosi";
     public static $aika = "Aika";
     public static $paikka = "Paikka";
     public static $kommentti = "Kommentti";
+    public static $nimi = "Nimi";
     public static $laji = "Laji";
     public static $laji_siirto = "Kohdelaji";
     public static $laji_alkup = "Alkuper&auml;inen laji";
@@ -648,6 +777,18 @@ class Bongausasetuksia{
     public static $havaintokuvakommentti_class = "havaintokuvakommentti";
     public static $havaintotaulu_parillinenrivi_class = 
         "havaintotaulu_parillinen_rivi";
+    
+    public static $havjaksolomake_nimi_id = "havjakslomakenimi_id";
+    public static $havjaksolomake_kommentti_id = "havjakslomakekommentti_id";
+    public static $havjaksolomake_alkupäiva_id = "paiva2";
+    public static $havjaksolomake_alkukk_id = "kk2";
+    public static $havjaksolomake_alkuvuosi_id = "vuosi2";
+    public static $havjaksolomake_alkuh_id = "havjakslomake_alkuh_id";
+    public static $havjaksolomake_alkumin_id = "havjakslomake_alkumin_id";
+    public static $havjaksolomake_kestomin_id = "havjakslomake_kestomin_id";
+    public static $havjaksolomake_kestoh_id = "havjakslomake_kestoh_id";
+    public static $havjaksolomake_kestovrk_id = "havjakslomake_kestovrk_id";
+    
     // Tietotaulu (yleisempi)
     public static $tietotaulun_id = "tietotaulu";
     public static $tietotaulun_class = "tietotaulu";
@@ -661,6 +802,9 @@ class Bongausasetuksia{
     public static $havaintolomake_lajivalintaohje_id = "lajivalintaohje";
     public static $havaintolomake_lajivalikko_id = "lajivalikko";
     public static $havaintolomake_lajivalikkopainike_id = "lajivalikkopainike";
+    public static $havaintolomake_vakipaikkavalikko_id = "paikkavalikko";
+    public static $havaintolomake_vakipaikkavalikkopainike_id = 
+            "paikkavalikkopainike";
     public static $havaintolomake_tallennustiedote_id = "tallennustiedote";
     
     public static $lajiluokkalomakkeen_id = "tietolomake_rajaton";
@@ -902,7 +1046,7 @@ class Bongaustunnisteet{
  */
 class Lisaluokitus_asetukset extends Asetuspohja{
     // Mahdolliset arvot:
-    public static $piha = 1; 
+    public static $piha = 1;    // Deprecated: korvattu vakipaikoilla!
     public static $vesilla = 2; 
     public static $tornien_taisto = 3; 
     public static $ekopinna = 4; //
@@ -912,9 +1056,6 @@ class Lisaluokitus_asetukset extends Asetuspohja{
     
     function __construct() {
         parent::__construct(array(
-            new Asetus(Bongaustekstit::$aset_lisaluokitus_piha_nimi, 
-                        Lisaluokitus_asetukset::$piha, 
-                        Bongaustekstit::$aset_lisaluokitus_piha_selitys),
             new Asetus(Bongaustekstit::$aset_lisaluokitus_ekopinna_nimi, 
                         Lisaluokitus_asetukset::$ekopinna, 
                         Bongaustekstit::$aset_lisaluokitus_ekopinna_selitys),

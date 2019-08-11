@@ -56,6 +56,28 @@ class Yleismetodit{
        return $suurin_id;
    }
    
+   /**
+    * Returns an array having as its first element the element given as 
+    * argument ($elem). Additionally the new array contains all the elements
+    * of the array $array given as parameter.
+    * 
+    * Replaces the parameter array named as &$array by the new one.
+    * 
+    * @param type $elem
+    * @param array $array
+    * @return array An array in which the $elem has been added as the first elem.
+    */
+   public static function array_add_first_elem($elem, &$array){
+       $new = array();
+       array_push($new, $elem);
+       
+       // Adds all the old element to the end of the new array:
+       foreach ($array as $old_elem) {
+           array_push($new, $old_elem);
+       }
+       $array = $new;
+       return $new;
+   }
     
     /**
     * Hakee annetusta tekstistä sellaiset merkkijonot, jotka ovat
@@ -208,6 +230,8 @@ HUU;
        }
        return $palaute;
    }
+   
+   
    
    /**
     * Tämä on muokattu kopio sivulta

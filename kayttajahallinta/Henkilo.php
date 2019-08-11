@@ -64,6 +64,7 @@ class Henkilo extends Malliluokkapohja{
     function __construct($id, $tietokantaolio) {
         
         $tietokantasolut = 
+
             array(new Tietokantasolu(Henkilo::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
                 new Tietokantasolu(Henkilo::$sarakenimi_etunimi, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
                 new Tietokantasolu(Henkilo::$sarakenimi_sukunimi, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
@@ -81,6 +82,7 @@ class Henkilo extends Malliluokkapohja{
                 new Tietokantasolu(Henkilo::$sarakenimi_poppoo_id, Tietokantasolu::$luku_int, $tietokantaolio),
                 new Tietokantasolu(Henkilo::$sarakenimi_asuinmaa, Tietokantasolu::$luku_int, $tietokantaolio),
                 new Tietokantasolu(Henkilo::$sarakenimi_kieli, Tietokantasolu::$luku_int, $tietokantaolio));
+
         
         $taulunimi = Henkilo::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
@@ -547,6 +549,7 @@ class Henkilo extends Malliluokkapohja{
      * @param Tietokantaolio $tietokantaolio
      */
     static function tarkista_kirjautuminen($ktunnus, $salis, $tietokantaolio){
+
         $ktunnuss = $tietokantaolio->real_escape_string($ktunnus);
         $saliss = $tietokantaolio->real_escape_string($salis);
         
@@ -557,10 +560,12 @@ class Henkilo extends Malliluokkapohja{
         
         $taulunimi = Henkilo::$taulunimi;
         $ehtosolu1 = new Tietokantasolu(Henkilo::$sarakenimi_kayttajatunnus, 
-                                            Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio); 
+
+                                            Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio); 
         $ehtosolu1->set_arvo_kevyt($ktunnuss);
         $ehtosolu2 = new Tietokantasolu(Henkilo::$sarakenimi_salasana, 
-                                            Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio); 
+                                            Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio); 
+
         $ehtosolu2->set_arvo_kevyt($saliss_koodattu);
         $ehtotietokantasolut = array($ehtosolu1,$ehtosolu2);
                                 

@@ -47,9 +47,11 @@ class Lajiluokka extends Malliluokkapohja {
         
         $this->jnro = 1;
         $tietokantasolut = 
-            array(new Tietokantasolu(Lajiluokka::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Lajiluokka::$SARAKENIMI_YLALUOKKA_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Lajiluokka::$SARAKENIMI_NIMI_LATINA, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio)
+
+            array(new Tietokantasolu(Lajiluokka::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Lajiluokka::$SARAKENIMI_YLALUOKKA_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Lajiluokka::$SARAKENIMI_NIMI_LATINA, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio)
+
                );
         
         $taulunimi = Lajiluokka::$taulunimi;
@@ -145,7 +147,7 @@ class Lajiluokka extends Malliluokkapohja {
      */
     public function set_nimi_latina($uusi){
         // Tarkistetaan (käyttäjän syöte)
-        $uusi = mysql_real_escape_string(stripslashes(trim($uusi)));
+        $uusi = trim($uusi);
         
         if($this->get_ylaluokka_id() != -1){
                 $uusi = Yleismetodit::eka_kirjain_pieneksi($uusi);
@@ -622,7 +624,7 @@ class Lajiluokka extends Malliluokkapohja {
             // ole sellaiset tietokantarivit, joiden tiedoissa ei havaittu muutoksia.
             // Vain todelliset muutokset lasketaan. Palauttaa -1, jos tapahtui jokin
             // virhe.
-            $palaute = mysql_affected_rows();
+            $palaute = $this->tietokantaolio->get_number_of_affected_rows();
         }
         
         return $palaute;
@@ -895,9 +897,16 @@ class Lajiluokka extends Malliluokkapohja {
        try{
            $name_arvo = "lajiluokka_id_hav";
            $oletusvalinta_arvo = $lajiluokka_id_hav;
-           $valikkohtml.= Html::luo_pudotusvalikko($arvot,
+           /*$valikkohtml.= Html::luo_pudotusvalikko($arvot,
                                                    $nimet,
                                                    $name_arvo,
+                                                   $oletusvalinta_arvo,
+                                                   $otsikko);*/
+           
+           $valikkohtml.= Html::luo_pudotusvalikko_uusi($arvot,
+                                                   $nimet,
+                                                   array(Maarite::name($name_arvo)),
+                                                   array(),
                                                    $oletusvalinta_arvo,
                                                    $otsikko);
        }

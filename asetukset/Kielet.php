@@ -2,7 +2,7 @@
 /**
  * Tämä luokka pitää huolta yhden kielen tiedoista. Alkoi vanha systeemi
  * järjestyksensäilyttämisvaatimuksineen tuntua elähtäneeltä. Näinhän asiat
- * hoidetaan paremmin! Tämä on git-testi!
+ * hoidetaan paremmin!
  */
 class Kieli{
     private $id, $nimi;

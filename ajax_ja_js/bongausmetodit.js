@@ -5,18 +5,14 @@ var ajaxkyselytiedosto_osoite = "ajax_ja_js/ajax_kyselyt.php";
 function tarkista_lisaluokitusvalinnat(class_arvo){
     var valintaboxit = document.getElementsByClassName(class_arvo);
     
-    // Jos kotipiha on valittu, valitaan myös eko ja eko2:
+    // Jos Eko on valittu, valitaan myös eko1:
     if(valintaboxit[0].checked){
         valintaboxit[1].checked="checked";
-        valintaboxit[2].checked="checked";
-        
-    } else if(valintaboxit[1].checked){ // eko -> eko2
-        valintaboxit[2].checked="checked";
-    }
+    } 
     
     // Elis -> maaelis
-    if(valintaboxit[4].checked){
-        valintaboxit[5].checked="checked";
+    if(valintaboxit[3].checked){
+        valintaboxit[4].checked="checked";
     } 
     
     /*for (i=0;i<valintaboxit.length;i++){
@@ -62,6 +58,41 @@ function vaihda_kommenttinakyvyys(elementin_name){
     else{
         document.getElementById("piilotusnappi").childNodes[0].nodeValue=
             "Kavenna";
+    }
+}
+// Shows the text field for setting event info:
+function showHavjaksInfo(id_info, id_showBtn, id_hideBtn){
+    setElemDisplay(id_info, "block");
+    setElemDisplay(id_showBtn, "none");
+    setElemDisplay(id_hideBtn, "inline");
+}
+// Hides the same thing:
+function hideHavjaksInfo(id_info, id_showBtn, id_hideBtn){
+    setElemDisplay(id_info, "none");
+    setElemDisplay(id_showBtn, "inline");
+    setElemDisplay(id_hideBtn, "none");
+}
+
+/**
+ * Muokkaa havaintojen monimuokkauslomaketta sen mukaan, kuinka käyttäjä
+ * valitsee muokattavia ominaisuuksia.
+ * @param {type} id
+ * @returns {undefined}
+ */
+function muuta_muokkausrivi(checked, edit_id, noedit_id){
+    
+    var edit_elem = find(edit_id);
+    var noedit_elem = find(noedit_id);
+    
+    if(edit_elem && noedit_elem){
+        
+        if(checked){
+            edit_elem.style.display="inline";
+            noedit_elem.style.display="none";
+        } else{
+            edit_elem.style.display="none";
+            noedit_elem.style.display="inline";
+        }
     }
 }
 
@@ -124,6 +155,95 @@ function muokkaa_havaintolomake(havaintolomake_id,
                 +virhe.description;
     }*/
 }
+function aseta_paikka_ja_maa(vakipaikka_id, 
+                                vakipaikka_id_name, 
+                                paikkakentta_id, 
+                                maavalikko_id,
+                                muokkausnappispan_id){
+    try{
+        kysely = "kysymys=aseta_paikka_ja_maa&"+
+                vakipaikka_id_name+"="+vakipaikka_id+
+                "&paikkakentta_id="+paikkakentta_id+
+                "&maavalikko_id="+maavalikko_id+
+                "&muokkausnappispan_id="+muokkausnappispan_id;
+        
+        nayta_viiveilmoitus = 0;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_paikka_ja_maa','post', 'xml', nayta_viiveilmoitus);
+
+        //alert(kysely);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/etsi_laji): "+virhe.description;
+    }
+}
+
+function nayta_paikka_ja_maa(tulosxml){
+    //alert(tulosxml);
+    var maavalikko_id =
+        tulosxml.getElementsByTagName("maavalikko_id")[0].childNodes[0].nodeValue;
+    
+    var paikkakentta_id =
+        tulosxml.getElementsByTagName("paikkakentta_id")[0].childNodes[0].nodeValue;
+
+    // Jos tämä tyhjä, ei ole tarkoitus muuttaa muokkauspainiketta (kuten
+    // tallennuksen yhteydessä).
+    var muokkausnappispan_id = "";
+    var spanElem =
+        tulosxml.getElementsByTagName("muokkausnappispan_id")[0].childNodes[0];
+    if(spanElem){
+        muokkausnappispan_id = spanElem.nodeValue;
+    }
+ 
+    // HUOM: paikka voi olla tyhjä, jolloin pitää ottaa varovasti:
+    var paikka = "";
+    var paikkaelem =
+        tulosxml.getElementsByTagName("paikka")[0].childNodes[0];
+    if(paikkaelem){
+        paikka = paikkaelem.nodeValue;
+    }
+    
+    // Samma här:
+    var muokkausnappi = "";
+    var elem = tulosxml.getElementsByTagName("muokkausnappi")[0].childNodes[0];
+    if(elem){
+        muokkausnappi = elem.nodeValue;
+    }
+    
+ 
+    var maa_id =
+        tulosxml.getElementsByTagName("maa_id")[0].childNodes[0].nodeValue;
+    
+    // Asettaa paikan ja maan oikein päin. Vakipaikka asetettu, jos maavalikko_id
+    // positiivinen, muuten ei.
+    var vakipaikka_on = false;
+    
+    if(parseInt(maa_id) < 0){
+        vakipaikka_on = false;
+    } else{
+        vakipaikka_on = true;
+    }
+
+    var paikkakentta = find(paikkakentta_id);
+    if(paikkakentta){
+        paikkakentta.value = paikka;
+        paikkakentta.readOnly = vakipaikka_on;
+    }
+    
+    // Disabled -> ei lähetä arvoa, joten silloin maa otetaan vakipaikalta.
+    var maavalikko = find(maavalikko_id);
+    if(maavalikko){
+        setSelected(maavalikko_id, maa_id);
+        maavalikko.disabled = vakipaikka_on;
+    }
+    
+    if(muokkausnappispan_id !== ""){
+        find(muokkausnappispan_id).innerHTML = muokkausnappi;
+    }
+}
+
 
 // Lähettää kyselyn koskien lajiluokkaa, joka täsmää kirjoitetun alukkeen kanssa.
 function etsi_laji(alkumj, ylaluokka_id){
@@ -190,6 +310,40 @@ function hae_henkilon_pinnalajit(henk_id, vuosi, havaintoalue, lisaluok_arvo, li
     catch(virhe){
         document.getElementById("ilmoitus").innerHTML =
             "Virhe (bongausmetodit.js/hae_henkilon_bongauslajit): "+virhe.description;
+    }
+}
+
+/* Tässä haetaan vain havaitut eri lajit. Lisäluokitukset
+ * otetaan huomioon täällä! */
+function hae_paikan_pinnalajit(vuosi, vakipaikka_id, vakipaikka_id_name){
+    try{
+        kysely = "kysymys=nayta_vakipaikan_pinnalajit"+
+                "&vuosi_hav="+vuosi+
+                "&"+vakipaikka_id_name+"="+vakipaikka_id;
+        nayta_viiveilmoitus = 1;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_havainnot_left','post', 'text', nayta_viiveilmoitus);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/hae_henkilon_bongauslajit): "+virhe.description;
+    }
+}
+
+
+function hae_vakipaikan_havainnot(vakipaikka_id, vakipaikka_name){
+    try{
+        kysely = "kysymys=nayta_vakipaikan_havainnot&"+
+                vakipaikka_name+"="+vakipaikka_id;
+        nayta_viiveilmoitus = 0;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_havainnot','post', 'text', nayta_viiveilmoitus);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/hae_vakipaikan_havainnot): "+virhe.description;
     }
 }
 
@@ -664,4 +818,297 @@ function nayta_viesti(viesti){
 // Tätä ei vielä toteutettu tätä kautta.
 function bongaus_kopioi_havainto(param){
     return false;
+}
+
+
+/* Näyttää vakipaikkalomakkeen, eli hakee ajaxin avulla html-koodin. */
+function hae_vakipaikkalomake(vakipaikka_id_name, vakipaikka_id){
+    try{
+        kysely = "kysymys=nayta_vakipaikkalomake"+
+                "&"+vakipaikka_id_name+"="+vakipaikka_id;
+        
+        nayta_viiveilmoitus = 0;
+        toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                    'nayta_vakipaikkalomake','post', 'text',
+                    nayta_viiveilmoitus);
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/hae_vakipaikkalomake): "+virhe.description;
+    }
+}
+
+function poistu_vakipaikkalomakkeesta(lomakeruutu_id){
+    setElemDisplay(lomakeruutu_id, "none");
+    
+    // Havaintolomake näkyviin:
+    var havaintolomakkeen_id_one = "tietolomake_rajaton"; // yksilisäyslomake.
+    var havaintolomakkeen_id_many = "tietolomake_maxi"; // Monilisäyslomake
+
+    if(find(havaintolomakkeen_id_one)){
+        setElemDisplay(havaintolomakkeen_id_one, "block");
+    } else if(find(havaintolomakkeen_id_many)){
+        setElemDisplay(havaintolomakkeen_id_many, "block");
+    }
+    
+}
+
+/* Näyttää vakipaikkalomakkeen, eli haetun html-koodin yleislaatikon sisällä.*/
+function nayta_vakipaikkalomake(html){
+    try{
+        //alert(html);
+        var yleislaatikon_id = "yleislaatikko";
+        var havaintolomakkeen_id_one = "tietolomake_rajaton";
+        var havaintolomakkeen_id_many = "tietolomake_maxi";
+   
+        if(find(havaintolomakkeen_id_one)){
+            find(havaintolomakkeen_id_one).style.display="none";
+        } else if(find(havaintolomakkeen_id_many)){
+            find(havaintolomakkeen_id_many).style.display="none";
+        }
+   
+        
+   
+        // luodaan uusi elementti vain, ellei sellaista jo olemassa:
+        if(!document.getElementById(yleislaatikon_id)){
+            body = document.getElementsByTagName("body")[0];
+            divi = document.createElement("div");
+            divi.setAttribute("id", yleislaatikon_id);
+            body.appendChild(divi);
+        }
+        else{// Muuten vain pannaan näkymään:
+            divi = document.getElementById(yleislaatikon_id);
+            if(divi.style.display === "none"){
+                divi.style.display = "block";
+            }
+        }
+        divi.innerHTML = html;
+    }
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/nayta_vakipaikkalomake): "+virhe.description;
+    }
+}
+
+// Asettaa parametrina annetun arvon valituksi (vain). Palauttaa true, jos onnistuu,
+// muuten false.
+function setSelected(elemID, val){
+    var elem = document.getElementById(elemID);
+    var success = false;
+    if (elem){
+
+        elem.selectedIndex = -1;        // Deselects all options
+        
+        for(var i=0; i < elem.options.length; i++){
+            var cand = elem.options[i];
+           
+            if(cand.value === val){
+                //alert("Selected value: "+val);
+                cand.selected = true;
+                success = true;
+                break;
+            } 
+        }
+    }
+    return success;
+}
+
+// Etsii pudotusvalikon valitun arvon. Ellei löydy, palauttaa arvon -1.
+// Siis sama arvo kuin maavalikko.options[maavalikko.selectedIndex].value;
+function getSelVal(elemID){
+    var val = "";
+    var selVal = -1;
+    var elem = document.getElementById(elemID);
+    if (elem){
+
+      for(var i=0; i < elem.options.length; i++){
+        val = elem.options[i];
+        if(val.selected === true){
+            alert("Selected value: "+val.value);
+            selVal = val.value;
+          //break;
+        } else{
+            alert("Not selected value: "+val.value);
+        }
+      }
+    }
+    return selVal;
+  }
+
+/* Tallentaa sekä uuden että muokatun homman. */
+function tallenna_vakipaikka(vakipaikka_id, // olion id > 0, jos vanhan muokkaus. 
+                            maavalikko_id,
+                            paikkaruutu_id, 
+                            selitysruutu_id,
+                            vakipaikka_id_name,
+                            maa_id_name,
+                            paikka_name,
+                            selitys_name){
+    try{
+        
+        // Haetaan arvot kentistä:
+        var maa_id =-1;
+        var paikka = "";
+        var selitys = "";
+        
+        var maavalikko = find(maavalikko_id);
+        if(maavalikko){
+            maa_id = maavalikko.options[maavalikko.selectedIndex].value;
+        }
+        
+        var paikkaruutu = find(paikkaruutu_id);
+        if(paikkaruutu){
+            paikka = paikkaruutu.value;
+        }
+        
+        var selitysruutu = find(selitysruutu_id);
+        if(selitysruutu){
+            selitys = selitysruutu.value;
+        }
+        
+        if(paikka === ""){
+            alert("Paikka ei saa olla tyhjä!");
+        } else{
+            var kysely = "kysymys=tallenna_vakipaikka"+
+                "&"+vakipaikka_id_name+"="+vakipaikka_id+
+                "&"+maa_id_name+"="+maa_id+
+                "&"+paikka_name+"="+paikka+
+                "&"+selitys_name+"="+selitys;
+            //alert(kysely);
+            nayta_viiveilmoitus = 0;
+            toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                        'nayta_vakipaikkatallennustulos','post', 'xml',
+                        nayta_viiveilmoitus);
+        }
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/tallenna_nimikuvaus): "+virhe.description;
+    }
+}
+/* Tiedot tulevat:
+ '<success>'.$success.'</success>'.
+'<kommentti>'.$kommentti.'</kommentti>'.
+'<dropdown>'.$html.'</dropdown>'.
+'<dropdown_id>'.$vakipaikkavalikon_id.'</dropdown_id>'.*/
+
+function nayta_vakipaikkatallennustulos(tulosxml){   
+   //alert("Metodissa 'nayta_vakipaikkatallennustulos' tulosxml: "+tulosxml );
+    // Haetaan xml:stä tiedot esille:
+    
+    var dropdown_id =
+        tulosxml.getElementsByTagName("dropdown_id")[0].childNodes[0].nodeValue;
+    
+    var kommentti =
+        tulosxml.getElementsByTagName("kommentti")[0].childNodes[0].nodeValue;
+    
+    var dropdown =
+        tulosxml.getElementsByTagName("dropdown")[0].childNodes[0].nodeValue;
+    
+    // HUOM Parseint pitää tehdä, ettei luku ole tekstinä!
+    var onnistuminen = parseInt(
+        tulosxml.getElementsByTagName("success")[0].childNodes[0].nodeValue);
+
+    nayta_viesti(kommentti);
+    
+    // Havaintolomake näkyviin:
+    var havaintolomakkeen_id_one = "tietolomake_rajaton"; // yksilisäyslomake.
+    var havaintolomakkeen_id_many = "tietolomake_maxi"; // Monilisäyslomake
+
+    if(find(havaintolomakkeen_id_one)){
+        find(havaintolomakkeen_id_one).style.display="block";
+    } else if(find(havaintolomakkeen_id_many)){
+        find(havaintolomakkeen_id_many).style.display="block";
+    }
+    
+    // Suljetaan vakipaikkalomake:
+    find("yleislaatikko").style.display="none";
+
+
+    // Viedään pudotusvalikko havaintolomakkeeseen:
+    if(onnistuminen===1){
+        var container = find(dropdown_id);
+        if(container){
+            container.innerHTML = dropdown;
+        }
+        
+    } 
+    
+    // Paikan ja maan arvojen oikaisu:
+    nayta_paikka_ja_maa(tulosxml);
+}
+
+
+
+/*
+ * Vaihtaa monivalintalomakkeen havaintojaksoruudun tiedot, 
+ * kun havaintojaksoa vaihdetaan (default uusi).
+ */
+function vaihda_havjaks(new_id, havjaks_idname){
+  try{
+    //alert("Kukkuu! Havaintojakson id="+new_id);
+      kysely = "kysymys=vaihda_havjakso_lomake"+
+          "&"+havjaks_idname+"="+new_id;
+      nayta_viiveilmoitus = 0;
+      toteutaAJAX(ajaxkyselytiedosto_osoite,kysely,
+                  'nayta_havjakstiedot','post', 'xml',
+                  nayta_viiveilmoitus);
+    
+    }
+
+    catch(virhe){
+        document.getElementById("ilmoitus").innerHTML =
+            "Virhe (bongausmetodit.js/vaihda_havjaks): "+
+            virhe.description;
+    }
+  //var e = document.getElementById("havaintojaksovalikko");
+  //var strUser = e.options[e.selectedIndex].value;
+}
+/**
+ * Näyttää vaihdetun havaintojakson tiedot kentissä ja muuttaa
+ * ne ei-muokattaviksi.
+ * @param {type} xml
+ * @returns {undefined}
+ */
+function nayta_havjakstiedot(xml){
+  //alert("xml="+xml);
+  var nimet = ["nimi", "kommentti", "alkuh", "alkukk", "alkumin",
+          "alkupaiva", "alkuvuosi", "kestoh", "kestovrk", "kestomin"];
+
+  var arvo, id, xmlElem_arvo, xmlElem_id, onUusi_raaka, onUusi, elem;
+
+  onUusi_raaka = xml.getElementsByTagName("onUusi")[0].childNodes[0].nodeValue;
+  if(onUusi_raaka === "1"){
+    onUusi = true;
+  } else{
+    onUusi = false;
+  }
+  
+  for (var i=0; i < nimet.length; i++){
+    arvo = "";
+    id = "";
+    
+    xmlElem_id = xml.getElementsByTagName("id_"+nimet[i])[0].childNodes[0];
+    if(xmlElem_id){
+        id = xmlElem_id.nodeValue;
+    }
+    
+    xmlElem_arvo = xml.getElementsByTagName(nimet[i])[0].childNodes[0];
+    if(xmlElem_arvo){
+        arvo = xmlElem_arvo.nodeValue;
+    }
+    
+    elem = document.getElementById(id);
+    
+    if(elem){
+      elem.value = arvo;
+      if(onUusi){
+        elem.disabled = false;
+      } else{
+        elem.disabled = true;
+      }
+    }
+  }
 }

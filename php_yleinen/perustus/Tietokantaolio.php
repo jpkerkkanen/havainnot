@@ -69,14 +69,14 @@ class Tietokantaolio extends Pohja
         $this->dbuser = $dbuser;
         $this->dbsalis = $dbsalis;
     }
-    
+
     public function get_yhteys(){
         return $this->yhteys;
     }
     public function get_result(){
         return $this->result;
     }
-
+    
     /**
      * Yhdistää tietokantaan.
      * @param <type> $dbnimi Tietokannan nimi, johon yhdistetään.
@@ -95,10 +95,6 @@ class Tietokantaolio extends Pohja
             //$this->yhteys->set_charset("utf8");
             if($this->yhteys->connect_errno){
                 echo "Tietokannan valinta ep&auml;onnistui: " .
-                    //"dbhost=".$this->dbhost.
-                    //", dbuser=".$this->dbuser.
-                    //", dbsalis=".$this->dbsalis.
-                    //", dbnimi=".$dbnimi.". Virhenro=".
                     $this->yhteys->connect_errno;
             }
         }
@@ -306,7 +302,7 @@ class Tietokantaolio extends Pohja
                                 WHERE $ehtosarake='$ehtoarvo'
                                 LIMIT $max_muutosrivilkm";
                 }
-   
+
                 $this->result = $this->yhteys->query($hakulause);  //FALSE on failure, true muutoin.
 
                 if($this->result){
@@ -314,6 +310,7 @@ class Tietokantaolio extends Pohja
                     //$this->lisaa_kommentti("<br/>".$hakulause."<br/>");
                 } else{
                     //$this->lisaa_virheilmoitus("<br/>".$hakulause."<br/>");
+                    $tulos = false;
                 }
             }
         }
@@ -334,7 +331,7 @@ class Tietokantaolio extends Pohja
      */
     private function tee_WHEREhaku_1($taulu, $taulun_sarake, $hakuarvo)
     {
-        if($this->dbtyyppi == 'mysql')
+        if($this->dbtyyppi === 'mysql')
         {
             $hakulause = "SELECT * FROM $taulu
                             WHERE $taulun_sarake='$hakuarvo'";
@@ -342,8 +339,6 @@ class Tietokantaolio extends Pohja
             return $this->result;
         }
     }
-
-    
 
     /************************FUNCTION TEE_OMAhaku_oliotaulukkopalautteella *****/
     /**
@@ -401,7 +396,9 @@ class Tietokantaolio extends Pohja
      * Escapes the string used in an SQL-query. Takes into account the
      * charset uset in the connection.
      * @param type $string
-     * @return type
+
+     * @return the escaped string
+
      */
     function real_escape_string($string){
         return $this->yhteys->real_escape_string($string);
@@ -633,84 +630,7 @@ class Tietokantaolio extends Pohja
         return $palaute;
     }
     
-    /***************FUNCTION TALLENNA_UUSI_rivi *************************************/
-
-    // Metodi, joka tallentaa uuden olion tiedot MySQL:llään: Palauttaa true, jos
-    // tallennus onnistuu.
-    /**
-     * DEPRECATED!
-     * @param <type> $taulu tietokantataulun nimi
-     * @param <type> $sarakenimitaulukko Taulukko, joka sisältää sarakenimet.
-     * @param <type> $arvotaulukko Taulukko, joka sisältää vastaavat arvot.
-     * HUOM! Taulukoissa pitää olla yhtä monta alkiota, muuten tulee palautetta!
-     * Muutenkin käyttäjän pitää huolehtia, että sarakenimet vastaavat
-     * olemassaolevaa tietokantataulua, ja että arvot ovat samassa järjestyksessä.
-     *
-     * Lisäksi oletetaan, että taulukon pääindeksi tuotetaan automaattisesti
-     * (auto-increment), ellei sitä anneta erikseen.
-     *
-     * @param string $virheilmoitus mysql_query-lauseen palauttaessa falsen.
-     * @return string Palauttaa arvon Tietokantaolio::$HAKU_ONNISTUI,
-     * jos tallennus ok, muuten false.
-     *
-    function tallenna_uusi_rivi($taulu, $sarakenimitaulukko, $arvotaulukko,
-                                $virheilmoitus)
-    {
-        $onnistu = false;
-        $sarakeLkm = sizeof($sarakenimitaulukko);
-        $arvoLkm = sizeof($arvotaulukko);
-
-        if(!isset($sarakenimitaulukko) || !isset($arvotaulukko) ||
-            ($sarakeLkm != $arvoLkm) || ($sarakeLkm == 0))
-        {
-            // Virheilmoitus kehittäjälle (ei käyttäjälle yl. näy):
-            $onnistu = "Virhe tallennuksessa: Sarakenimi- ja arvotaulukot".
-            " eivät t&auml;sm&auml;&auml;, ole m&auml;&auml;riteltyj&auml;
-                tai ovat tyhji&auml;";
-        }
-        else
-        {
-            $saraketeksti = '';
-            $arvoteksti = '';
-            
-            for($i = 0; $i < $sarakeLkm; $i++)
-            {
-                /* Ajatus: arvojen int-vertailu, jolloin lukujen kohdalla
-                 * turhat ja hidastavat hipsut '' voidaan välttää. 
-                 * Form-input on kuulemma aina string. Olennaista?
-                 *
-                if($i == 0) // Pilkkujen viilausta:
-                {
-                    $saraketeksti = $sarakenimitaulukko[$i];
-                    $arvoteksti = "'".$arvotaulukko[$i]."'";
-                }
-                else
-                {
-                    $saraketeksti .= ", ".$sarakenimitaulukko[$i];
-                    $arvoteksti .= ", '".$arvotaulukko[$i]."'";                 
-                }
-            }
-            // MYSQL:
-            if($this->dbtyyppi == 'mysql')
-            {
-                $kyselylause = "INSERT INTO $taulu ($saraketeksti)
-							 VALUE ($arvoteksti)";
-
-                $kyselyn_tila = mysql_query($kyselylause);
-                
-                if($kyselyn_tila == false){
-                    $onnistu = $virheilmoitus.
-                                        " (Tietokantaolio.tallenna_uusi_rivi)";
-                }
-
-                else if(mysql_affected_rows() == 1)
-                {
-                    $onnistu = Tietokantaolio::$HAKU_ONNISTUI;
-                }
-            }
-        }
-        return $onnistu;
-    }
+    
     
     /**
      * Tallentaa Mallipohjaluokasta perityn olion tietokantaan. Tämä on nykyään
@@ -769,7 +689,7 @@ class Tietokantaolio extends Pohja
                 $arvot .= ")";
                 
                 $insert_koodi ="INSERT INTO ".$taulu." ";
-                $value_koodi = " VALUE ";
+                $value_koodi = " VALUES ";
                
                 $kyselylause = $insert_koodi.$sarakenimet.
                                 $value_koodi.$arvot;
@@ -865,20 +785,6 @@ class Tietokantaolio extends Pohja
         
         return $poistettujen_lkm;
     }
-    /******************FUNCTION TARKISTA_SYÖTTEET ***************************/
-
-    /** Tarkistaa syätteet palvelimen päässä: tähän voisi yhdistää toiminnon
-    * poista_rumat_sanat
-    * Trim-funktio poistaa välierottimet, mikä voi joskus olla hyvä.
-    * Muuten tarkistetaan, ettei syätteissä
-    * ole merkkejä, joilla on erityismerkitys MySQL:ssä tai HTML:ssä.
-    * Palauttaa puhdistetun merkkijonon.
-    *
-    function tarkista_syote($syote)
-    {
-        $syote = mysql_real_escape_string(htmlspecialchars(trim($syote)));
-        return $syote;
-    }*/
     
     //==========================================================================
     //==========================================================================

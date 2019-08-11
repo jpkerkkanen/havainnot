@@ -40,7 +40,8 @@ else    // Jos tunnistus on kunnossa.
     // Asetetaan aikavyöhyke:
     date_default_timezone_set  ('Europe/Helsinki'); // Vaaditaan alkaen MySQL5.1
     
-    $koodaus = "UTF-8";
+    require_once('../asetukset/yleinen.php');
+    $koodaus = Yleisasetuksia::$koodaus;
 
     /************************ KYSELYT *****************************************/
     $kysymys = isset($_REQUEST['kysymys']) ? $_REQUEST['kysymys']: "";
@@ -58,7 +59,6 @@ else    // Jos tunnistus on kunnossa.
         // Haetaan asetukset ja avataan yhteys tietokantaan:
         require_once('../asetukset/tietokantayhteys.php');
         require_once('../asetukset/Valtuudet.php');
-        require_once('../asetukset/yleinen.php');
         require_once('../asetukset/Kielet.php');
 
         require_once('../html_tulostus.php');
@@ -96,6 +96,9 @@ else    // Jos tunnistus on kunnossa.
         require_once('../bongaus/havainnot/Havainto.php');
         require_once('../bongaus/havainnot/Havaintokontrolleri.php');
         require_once('../bongaus/havainnot/Havaintonakymat.php');
+        require_once('../bongaus/havainnot/Havaintojakso.php');
+        require_once('../bongaus/havainnot/Havaintojaksolinkki.php');
+         require_once('../bongaus/havainnot/Havaintopaikka.php');
         require_once('../bongaus/havainnot/Lisaluokitus.php');
         require_once('../bongaus/lajiluokat/Lajiluokka.php');
         require_once('../bongaus/lajiluokat/Kuvaus.php');
@@ -158,7 +161,10 @@ else    // Jos tunnistus on kunnossa.
         
         // Kuvakontrolleri:
         $kuvakontrolleri = new Kuvakontrolleri($tietokantaolio, $parametriolio);
-
+        $kuvanakymat = $kuvakontrolleri->get_kuvanakymat();
+        
+        $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
+        
         /*=================================================================*/
         /*=================================================================*/
         /*=================== KAYTTAJATOIMINNOT ALKAA =====================*/
@@ -402,6 +408,24 @@ else    // Jos tunnistus on kunnossa.
             $palaute = $palauteolio->get_sisalto();
             echo $palaute;
         }
+        
+        /*********************** havaintojen haku vakipaikan mukaan  ********/
+        else if($kysymys === "nayta_vakipaikan_havainnot"){
+            $havaintokontrolleri->
+                    toteuta_hae_vakipaikan_havainnot($palauteolio);
+            $palaute = $palauteolio->get_sisalto();
+            
+            echo $palaute;
+        }
+        
+        /*********************** havaintojen haku vakipaikan mukaan  ********/
+        else if($kysymys === "nayta_vakipaikan_pinnalajit"){
+            $havaintokontrolleri->
+                    toteuta_nayta_pinnalajit($palauteolio);
+            $palaute = $palauteolio->get_sisalto();
+            
+            echo $palaute;
+        }
 
         /*********************** havaintojen haku lajin mukaan *************/
         else if($kysymys === "nayta_lajihavainnot"){
@@ -412,7 +436,7 @@ else    // Jos tunnistus on kunnossa.
         }
 
         /********************* Lajilistan näyttö: puolivuodet *************/
-        else if($kysymys == "nayta_henkilon_bongauslajit"){
+        else if($kysymys === "nayta_henkilon_bongauslajit"){
 
             $havaintokontrolleri->toteuta_hae_henkilon_lajilista($palauteolio);
             $palaute = $palauteolio->get_sisalto();
@@ -421,7 +445,7 @@ else    // Jos tunnistus on kunnossa.
         }
         
          /********************* Lajilistan näyttö: vuositaso ******************/
-        else if($kysymys == "nayta_henkilon_pinnalajit"){
+        else if($kysymys === "nayta_henkilon_pinnalajit"){
 
             $havaintokontrolleri->toteuta_hae_henkilon_vuosilajilista($palauteolio);
             $palaute = $palauteolio->get_sisalto();
@@ -437,6 +461,32 @@ else    // Jos tunnistus on kunnossa.
             $havaintokontrolleri->toteuta_nayta($palauteolio);
             echo $palauteolio->get_sisalto();
         }
+        
+        /*********************** Vakipaikkalomakkeen näyttö *************/
+        else if($kysymys === "nayta_vakipaikkalomake"){
+            
+            $havaintokontrolleri->toteuta_nayta_vakipaikkalomake($palauteolio);
+            $response = $palauteolio->get_ajax_response();
+            echo $response;     // Ei xml tällä kertaa.
+        }
+        /*********************** Vakipaikkalomakkeen näyttö *************/
+        else if($kysymys === "tallenna_vakipaikka"){
+            
+            $havaintokontrolleri->toteuta_tallenna_vakipaikka_uusivanha($palauteolio);
+            $xml = $palauteolio->get_ajax_response();
+            
+            header('Content-type: text/xml');
+            echo $xml;
+        }
+        /********************** Vakipaikan muutoksen aiheuttama toiminta ******/
+        else if($kysymys === "aseta_paikka_ja_maa"){
+            
+            $xml = aseta_paikka_ja_maa($koodaus, $havaintokontrolleri);
+            header('Content-type: text/xml');
+            echo $xml;
+        }
+        
+
 
         /*=================================================================*/
         /*=================================================================*/
@@ -547,6 +597,78 @@ else    // Jos tunnistus on kunnossa.
             echo '</tiedot>';
         }
 
+        else if($kysymys === "vaihda_havjakso_lomake"){
+            
+            $id = $parametriolio->id_havjaks;
+            $havjakso = new Havaintojakso($id, $tietokantaolio);
+            $onUusi = 0;
+            
+            if($havjakso->olio_loytyi_tietokannasta){
+                
+                $nimi = $havjakso->get_nimi();
+                $kommentti = $havjakso->get_kommentti();
+                $alkuvuosi = $havjakso->get_alkuvuosi();
+                $alkukk = $havjakso->get_alkukk();
+                $alkupaiva = $havjakso->get_alkupaiva();
+                $alkuh = $havjakso->get_alkutunti();
+                $alkumin = $havjakso->get_alkumin();
+                $kestovrk = $havjakso->get_keston_vrk();
+                $kestoh = $havjakso->get_keston_h();
+                $kestomin = $havjakso->get_keston_min();
+            } else{
+                $onUusi = 1;
+                $nimi = "";
+                $kommentti = "";
+                $alkuvuosi = "";
+                $alkukk = "";
+                $alkupaiva = "";
+                $alkuh = "";
+                $alkumin = "";
+                $kestovrk = "";
+                $kestoh = "";
+                $kestomin = "";
+            }
+            
+            // xml-muodossa saadaan muutkin tiedot mukaan:
+            header('Content-type: text/xml');
+            echo '<?xml version="1.0" encoding="'.$koodaus.'"?>';
+            echo '<tiedot>';
+            echo '<onUusi>'.$onUusi.'</onUusi>';
+            echo '<id_nimi>'.Bongausasetuksia::$havjaksolomake_nimi_id.
+                    '</id_nimi>';
+            echo '<id_kommentti>'.Bongausasetuksia::$havjaksolomake_kommentti_id.
+                    '</id_kommentti>';
+            echo '<id_alkuh>'.Bongausasetuksia::$havjaksolomake_alkuh_id.
+                    '</id_alkuh>';
+            echo '<id_alkukk>'.Bongausasetuksia::$havjaksolomake_alkukk_id.
+                    '</id_alkukk>';
+            echo '<id_alkumin>'.Bongausasetuksia::$havjaksolomake_alkumin_id.
+                    '</id_alkumin>';
+            echo '<id_alkupaiva>'.Bongausasetuksia::$havjaksolomake_alkupäiva_id.
+                    '</id_alkupaiva>';
+            echo '<id_alkuvuosi>'.Bongausasetuksia::$havjaksolomake_alkuvuosi_id.
+                    '</id_alkuvuosi>';
+            echo '<id_kestoh>'.Bongausasetuksia::$havjaksolomake_kestoh_id.
+                    '</id_kestoh>';
+            echo '<id_kestomin>'.Bongausasetuksia::$havjaksolomake_kestomin_id.
+                    '</id_kestomin>';
+            echo '<id_kestovrk>'.Bongausasetuksia::$havjaksolomake_kestovrk_id.
+                    '</id_kestovrk>';
+            
+            
+            echo '<nimi>'.$nimi.'</nimi>';
+            echo '<kommentti>'.$kommentti.'</kommentti>';
+            echo '<alkuh>'.$alkuh.'</alkuh>';
+            echo '<alkukk>'.$alkukk.'</alkukk>';
+            echo '<alkumin>'.$alkumin.'</alkumin>';
+            echo '<alkupaiva>'.$alkupaiva.'</alkupaiva>';
+            echo '<alkuvuosi>'.$alkuvuosi.'</alkuvuosi>';
+            echo '<kestoh>'.$kestoh.'</kestoh>';
+            echo '<kestomin>'.$kestomin.'</kestomin>';
+            echo '<kestovrk>'.$kestovrk.'</kestovrk>';
+            echo '</tiedot>';
+        }
+        
         else if($kysymys == "nayta_siirtolomake"){
 
 
@@ -770,8 +892,66 @@ else    // Jos tunnistus on kunnossa.
         /*=================================================================*/
         /*=================================================================*/
         
+        
         $tietokantaolio->sulje_tietokanta($dbnimi); 
         
 }// Raskaammat kyselyt loppuivat
+
+/**
+ * 
+ * @param type $koodaus
+ * @param Havaintokontrolleri $havKontr
+ * @return string
+ */
+function aseta_paikka_ja_maa($koodaus, $havKontr){
+    
+    $tietokantaolio = $havKontr->get_tietokantaolio();
+    $parametriolio = $havKontr->get_parametriolio();
+    $kuvanakymat = new Kuvanakymat();
+    
+    $havaintonakymat = new Havaintonakymat($tietokantaolio, $parametriolio, $kuvanakymat);
+    
+    $maavalikko_id = 
+        isset($_REQUEST['maavalikko_id']) ? $_REQUEST['maavalikko_id']: 
+        Havaintopaikka::$ei_asetettu;
+    $paikkakentta_id = 
+        isset($_REQUEST['paikkakentta_id']) ? $_REQUEST['paikkakentta_id']: 
+        "tuntematon";
+    $muokkausnappispan_id = 
+        isset($_REQUEST['muokkausnappispan_id']) ? $_REQUEST['muokkausnappispan_id']: 
+        "tuntematon";
+    
+    
+    $vakipaikka_id = $havKontr->get_parametriolio()->havaintopaikka_id;
+    
+    $vakipaikka = new Havaintopaikka($vakipaikka_id, $havKontr->get_tietokantaolio());
+
+    $muokkausnappi = "";
+    
+    $paikka = "";
+    $maa_id = -1;
+    if($vakipaikka->olio_loytyi_tietokannasta){
+        $paikka = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_NIMI);
+        $maa_id = $vakipaikka->get_arvo(Havaintopaikka::$SARAKENIMI_MAA_ID);
+        $muokkausnappi = 
+            htmlspecialchars(
+                $havaintonakymat->luo_havaintopaikka_muokkauspainike($vakipaikka_id));
+    }
+    
+    $safe_paikka = htmlspecialchars($paikka);
+
+
+    // xml-muodossa saadaan muutkin tiedot mukaan:
+    $xml ='<?xml version="1.0" encoding="'.$koodaus.'"?>'.
+        '<tiedot>'.
+        '<paikka>'.$safe_paikka.'</paikka>'.
+        '<maa_id>'.$maa_id.'</maa_id>'.
+        '<paikkakentta_id>'.$paikkakentta_id.'</paikkakentta_id>'.
+        '<maavalikko_id>'.$maavalikko_id.'</maavalikko_id>'.
+        '<muokkausnappispan_id>'.$muokkausnappispan_id.'</muokkausnappispan_id>'.
+        '<muokkausnappi>'.$muokkausnappi.'</muokkausnappi>'.
+        '</tiedot>';
+    return $xml;
+}
 
 ?>

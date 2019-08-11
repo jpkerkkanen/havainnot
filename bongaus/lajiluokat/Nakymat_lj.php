@@ -359,7 +359,7 @@ class Nakymat_lj {
         // tietokannasta. $uusi=true, koska muuten valittaa, ellei
         // tietoja muutettu. Nyt id:tä ei tarkisteta, mutta ei sillä
         // väliä.
-        if($thislklklk->on_tallennuskelpoinen(true)){
+        if($this->on_tallennuskelpoinen(true)){
             $aika = anna_pvm_ja_aika($this->get_tallennushetki_sek());
 
             // true on muuttujan 'vain_etunimi' arvo.
@@ -485,7 +485,7 @@ class Nakymat_lj {
      * Palauttaa poistovahvistus-html:n, joka sisältää kuvauksen tiedot
      * ja poiston vahvistus- ja perumispainikkeet.
      * 
-     * KORJAA
+     * KORJAA TÄÄ ON IHAN RIKKI!
      */
     public function nayta_poistovahvistuskysely(){
 

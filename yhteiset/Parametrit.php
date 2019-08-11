@@ -121,7 +121,10 @@ class Parametrit {
             
             $sukupuoli_hav,
             $lkm_hav,
-            $lisaluokitusvalinnat_hav;
+            $lisaluokitusvalinnat_hav,
+    
+            // Monen havainnon muokkaus: muokkausvalinnat:
+            $muokattavat_ominaisuudet_hav;
     
     public
             $nayttomoodi_hav, 
@@ -141,14 +144,50 @@ class Parametrit {
     private $naytettavan_id_hav;    // Sen havainnon id, joka halutaan näyttää.
     
     //==========================================================================
-
+    // Havaintojaksomuuttujat:
     
+    // havaintojaksoihin liittyvät (jatkossa: havjaks eteen, niin löytäminen helpottuu):
+    public $id_havjaks;
+    public $henkilo_id_havjaks;
+    public $lajiluokka_id_havjaks;
+    public $alkuaika_sek_havjaks;
+    public $alkuaika_min_havjaks;
+    public $alkuaika_h_havjaks;
+    public $alkuaika_paiva_havjaks;
+    public $alkuaika_kk_havjaks;
+    public $alkuaika_vuosi_havjaks;
+    public $kesto_vrk_havjaks;
+    public $kesto_h_havjaks;
+    public $kesto_min_havjaks;
+    public $nimi_havjaks;
+    public $kommentti_havjaks;
+    public $nakyvyys_havjaks;
+    public $uusi_havjaks;
+    //==========================================================================
+    // Havaintojaksolinkkimuuttujat:
+    // Name-arvot liittyen havaintojaksolinkkeihin:
+    public $id_havjakslink;
+    public $havainto_id_havjakslink;
+    public $havaintojakso_id_havjakslink;
+    
+    //==========================================================================
+    // Havaintopaikkamuuttujat:
+    public $havaintopaikka_id;
+    public $havaintopaikka_henkilo_id;
+    public $havaintopaikka_nimi;
+    public $havaintopaikka_selitys;
+    public $havaintopaikka_maa;
     
     /** 
      * Huom! Vältä tämän käyttöä entiteettiluokan id-tunnisteen kohdalla.
-     * Käytä niissä Luokannimi::MUUTTUJAA_EI_MAARITELTY-arvoa, ettei tule
-     * sekaannusta kun entiteettiä luodaan (periaatteessa otettu kyllä huomioon,
-     * mutta kuitenkin noin loogisempi).
+     * Käytä niissä Luokannimi::MUUTTUJAA_EI_MAARITELTY-arvoa silloin, kun
+     * tarkoitus on luoda uusi puhdas.
+     * 
+     * HUOM: tämä arvo menee tietokantaan asti, kun taas muuttujaa_ei_maaritelty
+     * tulkitaan ei-määritellyksi, eikä se tallennu tietokantaan. Joten tämä arvo
+     * on ok silloin, kun "ei-määritelty"-arvo halutaan tietokantaan.
+     * 
+     * Älä muuta hetken mielijohteesta..
      * 
      * @var type 
      */
@@ -528,6 +567,12 @@ class Parametrit {
                     $_REQUEST[Havaintokontrolleri::$name_havaintovalinnat_hav]:
                     array();
         
+        // Monimuokkauslomakkeen muokattavat ominaisuudet ovat taulukossa:
+        $this->muokattavat_ominaisuudet_hav =  
+                isset($_REQUEST[Havaintokontrolleri::$name_muokattavat_ominaisuudet_hav]) ?
+                    $_REQUEST[Havaintokontrolleri::$name_muokattavat_ominaisuudet_hav]:
+                    array();
+        
         $this->puolivuotiskauden_nro_hav =
         isset($_REQUEST[Havaintokontrolleri::$name_puolivuotiskauden_nro_hav]) ? 
             $_REQUEST[Havaintokontrolleri::$name_puolivuotiskauden_nro_hav]: 
@@ -586,6 +631,116 @@ class Parametrit {
             $this->nayttovuosi_hav = Bongausasetuksia::$nayta_oletushavainnot; 
         }
         //======================= Havaintomuuttujat loppu ======================
+        //======================= Havaintojaksomuuttujat alku ==================
+        $this->id_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_id_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_id_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->henkilo_id_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_henkilo_id_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_henkilo_id_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_sek_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_sek_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_sek_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_min_havjaks_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_min_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_min_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_h_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_h_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_h_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_paiva_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_paiva_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_paiva_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_kk_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_kk_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_kk_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_vuosi_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_vuosi_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_vuosi_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        /*$this->alkuaika_date_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_date_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_date_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->alkuaika_time_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_alkuaika_time_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_alkuaika_time_havjaks]: 
+                Parametrit::$EI_MAARITELTY;*/
+        $this->kesto_min_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_kesto_min_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_kesto_min_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        
+        $this->kesto_h_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_kesto_h_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_kesto_h_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        
+        $this->kesto_vrk_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_kesto_vrk_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_kesto_vrk_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->nimi_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_nimi_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_nimi_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->kommentti_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_kommentti_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_kommentti_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->nakyvyys_havjaks =
+            isset($_REQUEST[Havaintokontrolleri::$name_nakyvyys_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_nakyvyys_havjaks]: 
+                Nakyvyys::$JULKINEN;
+        $this->uusi_havjaks = 
+            isset($_REQUEST[Havaintokontrolleri::$name_uusi_havjaks]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_uusi_havjaks]: 
+                Parametrit::$EI_MAARITELTY;
+   
+        //================== Havaintojaksomuuttujat loppu ======================
+        //================= Havaintojaksolinkkimuuttujat alku ==================
+        $this->id_havjakslink =
+            isset($_REQUEST[Havaintokontrolleri::$name_id_havjakslink]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_id_havjakslink]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->havainto_id_havjakslink =
+            isset($_REQUEST[Havaintokontrolleri::$name_havainto_id_havjakslink]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_havainto_id_havjakslink]: 
+                Parametrit::$EI_MAARITELTY;
+        $this->havaintojakso_id_havjakslink =
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintojakso_id_havjakslink]) ? 
+                $_REQUEST[Havaintokontrolleri::$name_havaintojakso_id_havjakslink]: 
+                Parametrit::$EI_MAARITELTY;
+        //================ Havaintojaksolinkkimuuttujat loppu ==================
+        // ============= Havaintopaikkamuuttujat alku: =========================
+        $this->havaintopaikka_id = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_id]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_id]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_henkilo_id = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_henkilo_id]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_henkilo_id]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_nimi = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_paikannimi]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_paikannimi]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_selitys = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_selitys]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_selitys]: 
+                    Parametrit::$EI_MAARITELTY;
+        $this->havaintopaikka_maa = 
+            isset($_REQUEST[Havaintokontrolleri::$name_havaintopaikka_maa]) ? 
+                    $_REQUEST[Havaintokontrolleri::$name_havaintopaikka_maa]: 
+                    Parametrit::$EI_MAARITELTY;
+        
+        // ============= Havaintopaikkamuuttujat alku: =========================
         
     }
     // Setterit ja getterit (osa vähän turhia..):

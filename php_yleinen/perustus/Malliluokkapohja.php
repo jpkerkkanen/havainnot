@@ -271,6 +271,7 @@ abstract class Malliluokkapohja extends Pohja{
                 Perustustekstit::$syotteen_tarkistusvirhe." ".$arvo;
             $this->lisaa_ilmoitus($ilmoitus, Ilmoitus::$TYYPPI_VIRHEILMOITUS);
         }
+       
 
         return $palaute;
     }
@@ -420,7 +421,7 @@ abstract class Malliluokkapohja extends Pohja{
             if($tallennuspalaute === Tietokantaolio::$HAKU_ONNISTUI){
 
                 // Otetaan ylös tallennetun id:
-                $uuden_id = $this->tietokantaolio->get_insert_id;
+                $uuden_id = $this->tietokantaolio->get_insert_id();
                 $this->set_id($uuden_id);
                 $this->set_id_tietokanta($uuden_id);
                 $this->olio_loytyi_tietokannasta = true;
@@ -436,7 +437,7 @@ abstract class Malliluokkapohja extends Pohja{
             /* Tämä voi tulla lähinnä testaajalle, joten viesti voi auttaa.*/
             $this->lisaa_virheilmoitus(
                                 Perustustekstit::$virhe_arvo_vaarantyyppinen);
-            
+
         }
         return $palaute;
     }
@@ -464,7 +465,8 @@ abstract class Malliluokkapohja extends Pohja{
         // Luodaan uusi, koska id:llä voi periaatteessa olla muutettu arvo!
         $tietokantasoluehto = 
             new Tietokantasolu(Malliluokkapohja::$SARAKENIMI_ID, 
-                        Tietokantasolu::$mj_tyhja_EI_ok, $this->tietokantaolio);
+                     Tietokantasolu::$mj_tyhja_EI_ok, $this->tietokantaolio);
+
         
         // Otetaan varmasti oikea id mukaan:
         $tietokantasoluehto->set_arvo_kevyt($this->id_tietokanta);
@@ -552,7 +554,7 @@ abstract class Malliluokkapohja extends Pohja{
                                 $malliluokkapohja_virheilm_muutostallennuksen_tietokantavirhe.
                             //$this->tietokantaolio->tulosta_virheilmoitukset().
                             $this->tietokantarivi->toString());
-echo $this->tietokantaolio->tulosta_virheilmoitukset();
+//echo $this->tietokantaolio->tulosta_virheilmoitukset();
                     }
                 }
                 else{
@@ -649,8 +651,9 @@ echo $this->tietokantaolio->tulosta_virheilmoitukset();
                 
                     $laskuri++;
                 } else{
-                    echo "Virhe tk-arvon asetuksessa oliolle: sarakenimi-arvo=".
-                            $sarakenimi."-".$haettu_arvo;
+                    $this->lisaa_virheilmoitus(
+                            "Virhe tk-arvon asetuksessa oliolle: sarakenimi=".
+                            $sarakenimi." ja arvo=".$haettu_arvo);
                 }
             }
              
@@ -730,7 +733,7 @@ echo $this->tietokantaolio->tulosta_virheilmoitukset();
             if($solu instanceof Tietokantasolu){
                 array_push($tietokantasolut_array, 
                             new Tietokantasolu($solu->get_sarakenimi(), 
-                                                $solu->get_arvon_tyyppi(), 
+                                                $solu->get_arvon_tyyppi(),
                                                 $this->tietokantaolio));
             }
         }

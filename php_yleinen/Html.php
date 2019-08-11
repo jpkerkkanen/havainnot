@@ -232,7 +232,7 @@ class Html{
             }
 
             for ($i = 0; $i < sizeof($arvot); $i++) {
-                if($oletusvalinta_arvo == $arvot[$i]){
+                if($oletusvalinta_arvo+0 === $arvot[$i]+0){
                     $valikkohtml .= "<option value = '$arvot[$i]'".
                                     "selected = 'selected'>";
                 }
@@ -516,7 +516,7 @@ class Html{
                 Maarite::lisaa_maarite(Maarite::value($arvot[$i]), 
                                         $option_maaritteet);
                 
-                // Jos oletusvalinta täsmää:
+                // Jos oletusvalinta täsmää: HUOM: === aina valitti ei-numeerisista..
                 if($oletusvalinta_arvo == $arvot[$i]){
                     
                     // Lisätään selected-määrite, mutta vähän hankalasti, ettei
@@ -1141,8 +1141,8 @@ class Maarite{
      * Muotoilee js-parametrit. this-avainsanan käyttö ei toimi vielä, mutta
      * siihen olisi hyvä keksiä jotakin.
      * @return string
-     */
-    function muotoile_js_koodi(){
+     *
+    function muotoile_js_koodi_vanha(){
         // JS-metodin parametrien muotoilu:
         $koodi = "";
         $param = "";
@@ -1172,6 +1172,63 @@ class Maarite{
 
                     $param .= "\"".$parametri."\"";
 
+                }
+                $laskuri++;
+            }
+
+            $koodi= " ".$this->nimi."='$this->arvo($param)' ";
+            
+        }
+
+        return $koodi;
+    }*/
+    /**
+     * Muotoilee js-parametrit. this-avainsanan käyttö toimii myös, eli annetaan
+     * lainausmerkeissä vain. Esim. doSomething("this.value"). Pelkkä "this" 
+     * tulkitaan this.value-arvoksi
+     * @return string
+     */
+    function muotoile_js_koodi(){
+        // JS-metodin parametrien muotoilu:
+        $koodi = "";
+        $param = "";
+        if(!empty($this->arvo) && !empty($this->nimi)){
+            
+            $laskuri = 0;
+            foreach($this->js_parametrit as $parametri){
+
+                // Lisätään pilkku silloin, kun ei ole eka parametri:
+                if($laskuri > 0){
+                    $param .= ",";
+                }
+
+                // Muotoillaan js-metodiin sopivasti:
+                if(is_numeric($parametri) || is_array($parametri)){
+                    $param .= $parametri;
+                }
+                else if (is_bool($parametri)) {
+                    if($parametri){
+                        $param .= 1;
+                    }
+                    else{
+                        $param .= 0;
+                    }
+                }
+                else{   // merkkijonot yms.
+
+                    // Pelkkä "this" tulkitaan this.value-arvoksi (esim.
+                    // syöttökentissä tai pudotusvalikoissa kätevä).
+                    if($parametri === "this"){
+                        $parametri = "this.value";
+                    }
+                    // Yritetään saada this-alkuiset toimimaan erikseen:
+                    $paloiteltu_param = str_split($parametri,5);
+                    $eka_osa = $paloiteltu_param[0];
+                    if($eka_osa === "this."){
+                        $param .= $parametri;
+                    } else{
+                        $param .= "\"".$parametri."\"";
+                    }
                 }
                 $laskuri++;
             }
@@ -1493,26 +1550,71 @@ class Maarite{
     public static function rowspan($arvo){
         return new Maarite("rowspan", $arvo, false);
     }
+    
+    /**
+     * this-avainsanan käyttö toimii myös, eli annetaan
+     * lainausmerkeissä vain. Esim. array("this.id"). Pelkkä "this" 
+     * tulkitaan this.value-arvoksi.
+     * @param type $metodinimi
+     * @param type $parametri_array
+     * @return \Maarite
+     */
     public static function onclick($metodinimi, $parametri_array){
         $m = new Maarite("onclick", $metodinimi, true);
         $m->set_js_parametrit($parametri_array);
         return $m;
     }
+    
+    /**
+     * this-avainsanan käyttö toimii myös, eli annetaan
+     * lainausmerkeissä vain. Esim. array("this.id"). Pelkkä "this" 
+     * tulkitaan this.value-arvoksi.
+     * @param type $metodinimi
+     * @param type $parametri_array
+     * @return \Maarite
+     */
     public static function onchange($metodinimi, $parametri_array){
         $m = new Maarite("onchange", $metodinimi, true);
         $m->set_js_parametrit($parametri_array);
         return $m;
     }
+    
+    /**
+     * this-avainsanan käyttö toimii myös, eli annetaan
+     * lainausmerkeissä vain. Esim. array("this.id"). Pelkkä "this" 
+     * tulkitaan this.value-arvoksi.
+     * @param type $metodinimi
+     * @param type $parametri_array
+     * @return \Maarite
+     */
     public static function onmouseover($metodinimi, $parametri_array){
         $m = new Maarite("onmouseover", $metodinimi, true);
         $m->set_js_parametrit($parametri_array);
         return $m;
     }
+    
+    /**
+     * this-avainsanan käyttö toimii myös, eli annetaan
+     * lainausmerkeissä vain. Esim. array("this.id"). Pelkkä "this" 
+     * tulkitaan this.value-arvoksi.
+     * @param type $metodinimi
+     * @param type $parametri_array
+     * @return \Maarite
+     */
      public static function onmouseout($metodinimi, $parametri_array){
         $m = new Maarite("onmouseout", $metodinimi, true);
         $m->set_js_parametrit($parametri_array);
         return $m;
     }
+    
+    /**
+     * this-avainsanan käyttö toimii myös, eli annetaan
+     * lainausmerkeissä vain. Esim. array("this.id"). Pelkkä "this" 
+     * tulkitaan this.value-arvoksi.
+     * @param type $metodinimi
+     * @param type $parametri_array
+     * @return \Maarite
+     */
     public static function onkeyup($metodinimi, $parametri_array){
         $m = new Maarite("onkeyup", $metodinimi, true);
         $m->set_js_parametrit($parametri_array);

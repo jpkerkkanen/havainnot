@@ -38,9 +38,10 @@ class Lisaluokitus extends Malliluokkapohja{
      */
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
-            array(new Tietokantasolu(Lisaluokitus::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Lisaluokitus::$SARAKENIMI_HAVAINTO_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Lisaluokitus::$SARAKENIMI_LISALUOKITUS, Tietokantasolu::$luku_int, $tietokantaolio));
+
+            array(new Tietokantasolu(Lisaluokitus::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Lisaluokitus::$SARAKENIMI_HAVAINTO_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Lisaluokitus::$SARAKENIMI_LISALUOKITUS, Tietokantasolu::$luku_int,$tietokantaolio));
         
         $taulunimi = Lisaluokitus::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);

@@ -8,37 +8,6 @@
 /**
  * Description of Havainto: Pitää sisällään tietokantataulun tiedot.
  * 
-create table havainnot
-(
-  id                    int auto_increment not null,
-  henkilo_id            int default -1 not null,
-  lajiluokka_id         int default -1 not null,
-  vuosi                 smallint default -1,
-  kk                    tinyint default -1,
- 
-  paiva                 tinyint default -1,
-  paikka                varchar(300),
-  kommentti             varchar(3000),
-  maa                   smallint default 1,
-  varmuus               smallint default 100,
- 
-  sukupuoli             tinyint default -1,
-  lkm                   int default -1,
- 
-  primary key (id),
-  index(henkilo_id),
-  index(vuosi),
-  index(kk),
-  index(paiva),
-  index(paikka),
-  index(maa),
-  index(lajiluokka_id),
-  FOREIGN KEY (lajiluokka_id) REFERENCES lajiluokat (id)
-                      ON DELETE CASCADE,
-  FOREIGN KEY (henkilo_id) REFERENCES henkilot (id)
-                      ON DELETE CASCADE
-
-) ENGINE=INNODB;    
  * @author J-P
  * 
  * Sidoksia: Kontrolleri_pikakommentit
@@ -59,6 +28,7 @@ class Havainto extends Malliluokkapohja {
     public static $SARAKENIMI_PAIVA= "paiva";
     
     public static $SARAKENIMI_PAIKKA= "paikka";
+    public static $SARAKENIMI_VAKIPAIKKA= "vakipaikka_id"; // Vakihavaintopaikka
     public static $SARAKENIMI_KOMMENTTI= "kommentti";
     public static $SARAKENIMI_MAA= "maa";
     public static $SARAKENIMI_VARMUUS= "varmuus";
@@ -73,20 +43,23 @@ class Havainto extends Malliluokkapohja {
      */
     function __construct($id, $tietokantaolio){
         $tietokantasolut = 
-            array(new Tietokantasolu(Havainto::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio),  
-                new Tietokantasolu(Havainto::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_LAJILUOKKA_ID, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_VUOSI, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_KK,Tietokantasolu::$luku_int, $tietokantaolio), 
+
+            array(new Tietokantasolu(Havainto::$SARAKENIMI_ID, Tietokantasolu::$luku_int,$tietokantaolio),  
+                new Tietokantasolu(Havainto::$SARAKENIMI_HENKILO_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_LAJILUOKKA_ID, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_VUOSI, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_KK,Tietokantasolu::$luku_int,$tietokantaolio), 
                 
-                new Tietokantasolu(Havainto::$SARAKENIMI_PAIVA, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_PAIKKA, Tietokantasolu::$mj_tyhja_EI_ok, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_ok, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_MAA, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_VARMUUS, Tietokantasolu::$luku_int, $tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_PAIVA, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_PAIKKA, Tietokantasolu::$mj_tyhja_EI_ok,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_KOMMENTTI, Tietokantasolu::$mj_tyhja_ok,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_MAA, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_VARMUUS, Tietokantasolu::$luku_int,$tietokantaolio), 
                 
-                new Tietokantasolu(Havainto::$SARAKENIMI_SUKUPUOLI, Tietokantasolu::$luku_int, $tietokantaolio), 
-                new Tietokantasolu(Havainto::$SARAKENIMI_LKM, Tietokantasolu::$luku_int, $tietokantaolio));
+                new Tietokantasolu(Havainto::$SARAKENIMI_SUKUPUOLI, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_VAKIPAIKKA, Tietokantasolu::$luku_int,$tietokantaolio), 
+                new Tietokantasolu(Havainto::$SARAKENIMI_LKM, Tietokantasolu::$luku_int,$tietokantaolio));
+
         
         $taulunimi = Havainto::$taulunimi;
         parent::__construct($tietokantaolio, $id, $taulunimi, $tietokantasolut);
@@ -124,6 +97,16 @@ class Havainto extends Malliluokkapohja {
     }
     public function set_paikka($uusi){
         return $this->set_arvo($uusi, Havainto::$SARAKENIMI_PAIKKA);
+    }
+    /**
+     * Returns the value of common bong place.
+     * @return type
+     */
+    public function get_vakipaikka(){
+        return $this->get_arvo(Havainto::$SARAKENIMI_VAKIPAIKKA);
+    }
+    public function set_vakipaikka($uusi){
+        return $this->set_arvo($uusi, Havainto::$SARAKENIMI_VAKIPAIKKA);
     }
     public function get_vuosi(){
         return $this->get_arvo(Havainto::$SARAKENIMI_VUOSI);
@@ -375,7 +358,7 @@ class Havainto extends Malliluokkapohja {
      * ei kannata pelkissä hauissa käyttää.
      *
      * @param type $uusi Parametrilla ei tässä merkitystä.
-     */
+     *
     public function on_tallennuskelpoinen($uusi) {
         $palaute = false;
 
@@ -400,13 +383,15 @@ class Havainto extends Malliluokkapohja {
             $this->lukumuotoinen_muuttuja_ok($this->maa, $putsaa, 
                                     Bongaustekstit::$havaintolomake_maa) &&
             $this->lukumuotoinen_muuttuja_ok($this->varmuus, $putsaa, 
+                                    Bongaustekstit::$havaintolomake_varmuus) &&
+            $this->lukumuotoinen_muuttuja_ok($this->, $putsaa, 
                                     Bongaustekstit::$havaintolomake_varmuus)
             ){
 
             $palaute = true;
         }
         return $palaute;
-    }
+    }*/
     
     /**
      * Etsii tietokannasta parametri-id:n mukaista havaintoa. HUOM! Palauttaa
@@ -785,7 +770,8 @@ class Havainto extends Malliluokkapohja {
        }
 
        // Muotoillaan varmuusehto:
-       $varmuusehto = "AND ".Havainto::$taulunimi.".varmuus >= ".Varmuus::$melkoisen_varma;
+       $varmuusehto = "AND ".Havainto::$taulunimi.".varmuus >= ".
+                        Varmuus::$melkoisen_varma;
 
        $hakulause = 
                    "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id
@@ -793,7 +779,8 @@ class Havainto extends Malliluokkapohja {
                    JOIN henkilot
                    ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
                    JOIN ".Lajiluokka::$taulunimi."
-                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".Lajiluokka::$taulunimi.".id
+                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".
+                        Lajiluokka::$taulunimi.".id
                    WHERE henkilot.id = $henkilo_id
                    AND $ylaluokkaehto
                    $aikaehto
@@ -816,7 +803,8 @@ class Havainto extends Malliluokkapohja {
                    JOIN henkilot
                    ON ".Havainto::$taulunimi.".henkilo_id = henkilot.id
                    JOIN ".Lajiluokka::$taulunimi."
-                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".Lajiluokka::$taulunimi.".id
+                   ON ".Havainto::$taulunimi.".lajiluokka_id = ".
+                        Lajiluokka::$taulunimi.".id
                    WHERE henkilot.id = $henkilo_id
                    AND $ylaluokkaehto
                    $aikaehto
@@ -860,6 +848,8 @@ class Havainto extends Malliluokkapohja {
 
        // Palauttaa luvun 0 myös jos parametri paha.
        $lkm[2] = sizeof($hakutulos);
+       
+       $lkm[3] = $hakulause;
        
        
        
@@ -1056,7 +1046,7 @@ class Havainto extends Malliluokkapohja {
        }
 
        $hakulause =
-                   "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                   "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                            ".Kuvaus::$taulunimi.".nimi AS nimi
                    FROM ".Havainto::$taulunimi."
                    JOIN henkilot
@@ -1071,7 +1061,6 @@ class Havainto extends Malliluokkapohja {
                    $jaksoaikaehto
                    $varmuusehto
                    $alue_ehto
-                   GROUP BY laji_id
                    ORDER BY nimi
                   ";
 
@@ -1085,6 +1074,7 @@ class Havainto extends Malliluokkapohja {
            $tulos .= "<table class = ".Bongausasetuksia::$tietotaulun_class.">
                    <tr>
                    <th>".Bongaustekstit::$ilm_ei_havaintoja."</th></tr></table>";
+                   //$hakulause;
        }
        else{ // Muotoillaan tiedot nätisti:
            $tulos = "<div class=".Bongausasetuksia::$tietotauluotsikko_class.">".
@@ -1123,6 +1113,7 @@ class Havainto extends Malliluokkapohja {
    }
    
    /**
+    * DEPRECATED: käytä havaintokontrollerin metodeita instead.
     * Palauttaa taulukon, joka sisältää nimet niistä sessiomuuttujassa 
     * säilytettävän (siksi ei tarvitse täällä välittää) yläluokan lajeista,
     * jotka annettu henkilö on havainnut kyseisenä vuotena (tai ikinä) ja jotka 
@@ -1212,7 +1203,7 @@ class Havainto extends Malliluokkapohja {
        
        if($lisaluokitus){
            $hakulause =
-                   "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                   "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                            ".Kuvaus::$taulunimi.".nimi AS nimi
                    FROM ".Havainto::$taulunimi."
                    JOIN henkilot
@@ -1234,13 +1225,12 @@ class Havainto extends Malliluokkapohja {
                    $varmuusehto
                    $alue_ehto
                    $lisaluokitusehto
-                   GROUP BY laji_id
                    ORDER BY nimi
                   ";
            
        } else{  // Ei lisäluokitusehtoa: yksi liitos vähemmän.
            $hakulause =
-                   "SELECT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
+                   "SELECT DISTINCT ".Havainto::$taulunimi.".lajiluokka_id AS laji_id,
                            ".Kuvaus::$taulunimi.".nimi AS nimi
                    FROM ".Havainto::$taulunimi."
                    JOIN henkilot
@@ -1255,10 +1245,10 @@ class Havainto extends Malliluokkapohja {
                    $jaksoaikaehto
                    $varmuusehto
                    $alue_ehto
-                   GROUP BY laji_id
                    ORDER BY nimi
                   ";
        }
+       //GROUP BY laji_id
        
        $havaintotaulu = 
                    $tietokantaolio->tee_OMAhaku_oliotaulukkopalautteella($hakulause);
@@ -1479,6 +1469,8 @@ class Havainto extends Malliluokkapohja {
 
        return $tulos;
    }
+   
+   
 
    /**
     * Palauttaa yhden poppoon yhdestä lajista tekemät havainnot taulukkoon 
@@ -1804,6 +1796,101 @@ class Havainto extends Malliluokkapohja {
                     $palaute = true;
                 }
             }
+        }
+        return $palaute;
+    }
+    
+    /**
+     * Tarkistaa tietokannasta, onko siellä jo havaintojaksolinkki tämän
+     * havainnon ja annetun havaintojakson välillä.
+     * Palauttaa true, jos linkki löytyy ja false muuten.
+     * @param int havaintojakso_id
+     */
+    public function havaintojaksolinkki_olemassa($havaintojakso_id){
+        $hakulause = "SELECT ". Havaintojaksolinkki::$SARAKENIMI_ID.
+                    " FROM ". Havaintojaksolinkki::$taulunimi.
+                    " WHERE ".Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID."=".
+                            $this->get_id().
+                    " AND ".Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID."=".
+                            $havaintojakso_id;
+        
+        $osumat = 
+            $this->tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
+        
+        if(empty($osumat)){
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    /**
+     * Hakee tietokannasta tähän havaintoon liittyvät havaintojaksolinkit ja 
+     * palauttaa ne (Havaintojaksolinkki-luokan oliot) taulukossa (array), joka
+     * on tyhjä, ellei mitään löydy.
+     */
+    public function get_havaintojaksolinkit(){
+        
+        $linkit = array();
+        
+        $hakulause = "SELECT ". Havaintojaksolinkki::$SARAKENIMI_ID.
+                    " FROM ". Havaintojaksolinkki::$taulunimi.
+                    " WHERE ".Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID."=".
+                            $this->get_id();
+        
+        $osumat = 
+            $this->tietokantaolio->tee_omahaku_oliotaulukkopalautteella($hakulause);
+        
+        foreach ($osumat as $osumaolio) {
+            $linkki_id = $osumaolio->id;
+            array_push($linkit, 
+                    new Havaintojaksolinkki($linkki_id, $this->tietokantaolio));
+        }
+        
+        return $linkit;
+    }
+    
+    /**
+     * Luo Havintojaksolinkki-luokan olion yhdistämään tämän havainnon
+     * havaintojaksoon, jonka id annetaan parametrina.
+     * 
+     * Varmistaa ensin, ettei samaa havaintoa jo merkitty tapahtumaan. Tätä
+     * ei ole mielekästä tehdä, jos kyseessä on uuden havaintojakson tallennus
+     * samalla kun havaintojen!
+     * 
+     * Huomaa, että saman lajin voi toki havaita monta kertaa esimerkiksi
+     * matkan aikana eri päivinä.
+     * 
+     * Palauttaa arvon $OPERAATIO_ONNISTUI, jos linkki lisätään.
+     * Muuten palauttaa lisää selittävän kommentin tai virheilmoituksen 
+     * (Malliluokkapohja-oliolta). Tämähän ei ole yleensä 
+     * virhetoiminto, koska todennäköisesti törmäyksiä tulee aika usein, 
+     * vaan rutiinitarkastus.
+     * 
+     * @param int $havaintojakso_id
+     * @param bool $tarkista Jos true, tarkistetaan linkin olemassa olo, muuten ei.
+     */
+    function lisaa_havaintojaksoon($havaintojakso_id, $tarkista){
+        
+        $tarkistus_ok = true;
+        
+        if($tarkista){
+            if($this->havaintojaksolinkki_olemassa($havaintojakso_id)){
+                $palaute =  Bongaustekstit::$ilm_havaintojaksolinkki_jo_olemassa;
+                $tarkistus_ok = false;
+            } 
+        } 
+        
+        if($tarkistus_ok){
+            $linkki = new Havaintojaksolinkki(Havainto::$MUUTTUJAA_EI_MAARITELTY, 
+                                                    $this->tietokantaolio);
+            
+            $linkki->set_arvo($havaintojakso_id, 
+                            Havaintojaksolinkki::$SARAKENIMI_HAVAINTOJAKSO_ID);
+            $linkki->set_arvo($this->get_id(), 
+                            Havaintojaksolinkki::$SARAKENIMI_HAVAINTO_ID);
+
+            $palaute = $linkki->tallenna_uusi();
         }
         return $palaute;
     }

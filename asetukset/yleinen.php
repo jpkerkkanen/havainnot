@@ -22,6 +22,15 @@ class Oliotyyppi{
     public static $MUU = 50; //
 }
 
+/**
+ * Tämä luokka sisältää arvot muuttujalle, joka määrää, miten olio
+ * käyttäjälle näytetään. 
+ */
+class Nakyvyys{
+    public static $JULKINEN = 10; //
+    public static $YKSITYINEN = 5; //
+}
+
 
 
 /**
@@ -70,6 +79,7 @@ class Tekstit{
  */
 class Yleisasetuksia{
     public static $etusivutiedostonimi = "index.php";  
+    public static $koodaus = "UTF-8";
 
     //======================= kayttäjä-tekstit==================================
 }
@@ -98,6 +108,7 @@ class Id{
     public static $palkki_oikea = "palkki_oikea";
     public static $palkki_vasen = "palkki_vasen";
     public static $sisalto = "sisalto";
+    public static $maavalikko_id = "maavalikko";
 }
 
 /**
@@ -159,7 +170,7 @@ class Maat {
     
     public static $islanti = 16;
     public static $israel = 17;
-    public static $isobritannia = 17;
+    public static $isobritannia = 18;
     
     
     /**
@@ -264,32 +275,42 @@ class Maat {
     /**
     * Luo ja palauttaa maavalikon html-koodin. Ei sisällä lomake- eli
     * form-tageja!
-    * @param <type> $maa
-    * @param <type> $otsikko
-    * @return <type>
+     * 
+     * @param type $maaindeksi
+     * @param type $otsikko
      * @param type $name_arvo
+     * @param type $id
      * @return string
      */
-   public static function nayta_maavalikko(&$maaindeksi, $otsikko, $name_arvo){
+    public static function nayta_maavalikko(&$maaindeksi, $otsikko, $name_arvo, $id){
 
-       $maavalikkohtml = "";
-
-       try{
-           $arvot = Maat::hae_maiden_arvot();
-           $nimet = Maat::hae_maiden_nimet();
-           $oletusvalinta_arvo = $maaindeksi;
-           $maavalikkohtml.= Html::luo_pudotusvalikko($arvot,
-                                                   $nimet,
-                                                   $name_arvo,
-                                                   $oletusvalinta_arvo,
-                                                   $otsikko);
-       }
-       catch(Exception $poikkeus){
-           $maavalikkohtml = Tekstit::$virhe_maavalikon_luomisessa." (".
-                           $poikkeus->getMessage().")";
-       }
-       return $maavalikkohtml;
-   }
+        try{
+            $arvot = Maat::hae_maiden_arvot();
+            $nimet = Maat::hae_maiden_nimet();
+            $oletusvalinta_arvo = $maaindeksi;
+            $select_maaritteet = 
+                array(Maarite::name($name_arvo),
+                        Maarite::id($id));
+            $option_maaritteet = 
+                array();
+            $maavalikkohtml = Html::luo_pudotusvalikko_uusi($arvot, 
+                                                             $nimet, 
+                                                             $select_maaritteet, 
+                                                             $option_maaritteet, 
+                                                             $oletusvalinta_arvo, 
+                                                             $otsikko);
+                                                             //"maaid=".$maaindeksi);
+        }
+        catch(Exception $poikkeus){
+            $maavalikkohtml = Tekstit::$virhe_maavalikon_luomisessa." (".
+                            $poikkeus->getMessage().")";
+        }
+        return $maavalikkohtml;
+    }
+    
+    
+   
+    
 }
 
 

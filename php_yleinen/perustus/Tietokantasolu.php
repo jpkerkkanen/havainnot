@@ -34,10 +34,9 @@ class Tietokantasolu {
     
     //put your code here
     private $sarakenimi, $arvo, $arvon_tyyppi, $tiedot_ok;
+    private $tietokantaolio;    //  Tarvitaan funktiota escape_real_string varten.
     
     private $on_muokattu;   // Tämän avulla tiedetään, onko solua muutettu.
-    
-    private $tietokantaolio;    //  Tarvitaan funktiota escape_real_string varten.
     
     // Arvotyypit;
     public static $luku_int = 1;
@@ -51,6 +50,7 @@ class Tietokantasolu {
         $this->arvon_tyyppi = Pohja::$MUUTTUJAA_EI_MAARITELTY;
         $this->tiedot_ok = false;
         $this->on_muokattu = false;
+        $this->tietokantaolio = $tietokantaolio;
         
         // Sarakenimen pitää olla määritelty ja epätyhjä merkkijono:
         if(is_string($sarakenimi) && !empty($sarakenimi)){   
@@ -134,8 +134,9 @@ class Tietokantasolu {
      * <b>HUOM! Kaikki tietokantaan menevä tieto kulkee tämän metodin kautta!</b>
      * </p>
      * 
-     * Ellei uusi ole määritelty, 
-     * annetaan arvoksi Pohja::$MUUTTUJAA_EI_MAARITELTY.
+     * Ellei uusi ole määritelty, (tai arvo on Pohja::$MUUTTUJAA_EI_MAARITELTY),
+     * annetaan arvoksi Pohja::$MUUTTUJAA_EI_MAARITELTY. HUOMAA: tämä arvo ei mene
+     * läpi, vaan tiedot_ok-arvoksi tulee FALSE!
      * 
      * Jos uusi arvo on tyhjä silloin, kun tyhjä kielletty, 
      * annetaan arvoksi Pohja::$ARVO_TYHJA. HUOMAA: tässä vain merkkijonoja
@@ -160,7 +161,8 @@ class Tietokantasolu {
             // rakentajan parametri on niille turha..
             if($this->arvon_tyyppi === Tietokantasolu::$luku_int){
                 if(is_numeric($uusi)){
-                    $this->arvo = $this->tietokantaolio->real_escape_string(trim($uusi));
+                    $this->arvo = 
+                        $this->tietokantaolio->real_escape_string(trim($uusi));
                     $this->tiedot_ok = true;
                 }
                 else{
@@ -173,7 +175,10 @@ class Tietokantasolu {
                     ($this->arvon_tyyppi === Tietokantasolu::$mj_tyhja_ok)){
                     
                     if(is_string($uusi)){
-                        $this->arvo = $this->tietokantaolio->real_escape_string(trim($uusi));
+
+                        $this->arvo = 
+                            $this->tietokantaolio->real_escape_string(trim($uusi));
+
 
                         // Tarkistetaan tyhjyys tarvittaessa:
                         if(($this->arvon_tyyppi === Tietokantasolu::$mj_tyhja_EI_ok) && 

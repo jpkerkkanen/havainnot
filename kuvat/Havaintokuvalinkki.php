@@ -48,6 +48,7 @@ class Havaintokuvalinkki extends Malliluokkapohja{
      */
     function __construct($id, $tietokantaolio) {
         $tietokantasolut = 
+
             array(new Tietokantasolu(Havaintokuvalinkki::$SARAKENIMI_ID, Tietokantasolu::$luku_int, $tietokantaolio),
                 new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_kuva_id, Tietokantasolu::$luku_int, $tietokantaolio),
                 new Tietokantasolu(Havaintokuvalinkki::$sarakenimi_havainto_id, Tietokantasolu::$luku_int, $tietokantaolio),
