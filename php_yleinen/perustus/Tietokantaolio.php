@@ -92,7 +92,7 @@ class Tietokantaolio extends Pohja
                                         $this->dbuser,
                                         $this->dbsalis,
                                         $dbnimi);
-            //$this->yhteys->set_charset("utf8");
+            $this->yhteys->set_charset("utf8");
             if($this->yhteys->connect_errno){
                 echo "Tietokannan valinta ep&auml;onnistui: " .
                     $this->yhteys->connect_errno;
